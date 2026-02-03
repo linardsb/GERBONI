@@ -1,0 +1,341 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface-muted: var(--surface-muted);
+  --color-surface-dark: var(--surface-dark);
+  --color-border-subtle: var(--border-subtle);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-overlay-foreground: var(--overlay-foreground);
+  --color-overlay-foreground-muted: var(--overlay-foreground-muted);
+  --color-overlay-foreground-subtle: var(--overlay-foreground-subtle);
+  --color-red-brand: var(--red-brand);
+  --color-red-brand-foreground: var(--red-brand-foreground);
+  /* Spacing tokens - semantic scale for gap, padding, margin */
+  --spacing-page: var(--space-page);
+  --spacing-section: var(--space-section);
+  --spacing-group: var(--space-group);
+  --spacing-element: var(--space-element);
+  /* Container query breakpoints */
+  --container-3xs: 16rem;
+  --container-2xs: 18rem;
+  --container-xs: 20rem;
+  --container-sm: 24rem;
+  --container-md: 28rem;
+  --container-lg: 32rem;
+  --container-xl: 36rem;
+  --container-2xl: 42rem;
+  --container-3xl: 48rem;
+  --container-4xl: 56rem;
+  --container-5xl: 64rem;
+  --container-6xl: 72rem;
+  --container-7xl: 80rem;
+  /* Animation duration tokens */
+  --transition-duration-instant: 50ms;
+  --transition-duration-fast: 150ms;
+  --transition-duration-normal: 300ms;
+  --transition-duration-slow: 500ms;
+  --transition-duration-slower: 700ms;
+  --font-sans: var(--font-figtree);
+  --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-playfair);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+}
+
+:root {
+  /* Vega style: zinc base + cyan theme + no radius */
+  --radius: 0;
+  --background: oklch(1 0 0);
+  /* Semantic surface colors */
+  --surface-muted: oklch(0.985 0.002 286);
+  --surface-dark: oklch(0.12 0.004 286);
+  --border-subtle: oklch(0.92 0.004 286);
+  /* State colors */
+  --success: oklch(0.72 0.17 142);
+  --success-foreground: oklch(0.26 0.07 142);
+  --warning: oklch(0.75 0.18 55);
+  --warning-foreground: oklch(0.35 0.12 55);
+  /* Overlay text colors */
+  --overlay-foreground: oklch(1 0 0);
+  --overlay-foreground-muted: oklch(1 0 0 / 0.7);
+  --overlay-foreground-subtle: oklch(1 0 0 / 0.5);
+  /* Brand red (#A4343A) - burgundy accent */
+  --red-brand: oklch(0.463 0.142 23);
+  --red-brand-foreground: oklch(0.98 0 0);
+  /* Spacing scale */
+  --space-page: 3rem;
+  --space-section: 2rem;
+  --space-group: 1rem;
+  --space-element: 0.5rem;
+  /* Animation tokens */
+  --duration-instant: 50ms;
+  --duration-fast: 150ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+  --duration-slower: 700ms;
+  --easing-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --easing-in: cubic-bezier(0.4, 0, 1, 1);
+  --easing-out: cubic-bezier(0, 0, 0.2, 1);
+  --easing-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --easing-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --easing-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  /* Semantic surface colors */
+  --surface-muted: oklch(0.985 0.002 286);
+  --surface-dark: oklch(0.12 0.004 286);
+  --border-subtle: oklch(0.92 0.004 286);
+  --foreground: oklch(0.141 0.005 285.823);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.141 0.005 285.823);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.141 0.005 285.823);
+  /* Cyan primary */
+  --primary: oklch(0.715 0.143 215.221);
+  --primary-foreground: oklch(0.985 0.002 247.839);
+  --secondary: oklch(0.967 0.001 286.375);
+  --secondary-foreground: oklch(0.21 0.006 285.885);
+  --muted: oklch(0.967 0.001 286.375);
+  --muted-foreground: oklch(0.552 0.016 285.938);
+  --accent: oklch(0.967 0.001 286.375);
+  --accent-foreground: oklch(0.21 0.006 285.885);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.92 0.004 286.32);
+  --input: oklch(0.92 0.004 286.32);
+  --ring: oklch(0.715 0.143 215.221);
+  --chart-1: oklch(0.715 0.143 215.221);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  /* Sidebar: inverted menu color */
+  --sidebar: oklch(0.141 0.005 285.823);
+  --sidebar-foreground: oklch(0.985 0.002 247.839);
+  --sidebar-primary: oklch(0.715 0.143 215.221);
+  --sidebar-primary-foreground: oklch(0.985 0.002 247.839);
+  --sidebar-accent: oklch(0.21 0.006 285.885);
+  --sidebar-accent-foreground: oklch(0.985 0.002 247.839);
+  --sidebar-border: oklch(0.274 0.006 286.033);
+  --sidebar-ring: oklch(0.715 0.143 215.221);
+}
+
+.dark {
+  --background: oklch(0.141 0.005 285.823);
+  --foreground: oklch(0.985 0.002 247.839);
+  /* Brand red - lighter in dark mode for visibility */
+  --red-brand: oklch(0.55 0.16 23);
+  --red-brand-foreground: oklch(0.98 0 0);
+  --card: oklch(0.141 0.005 285.823);
+  --card-foreground: oklch(0.985 0.002 247.839);
+  --popover: oklch(0.141 0.005 285.823);
+  --popover-foreground: oklch(0.985 0.002 247.839);
+  /* Cyan primary */
+  --primary: oklch(0.715 0.143 215.221);
+  --primary-foreground: oklch(0.21 0.006 285.885);
+  --secondary: oklch(0.274 0.006 286.033);
+  --secondary-foreground: oklch(0.985 0.002 247.839);
+  --muted: oklch(0.274 0.006 286.033);
+  --muted-foreground: oklch(0.705 0.015 286.067);
+  --accent: oklch(0.274 0.006 286.033);
+  --accent-foreground: oklch(0.985 0.002 247.839);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(0.274 0.006 286.033);
+  --input: oklch(0.274 0.006 286.033);
+  --ring: oklch(0.715 0.143 215.221);
+  --chart-1: oklch(0.715 0.143 215.221);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  /* Sidebar: inverted */
+  --sidebar: oklch(0.21 0.006 285.885);
+  --sidebar-foreground: oklch(0.985 0.002 247.839);
+  --sidebar-primary: oklch(0.715 0.143 215.221);
+  --sidebar-primary-foreground: oklch(0.985 0.002 247.839);
+  --sidebar-accent: oklch(0.274 0.006 286.033);
+  --sidebar-accent-foreground: oklch(0.985 0.002 247.839);
+  --sidebar-border: oklch(0.274 0.006 286.033);
+  --sidebar-ring: oklch(0.715 0.143 215.221);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  .container {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+  /* Serif font family */
+  .font-serif {
+    font-family: var(--font-serif);
+  }
+  /* Display headings - serif italic for elegant headers */
+  .text-display {
+    font-family: var(--font-serif);
+    font-style: italic;
+  }
+  /* Uppercase tracking for labels and CTAs */
+  .text-label {
+    @apply uppercase tracking-[0.15em] text-sm font-medium;
+  }
+  /* Fine print with increased tracking */
+  .text-fine {
+    @apply text-xs tracking-wide text-muted-foreground;
+  }
+  /* Navigation link with hover underline */
+  .nav-link {
+    @apply text-sm font-medium text-foreground/80 hover:text-foreground transition-colors relative;
+  }
+  .nav-link::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-0 h-px bg-current transition-all duration-300;
+  }
+  .nav-link:hover::after {
+    @apply w-full;
+  }
+  /* Mobile navigation link */
+  .nav-link-mobile {
+    @apply text-lg font-medium;
+  }
+  /* Footer link */
+  .footer-link {
+    @apply text-sm text-muted-foreground hover:text-foreground transition-colors;
+  }
+}
+
+@layer utilities {
+  /* Hover underline effect */
+  .hover-underline {
+    @apply relative;
+  }
+  .hover-underline::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-0 h-px bg-current transition-all duration-300;
+  }
+  .hover-underline:hover::after {
+    @apply w-full;
+  }
+  /* Image scale on hover (use with group) */
+  .hover-scale {
+    @apply transition-transform duration-500;
+  }
+  .group:hover .hover-scale {
+    @apply scale-105;
+  }
+  /* Gradient overlays */
+  .overlay-gradient-up {
+    @apply bg-gradient-to-t from-black/60 via-black/20 to-transparent;
+  }
+  .overlay-gradient-down {
+    @apply bg-gradient-to-b from-black/60 via-black/20 to-transparent;
+  }
+}
+
+/* ============================================
+   Container Queries
+   ============================================
+   Usage: Add .cq-container to parent, use cq-sm:, cq-md:, cq-lg: etc on children
+
+   Example:
+     <div className="cq-container">
+       <div className="cq-sm:flex-row cq-lg:grid-cols-3">...</div>
+     </div>
+
+   Or use the ResponsiveContainer component:
+     <ResponsiveContainer>
+       <Grid cols={4} containerQuery />
+     </ResponsiveContainer>
+
+   Breakpoints: cq-3xs (16rem) → cq-7xl (80rem)
+   ============================================ */
+
+@layer utilities {
+  /* Container utilities */
+  .cq-container {
+    container-type: inline-size;
+  }
+  .cq-container-normal {
+    container-type: normal;
+  }
+  /* Named containers for nested/scoped queries */
+  .cq-container\/card {
+    container-type: inline-size;
+    container-name: card;
+  }
+  .cq-container\/section {
+    container-type: inline-size;
+    container-name: section;
+  }
+  .cq-container\/sidebar {
+    container-type: inline-size;
+    container-name: sidebar;
+  }
+  .cq-container\/main {
+    container-type: inline-size;
+    container-name: main;
+  }
+  .cq-container\/grid {
+    container-type: inline-size;
+    container-name: grid;
+  }
+}
+
+/* Container query variants - responsive based on container width
+   Usage: @sm:flex-row, @lg:grid-cols-3, etc.
+   These work with any parent that has cq-container class */
+@custom-variant cq-3xs (@container (min-width: 16rem));
+@custom-variant cq-2xs (@container (min-width: 18rem));
+@custom-variant cq-xs (@container (min-width: 20rem));
+@custom-variant cq-sm (@container (min-width: 24rem));
+@custom-variant cq-md (@container (min-width: 28rem));
+@custom-variant cq-lg (@container (min-width: 32rem));
+@custom-variant cq-xl (@container (min-width: 36rem));
+@custom-variant cq-2xl (@container (min-width: 42rem));
+@custom-variant cq-3xl (@container (min-width: 48rem));
+@custom-variant cq-4xl (@container (min-width: 56rem));
+@custom-variant cq-5xl (@container (min-width: 64rem));
+@custom-variant cq-6xl (@container (min-width: 72rem));
+@custom-variant cq-7xl (@container (min-width: 80rem));

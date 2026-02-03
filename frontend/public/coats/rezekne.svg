@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" fill="none">
+  <path d="M50 5 L95 25 L95 75 C95 90 75 110 50 115 C25 110 5 90 5 75 L5 25 Z" fill="#4169e1" stroke="#1e3a8a" stroke-width="2"/>
+  <!-- Griffin -->
+  <path d="M30 85 Q35 65 50 55 Q65 65 70 85" fill="#c0c0c0" stroke="#808080" stroke-width="1"/>
+  <circle cx="45" cy="48" r="12" fill="#c0c0c0"/>
+  <!-- Beak -->
+  <path d="M55 48 L70 42 L65 50 L75 48" stroke="#ffd700" stroke-width="3" fill="#ffd700"/>
+  <!-- Wings -->
+  <path d="M32 60 Q15 45 20 70" fill="#c0c0c0"/>
+  <path d="M68 60 Q85 45 80 70" fill="#c0c0c0"/>
+  <!-- Eye -->
+  <circle cx="42" cy="45" r="3" fill="black"/>
+  <!-- Crown -->
+  <path d="M38 35 L45 28 L50 35 L55 28 L62 35" stroke="#ffd700" stroke-width="2" fill="none"/>
+</svg>

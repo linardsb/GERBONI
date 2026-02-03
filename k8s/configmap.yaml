@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gerboni-config
+  namespace: gerboni
+  labels:
+    app.kubernetes.io/name: gerboni-config
+    app.kubernetes.io/part-of: gerboni-platform
+data:
+  # Application settings
+  APP_NAME: "GERBONI"
+  DEBUG: "false"
+  API_PREFIX: "/api"
+
+  # URLs (update for your domain)
+  FRONTEND_URL: "https://gerboni.lv"
+  BACKEND_URL: "https://api.gerboni.lv"
+
+  # Logging
+  LOG_LEVEL: "INFO"
+  LOG_FORMAT: "json"
+
+  # Performance thresholds
+  SLOW_REQUEST_THRESHOLD: "1.0"
+  VERY_SLOW_REQUEST_THRESHOLD: "5.0"
+
+  # Security
+  TRUSTED_HOSTS: "gerboni.lv,*.gerboni.lv,api.gerboni.lv"

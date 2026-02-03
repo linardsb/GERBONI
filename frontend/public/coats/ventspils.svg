@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" fill="none">
+  <path d="M50 5 L95 25 L95 75 C95 90 75 110 50 115 C25 110 5 90 5 75 L5 25 Z" fill="#4169e1" stroke="#1e3a8a" stroke-width="2"/>
+  <!-- Bull/Auroch -->
+  <ellipse cx="50" cy="65" rx="25" ry="22" fill="#8b4513"/>
+  <!-- Head -->
+  <ellipse cx="50" cy="48" rx="15" ry="12" fill="#a0522d"/>
+  <!-- Horns -->
+  <path d="M35 45 Q25 35 20 45 Q25 50 30 48" fill="#f5f5dc" stroke="#d2b48c" stroke-width="1"/>
+  <path d="M65 45 Q75 35 80 45 Q75 50 70 48" fill="#f5f5dc" stroke="#d2b48c" stroke-width="1"/>
+  <!-- Eyes -->
+  <circle cx="43" cy="48" r="3" fill="black"/>
+  <circle cx="57" cy="48" r="3" fill="black"/>
+  <!-- Nose -->
+  <ellipse cx="50" cy="55" rx="8" ry="5" fill="#654321"/>
+  <!-- Nostrils -->
+  <circle cx="47" cy="55" r="2" fill="black"/>
+  <circle cx="53" cy="55" r="2" fill="black"/>
+</svg>

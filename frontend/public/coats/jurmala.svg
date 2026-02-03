@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" fill="none">
+  <path d="M50 5 L95 25 L95 75 C95 90 75 110 50 115 C25 110 5 90 5 75 L5 25 Z" fill="#4169e1" stroke="#1e3a8a" stroke-width="2"/>
+  <!-- Mermaid -->
+  <circle cx="50" cy="40" r="12" fill="#ffe4c4"/>
+  <!-- Hair -->
+  <path d="M38 35 Q35 50 40 60 M62 35 Q65 50 60 60" stroke="#ffd700" stroke-width="3" fill="none"/>
+  <!-- Body -->
+  <ellipse cx="50" cy="55" rx="10" ry="8" fill="#ffe4c4"/>
+  <!-- Tail -->
+  <path d="M50 63 Q50 80 45 90 Q40 100 30 95" fill="#20b2aa" stroke="#008b8b" stroke-width="1"/>
+  <path d="M50 63 Q50 80 55 90 Q60 100 70 95" fill="#20b2aa" stroke="#008b8b" stroke-width="1"/>
+  <!-- Waves -->
+  <path d="M20 85 Q30 80 40 85 Q50 90 60 85 Q70 80 80 85" stroke="white" stroke-width="2" fill="none"/>
+</svg>

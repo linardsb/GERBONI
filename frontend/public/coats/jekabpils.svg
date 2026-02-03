@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" fill="none">
+  <path d="M50 5 L95 25 L95 75 C95 90 75 110 50 115 C25 110 5 90 5 75 L5 25 Z" fill="#228b22" stroke="#006400" stroke-width="2"/>
+  <!-- Stag -->
+  <ellipse cx="50" cy="70" rx="18" ry="22" fill="#8b4513"/>
+  <ellipse cx="50" cy="50" rx="12" ry="15" fill="#a0522d"/>
+  <!-- Antlers -->
+  <path d="M40 40 Q30 25 25 30 Q32 28 35 35 Q28 22 22 25" stroke="#8b4513" stroke-width="3" fill="none"/>
+  <path d="M60 40 Q70 25 75 30 Q68 28 65 35 Q72 22 78 25" stroke="#8b4513" stroke-width="3" fill="none"/>
+  <!-- Eyes -->
+  <circle cx="45" cy="48" r="2" fill="black"/>
+  <circle cx="55" cy="48" r="2" fill="black"/>
+</svg>

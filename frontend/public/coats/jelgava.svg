@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" fill="none">
+  <path d="M50 5 L95 25 L95 75 C95 90 75 110 50 115 C25 110 5 90 5 75 L5 25 Z" fill="#1e3a5f" stroke="#0f1f33" stroke-width="2"/>
+  <!-- Moose head -->
+  <ellipse cx="50" cy="65" rx="20" ry="25" fill="#8b4513"/>
+  <ellipse cx="50" cy="80" rx="10" ry="12" fill="#a0522d"/>
+  <!-- Antlers -->
+  <path d="M35 45 Q25 30 20 35 M35 45 Q30 35 25 40" stroke="#8b4513" stroke-width="4" fill="none"/>
+  <path d="M65 45 Q75 30 80 35 M65 45 Q70 35 75 40" stroke="#8b4513" stroke-width="4" fill="none"/>
+  <!-- Eyes -->
+  <circle cx="42" cy="55" r="3" fill="black"/>
+  <circle cx="58" cy="55" r="3" fill="black"/>
+</svg>

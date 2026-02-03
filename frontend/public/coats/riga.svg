@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" fill="none">
+  <path d="M50 5 L95 25 L95 75 C95 90 75 110 50 115 C25 110 5 90 5 75 L5 25 Z" fill="#1e3a5f" stroke="#0f1f33" stroke-width="2"/>
+  <!-- Towers -->
+  <rect x="20" y="40" width="15" height="40" fill="#c0c0c0"/>
+  <rect x="65" y="40" width="15" height="40" fill="#c0c0c0"/>
+  <polygon points="27.5,40 20,25 35,25" fill="#c41e3a"/>
+  <polygon points="72.5,40 65,25 80,25" fill="#c41e3a"/>
+  <!-- Keys -->
+  <line x1="40" y1="55" x2="60" y2="75" stroke="#ffd700" stroke-width="3"/>
+  <line x1="60" y1="55" x2="40" y2="75" stroke="#ffd700" stroke-width="3"/>
+  <circle cx="40" cy="55" r="5" fill="#ffd700"/>
+  <circle cx="60" cy="55" r="5" fill="#ffd700"/>
+  <!-- Lion head simplified -->
+  <circle cx="50" y="90" r="8" fill="#ffd700"/>
+</svg>

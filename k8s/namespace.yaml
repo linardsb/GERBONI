@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: gerboni
+  labels:
+    app.kubernetes.io/name: gerboni
+    app.kubernetes.io/part-of: gerboni-platform
