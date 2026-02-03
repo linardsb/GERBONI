@@ -12,7 +12,7 @@ Track current work items and progress. Update status as work progresses.
 ## Current Sprint
 
 ### Frontend
-- [ ] Fix FAQ translations - migrate 27 hard-coded questions to en.json/lv.json
+- [x] Fix FAQ translations - migrate 27 hard-coded questions to en.json/lv.json (already complete)
 - [ ] Commit pending middleware.ts changes
 
 ### Backend

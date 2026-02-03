@@ -12,22 +12,30 @@ Track bugs, issues, and their resolutions. Reference these IDs in commits and to
 
 ## Open Bugs
 
+(No open bugs)
+
+---
+
+## Recently Fixed
+
 ### BUG-001: FAQ Page Not Translated
-**Status:** OPEN
+**Status:** CLOSED
 **Severity:** Medium
 **Reported:** 2026-02-03
+**Fixed:** 2026-02-03
 **Component:** Frontend / i18n
 
 **Description:**
 FAQ page displays only English content regardless of selected locale. The 27 FAQ questions are hard-coded in the component instead of using the translation system.
 
 **Root Cause:**
-`frontend/src/app/[locale]/faq/page.tsx` contains hard-coded English strings instead of using `useTranslations` hook. The translation files (en.json, lv.json) only have 9 of 27 FAQ entries.
+`frontend/src/app/[locale]/faq/page.tsx` originally contained hard-coded English strings.
 
-**Fix Required:**
-1. Add all 27 FAQ entries to `frontend/src/messages/en.json`
-2. Add Latvian translations to `frontend/src/messages/lv.json`
-3. Refactor FAQ component to use `useTranslations` hook
+**Fix:**
+- Component refactored to use `useTranslations("faq")` hook
+- All 26 FAQ entries added to `frontend/src/messages/en.json`
+- Complete Latvian translations added to `frontend/src/messages/lv.json`
+- FAQ organized into 6 categories: Orders & Shipping (5), Returns & Refunds (5), Products & Sizing (5), Payment & Security (4), Account & Support (4), Bulk & Custom (3)
 
 **Related Files:**
 - `frontend/src/app/[locale]/faq/page.tsx`
@@ -35,8 +43,6 @@ FAQ page displays only English content regardless of selected locale. The 27 FAQ
 - `frontend/src/messages/lv.json`
 
 ---
-
-## Recently Fixed
 
 ### BUG-002: Middleware Blocking Static Assets
 **Status:** CLOSED
@@ -113,4 +119,4 @@ Created `frontend/src/app/layout.tsx` and `frontend/src/app/page.tsx` with redir
 
 | Month | Opened | Closed | Net |
 |-------|--------|--------|-----|
-| Feb 2026 | 3 | 2 | +1 |
+| Feb 2026 | 3 | 3 | 0 |
