@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { IconBrandInstagram, IconBrandFacebook, IconMail, IconHeart } from "@tabler/icons-react";
 import { Separator } from "@/components/elements/separator";
@@ -37,6 +37,7 @@ function FooterLinkGroup({ title, links }: { title: string; links: { href: strin
 
 export function Footer() {
   const t = useTranslations("footer");
+  const locale = useLocale();
   const currentYear = new Date().getFullYear();
 
   const footerLinks = {
@@ -109,15 +110,18 @@ export function Footer() {
             </Text>
             <Text variant="muted-sm" className="hidden md:block">•</Text>
             <Text variant="muted-sm" className="inline-flex items-center gap-1">
-              {t("madeIn").split("love").map((part, i) =>
-                i === 0 ? (
-                  <span key={i}>{part}</span>
-                ) : (
-                  <span key={i} className="inline-flex items-center gap-1">
-                    <IconHeart className="size-4 fill-current text-red-brand" aria-hidden="true" />
-                    {part}
-                  </span>
-                )
+              {locale === "lv" ? (
+                <>
+                  <span>Radīts ar</span>
+                  <IconHeart className="size-4 fill-current text-red-brand" aria-hidden="true" />
+                  <span>Rīgā, Latvijā</span>
+                </>
+              ) : (
+                <>
+                  <span>Made with</span>
+                  <IconHeart className="size-4 fill-current text-red-brand" aria-hidden="true" />
+                  <span>in Rīga, Latvia</span>
+                </>
               )}
             </Text>
             <Text variant="muted-sm" className="hidden md:block">•</Text>

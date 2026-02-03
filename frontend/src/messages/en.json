@@ -294,33 +294,81 @@
   },
   "faq": {
     "title": "Frequently Asked Questions",
-    "subtitle": "Find answers to common questions about our products and services",
-    "shipping": {
-      "title": "Shipping & Delivery",
+    "subtitle": "Help Center",
+    "description": "Find answers to common questions about our products, shipping, returns, and more.",
+    "stillHaveQuestions": "Still have questions?",
+    "stillHaveQuestionsDescription": "Can't find what you're looking for? Our support team is ready to help.",
+    "contactSupport": "Contact Support",
+    "emailUs": "Email Us",
+    "ordersShipping": {
+      "title": "Orders & Shipping",
       "q1": "How long does shipping take?",
-      "a1": "Standard shipping within Latvia takes 2-3 business days. Baltic states delivery takes 3-5 business days. EU shipping takes 5-10 business days.",
+      "a1": "Latvia: 2-4 business days (€3.99, free over €50). EU countries: 5-10 business days (€7.99, free over €75). Express shipping available for Latvia only at +€12 (1-2 days).",
       "q2": "Do you ship internationally?",
-      "a2": "Yes! We ship to all EU countries. Shipping costs and delivery times vary by destination.",
-      "q3": "Is shipping free?",
-      "a3": "We offer free shipping on orders over €50 within the Baltic states."
+      "a2": "Yes! We ship to the UK (7-14 days, €12.99), USA/Canada (10-21 days, €19.99), and other countries on request. Contact international@gerboni.lv for quotes. Note: customs fees and import duties may apply.",
+      "q3": "How can I track my order?",
+      "a3": "Once your order ships, you'll receive an email with a tracking number. You can also view your order status in your account under 'Orders'. All orders ship from Rīga with tracking.",
+      "q4": "Can I change my shipping address after ordering?",
+      "a4": "Yes, as long as the order hasn't shipped yet. Contact support immediately at support@gerboni.lv or use our live chat. After shipping, address changes are not possible.",
+      "q5": "Can I cancel my order?",
+      "a5": "Orders can be cancelled within 1 hour of placing them. After that, we may have already started processing. Contact support immediately if you need to cancel."
     },
-    "orders": {
-      "title": "Orders & Returns",
-      "q1": "Can I modify my order after placing it?",
-      "a1": "Please contact us within 1 hour of placing your order. Once processing begins, we cannot make changes.",
-      "q2": "What is your return policy?",
-      "a2": "We accept returns within 30 days of delivery. Items must be unworn, unwashed, and in original packaging.",
-      "q3": "How do I track my order?",
-      "a3": "Once shipped, you'll receive a tracking number via email. You can also track orders in your account."
+    "returnsRefunds": {
+      "title": "Returns & Refunds",
+      "q1": "What is your return policy?",
+      "a1": "We offer a 14-day return window from delivery date. Items must be unworn with original tags attached. Return shipping is free within Latvia; EU customers pay return postage.",
+      "q2": "How do I return an item?",
+      "a2": "Contact support@gerboni.lv or use our live chat within 14 days of delivery. We'll provide return instructions and a shipping label (free for Latvia).",
+      "q3": "How long do refunds take?",
+      "a3": "Refunds are processed within 5-10 business days of receiving the returned item. The refund goes to your original payment method. Bank processing may add 3-5 additional days.",
+      "q4": "What if I received a damaged or wrong item?",
+      "a4": "Report within 48 hours with photos. We'll send a replacement immediately or provide a full refund—your choice. No need to return the damaged item.",
+      "q5": "Can I exchange for a different size or color?",
+      "a5": "Yes, subject to stock availability. Contact us before returning to confirm the exchange item is in stock. Price differences will be charged or refunded."
     },
-    "products": {
-      "title": "Products & Care",
-      "q1": "What material are the t-shirts made of?",
-      "a1": "Our t-shirts are made from 100% organic cotton, pre-shrunk and garment-dyed for lasting comfort.",
-      "q2": "How should I care for my t-shirt?",
-      "a2": "Machine wash cold, inside out. Tumble dry low or hang to dry. Do not bleach or iron directly on the print.",
-      "q3": "Are your designs officially licensed?",
-      "a3": "Our designs are inspired by historical coats of arms and created in collaboration with local historians."
+    "productsSizing": {
+      "title": "Products & Sizing",
+      "q1": "What sizes are available?",
+      "a1": "We offer XS through XXL. Check our size guide on each product page for detailed measurements. Our shirts are pre-shrunk, so what you see is what you get.",
+      "q2": "What material are the t-shirts made of?",
+      "a2": "100% organic cotton, 180 GSM medium weight. Soft, breathable, and durable for everyday wear.",
+      "q3": "How should I wash my t-shirt?",
+      "a3": "Machine wash cold (30°C max), do not bleach, tumble dry low or hang dry. Iron on reverse side only to protect the print. Do not dry clean.",
+      "q4": "Are the coat of arms designs authentic?",
+      "a4": "Yes! Each design faithfully represents the official coat of arms of its respective Latvian city. Our designs are created in accordance with Latvian heraldic regulations.",
+      "q5": "What printing method do you use?",
+      "a5": "Direct-to-garment (DTG) printing with eco-friendly, wash-resistant inks. The print becomes part of the fabric for long-lasting quality."
+    },
+    "paymentSecurity": {
+      "title": "Payment & Security",
+      "q1": "What payment methods do you accept?",
+      "a1": "Visa, Mastercard, American Express, Apple Pay, Google Pay, and Klarna (buy now, pay later—EU only). All payments are secured via Stripe.",
+      "q2": "Is my payment information secure?",
+      "a2": "Absolutely. We never store your card details. All payment processing is handled by Stripe with bank-level encryption and security.",
+      "q3": "Do you offer buy now, pay later?",
+      "a3": "Yes, Klarna is available for EU customers. Select Klarna at checkout to split your payment or pay within 30 days.",
+      "q4": "Can I use multiple discount codes?",
+      "a4": "Only one discount code can be applied per order. Choose the one that gives you the best value!"
+    },
+    "accountSupport": {
+      "title": "Account & Support",
+      "q1": "Do I need an account to order?",
+      "a1": "No! Guest checkout is always available. However, creating an account lets you track orders, save addresses, and view order history.",
+      "q2": "How do I reset my password?",
+      "a2": "Click 'Forgot Password' on the login page and enter your email. You'll receive a reset link within a few minutes.",
+      "q3": "How can I delete my account?",
+      "a3": "Email support@gerboni.lv with your deletion request. We'll process it within 30 days in compliance with GDPR.",
+      "q4": "What are your support hours?",
+      "a4": "Live chat: 9:00-18:00 EET weekdays. Email: 24-hour response time. Phone: 10:00-17:00 EET weekdays. Chat gets the fastest response!"
+    },
+    "bulkCustom": {
+      "title": "Bulk & Custom Orders",
+      "q1": "Do you offer bulk discounts?",
+      "a1": "Yes! 10+ items: 10% discount (auto-applied). 25+ items: 15% discount—contact sales@gerboni.lv for a custom quote.",
+      "q2": "Can I order custom municipality designs?",
+      "a2": "Yes! Minimum 50 units with a 4-6 week lead time. Email custom@gerboni.lv with your requirements for a quote.",
+      "q3": "Do you offer gift wrapping?",
+      "a3": "Yes! Gift wrapping is available for €2.50 per item. You can also add a free personalized message (up to 150 characters) at checkout."
     }
   },
   "shipping": {

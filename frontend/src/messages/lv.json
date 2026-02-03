@@ -294,33 +294,81 @@
   },
   "faq": {
     "title": "Biežāk uzdotie jautājumi",
-    "subtitle": "Atrodiet atbildes uz biežāk uzdotajiem jautājumiem par mūsu produktiem un pakalpojumiem",
-    "shipping": {
-      "title": "Piegāde un piegāde",
+    "subtitle": "Palīdzības centrs",
+    "description": "Atrodiet atbildes uz biežāk uzdotajiem jautājumiem par mūsu produktiem, piegādi, atgriešanu un citiem.",
+    "stillHaveQuestions": "Vēl ir jautājumi?",
+    "stillHaveQuestionsDescription": "Nevarat atrast to, ko meklējat? Mūsu atbalsta komanda ir gatava palīdzēt.",
+    "contactSupport": "Sazināties ar atbalstu",
+    "emailUs": "Rakstīt e-pastu",
+    "ordersShipping": {
+      "title": "Pasūtījumi un piegāde",
       "q1": "Cik ilgi aizņem piegāde?",
-      "a1": "Standarta piegāde Latvijā aizņem 2-3 darba dienas. Piegāde Baltijas valstīs aizņem 3-5 darba dienas. ES piegāde aizņem 5-10 darba dienas.",
+      "a1": "Latvija: 2-4 darba dienas (€3.99, bezmaksas virs €50). ES valstis: 5-10 darba dienas (€7.99, bezmaksas virs €75). Ekspress piegāde pieejama tikai Latvijai par +€12 (1-2 dienas).",
       "q2": "Vai jūs piegādājat starptautiski?",
-      "a2": "Jā! Mēs piegādājam uz visām ES valstīm. Piegādes izmaksas un laiki atšķiras atkarībā no galamērķa.",
-      "q3": "Vai piegāde ir bezmaksas?",
-      "a3": "Mēs piedāvājam bezmaksas piegādi pasūtījumiem virs €50 Baltijas valstīs."
+      "a2": "Jā! Mēs piegādājam uz Apvienoto Karalisti (7-14 dienas, €12.99), ASV/Kanādu (10-21 diena, €19.99) un citām valstīm pēc pieprasījuma. Sazinieties ar international@gerboni.lv cenām. Piezīme: var tikt piemērotas muitas nodevas un importa nodokļi.",
+      "q3": "Kā es varu izsekot savu pasūtījumu?",
+      "a3": "Kad pasūtījums tiks nosūtīts, jūs saņemsiet e-pastu ar izsekošanas numuru. Varat arī skatīt pasūtījuma statusu savā kontā sadaļā 'Pasūtījumi'. Visi pasūtījumi tiek nosūtīti no Rīgas ar izsekošanu.",
+      "q4": "Vai es varu mainīt piegādes adresi pēc pasūtīšanas?",
+      "a4": "Jā, kamēr pasūtījums vēl nav nosūtīts. Nekavējoties sazinieties ar atbalstu uz support@gerboni.lv vai izmantojiet mūsu tiešsaistes čatu. Pēc nosūtīšanas adreses maiņa nav iespējama.",
+      "q5": "Vai es varu atcelt savu pasūtījumu?",
+      "a5": "Pasūtījumus var atcelt 1 stundas laikā pēc to veikšanas. Pēc tam mēs, iespējams, jau būsim sākuši apstrādi. Nekavējoties sazinieties ar atbalstu, ja nepieciešams atcelt."
     },
-    "orders": {
-      "title": "Pasūtījumi un atgriešana",
-      "q1": "Vai es varu mainīt pasūtījumu pēc tā veikšanas?",
-      "a1": "Lūdzu, sazinieties ar mums 1 stundas laikā pēc pasūtījuma veikšanas. Kad apstrāde ir sākusies, mēs nevaram veikt izmaiņas.",
-      "q2": "Kāda ir jūsu atgriešanas politika?",
-      "a2": "Mēs pieņemam atgriešanu 30 dienu laikā pēc piegādes. Priekšmetiem jābūt nevalkātiem, nemazgātiem un oriģinālajā iepakojumā.",
-      "q3": "Kā es varu izsekot savam pasūtījumam?",
-      "a3": "Pēc nosūtīšanas jūs saņemsiet izsekošanas numuru pa e-pastu. Jūs varat arī izsekot pasūtījumus savā kontā."
+    "returnsRefunds": {
+      "title": "Atgriešana un atmaksa",
+      "q1": "Kāda ir jūsu atgriešanas politika?",
+      "a1": "Mēs piedāvājam 14 dienu atgriešanas periodu no piegādes datuma. Precēm jābūt nevalkātām ar oriģinālajām etiķetēm. Atgriešanas piegāde ir bezmaksas Latvijā; ES klienti maksā atgriešanas pasta izdevumus.",
+      "q2": "Kā atgriezt preci?",
+      "a2": "Sazinieties ar support@gerboni.lv vai izmantojiet mūsu tiešsaistes čatu 14 dienu laikā pēc piegādes. Mēs sniegsim atgriešanas instrukcijas un piegādes etiķeti (bezmaksas Latvijai).",
+      "q3": "Cik ilgi aizņem atmaksa?",
+      "a3": "Atmaksas tiek apstrādātas 5-10 darba dienu laikā pēc atgrieztās preces saņemšanas. Atmaksa tiek veikta uz jūsu sākotnējo maksājuma metodi. Bankas apstrāde var pievienot vēl 3-5 dienas.",
+      "q4": "Ko darīt, ja saņēmu bojātu vai nepareizu preci?",
+      "a4": "Ziņojiet 48 stundu laikā ar fotoattēliem. Mēs nekavējoties nosūtīsim aizstājēju vai nodrošināsim pilnu atmaksu—jūsu izvēle. Nav nepieciešams atgriezt bojāto preci.",
+      "q5": "Vai es varu apmainīt pret citu izmēru vai krāsu?",
+      "a5": "Jā, atkarībā no krājumu pieejamības. Sazinieties ar mums pirms atgriešanas, lai apstiprinātu, ka apmaiņas prece ir noliktavā. Cenu starpības tiks iekasētas vai atmaksātas."
     },
-    "products": {
-      "title": "Produkti un kopšana",
-      "q1": "No kāda materiāla ir izgatavoti krekli?",
-      "a1": "Mūsu krekli ir izgatavoti no 100% organiskās kokvilnas, iepriekš sarukušas un apģērba krāsotas ilgstošam komfortam.",
-      "q2": "Kā man jākopj mans krekls?",
-      "a2": "Mazgājiet veļas mašīnā aukstā ūdenī, izgrieztu uz āru. Žāvējiet žāvētājā zemā temperatūrā vai pakārt. Nebalināt un negludināt tieši uz apdruku.",
-      "q3": "Vai jūsu dizaini ir oficiāli licencēti?",
-      "a3": "Mūsu dizaini ir iedvesmoti no vēsturiskiem ģerboņiem un izveidoti sadarbībā ar vietējiem vēsturniekiem."
+    "productsSizing": {
+      "title": "Produkti un izmēri",
+      "q1": "Kādi izmēri ir pieejami?",
+      "a1": "Mēs piedāvājam no XS līdz XXL. Skatiet izmēru tabulu katrā produkta lapā detalizētiem mērījumiem. Mūsu krekli ir iepriekš sarauti, tāpēc tas, ko redzat, ir tas, ko saņemat.",
+      "q2": "No kāda materiāla ir izgatavoti krekli?",
+      "a2": "100% organiskā kokvilna, 180 GSM vidēja svara. Mīksta, elpošana un izturīga ikdienas valkāšanai.",
+      "q3": "Kā man mazgāt savu kreklu?",
+      "a3": "Mazgāt veļas mašīnā aukstā ūdenī (maks. 30°C), nebalinot, žāvēt žāvētājā zemā temperatūrā vai pakārt. Gludināt tikai no otrās puses, lai aizsargātu apdruku. Nežāvēt ķīmiski.",
+      "q4": "Vai ģerboņu dizaini ir autentiski?",
+      "a4": "Jā! Katrs dizains uzticami attēlo attiecīgās Latvijas pilsētas oficiālo ģerboni. Mūsu dizaini ir izveidoti saskaņā ar Latvijas heraldikas noteikumiem.",
+      "q5": "Kādu apdruku metodi jūs izmantojat?",
+      "a5": "Tieša drukāšana uz apģērba (DTG) ar videi draudzīgām, mazgāšanai izturīgām tintēm. Apdruka kļūst par auduma daļu ilgstošai kvalitātei."
+    },
+    "paymentSecurity": {
+      "title": "Maksājumi un drošība",
+      "q1": "Kādas maksājumu metodes jūs pieņemat?",
+      "a1": "Visa, Mastercard, American Express, Apple Pay, Google Pay un Klarna (pirkt tagad, maksāt vēlāk—tikai ES). Visi maksājumi ir nodrošināti caur Stripe.",
+      "q2": "Vai mana maksājuma informācija ir droša?",
+      "a2": "Pilnīgi noteikti. Mēs nekad neglabājam jūsu kartes datus. Visu maksājumu apstrādi veic Stripe ar bankas līmeņa šifrēšanu un drošību.",
+      "q3": "Vai jūs piedāvājat pirkt tagad, maksāt vēlāk?",
+      "a3": "Jā, Klarna ir pieejama ES klientiem. Izvēlieties Klarna apmaksas laikā, lai sadalītu maksājumu vai samaksātu 30 dienu laikā.",
+      "q4": "Vai es varu izmantot vairākus atlaižu kodus?",
+      "a4": "Vienam pasūtījumam var piemērot tikai vienu atlaides kodu. Izvēlieties to, kas dod jums labāko vērtību!"
+    },
+    "accountSupport": {
+      "title": "Konts un atbalsts",
+      "q1": "Vai man ir nepieciešams konts, lai pasūtītu?",
+      "a1": "Nē! Viesa apmaksa vienmēr ir pieejama. Tomēr konta izveide ļauj izsekot pasūtījumus, saglabāt adreses un skatīt pasūtījumu vēsturi.",
+      "q2": "Kā atjaunot paroli?",
+      "a2": "Noklikšķiniet uz 'Aizmirsu paroli' ielogošanās lapā un ievadiet savu e-pastu. Jūs saņemsiet atjaunošanas saiti dažu minūšu laikā.",
+      "q3": "Kā es varu dzēst savu kontu?",
+      "a3": "Nosūtiet e-pastu uz support@gerboni.lv ar dzēšanas pieprasījumu. Mēs to apstrādāsim 30 dienu laikā saskaņā ar GDPR.",
+      "q4": "Kādas ir jūsu atbalsta darba stundas?",
+      "a4": "Tiešsaistes čats: 9:00-18:00 EET darba dienās. E-pasts: 24 stundu atbildes laiks. Tālrunis: 10:00-17:00 EET darba dienās. Čats saņem ātrāko atbildi!"
+    },
+    "bulkCustom": {
+      "title": "Vairumtirdzniecība un pielāgoti pasūtījumi",
+      "q1": "Vai jūs piedāvājat vairumtirdzniecības atlaides?",
+      "a1": "Jā! 10+ preces: 10% atlaide (automātiski piemērota). 25+ preces: 15% atlaide—sazinieties ar sales@gerboni.lv individuālam piedāvājumam.",
+      "q2": "Vai es varu pasūtīt pielāgotus pašvaldību dizainus?",
+      "a2": "Jā! Minimums 50 vienības ar 4-6 nedēļu izpildes laiku. Nosūtiet e-pastu uz custom@gerboni.lv ar jūsu prasībām cenai.",
+      "q3": "Vai jūs piedāvājat dāvanu iesaiņojumu?",
+      "a3": "Jā! Dāvanu iesaiņojums ir pieejams par €2.50 par preci. Varat arī pievienot bezmaksas personalizētu ziņojumu (līdz 150 rakstzīmēm) apmaksas laikā."
     }
   },
   "shipping": {
