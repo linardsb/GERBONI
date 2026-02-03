@@ -1,20 +1,55 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { IconMessageCircle, IconX, IconSend, IconRobot } from "@tabler/icons-react";
+import { useLocale } from "next-intl";
+import {
+  IconMessageCircle,
+  IconX,
+  IconSend,
+  IconRobot,
+  IconPackage,
+  IconHelp,
+  IconRefresh,
+} from "@tabler/icons-react";
 import { Button } from "@/components/elements/button";
 import { Card } from "@/components/elements/card";
 import { Input } from "@/components/elements/input";
 import { ScrollArea } from "@/components/elements/scroll-area";
-import { useChatStore, useAuthStore, type ChatMessage } from "@/lib/store";
+import { Text } from "@/components/elements/text";
+import { Stack } from "@/components/elements/stack";
+import { Row } from "@/components/elements/row";
+import { ChatMessage, ChatTypingIndicator } from "@/components/components/chat-message";
+import { useChatStore, useAuthStore, type ChatMessage as ChatMessageType } from "@/lib/store";
 import { chatWebSocket, type WebSocketMessage } from "@/lib/websocket";
+import { cn } from "@/lib/utils";
+
+const CHAT_WIDGET_ID = "chat-widget-window";
 
 export function ChatWidget() {
   const { isOpen, messages, isTyping, toggleChat, addMessage, setTyping } = useChatStore();
   const { token, guestSession } = useAuthStore();
+  const locale = useLocale() as "en" | "lv";
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  const t = {
+    support: locale === "lv" ? "GERBONI Atbalsts" : "GERBONI Support",
+    aiAssistant: locale === "lv" ? "AI Asistents" : "AI Assistant",
+    online: locale === "lv" ? "Tiešsaistē" : "Online",
+    welcomeTitle: locale === "lv" ? "Sveiki! Kā varam palīdzēt?" : "Hi! How can we help?",
+    welcomeSubtitle: locale === "lv"
+      ? "Jautājiet par pasūtījumiem, produktiem vai atmaksām."
+      : "Ask about orders, products, or refunds.",
+    placeholder: locale === "lv" ? "Rakstiet ziņu..." : "Type a message...",
+    orderStatus: locale === "lv" ? "Pasūtījuma statuss" : "Order status",
+    productHelp: locale === "lv" ? "Produktu palīdzība" : "Product help",
+    refunds: locale === "lv" ? "Atmaksas" : "Refunds",
+    openChat: locale === "lv" ? "Atvērt čatu" : "Open chat",
+    closeChat: locale === "lv" ? "Aizvērt čatu" : "Close chat",
+    sendMessage: locale === "lv" ? "Sūtīt ziņu" : "Send message",
+  };
 
   useEffect(() => {
     const handleMessage = (data: WebSocketMessage) => {
@@ -25,6 +60,10 @@ export function ChatWidget() {
           content: data.content,
           timestamp: new Date(),
         });
+        // Increment unread count if chat is closed
+        if (!isOpen) {
+          setUnreadCount((prev) => prev + 1);
+        }
       } else if (data.type === "typing") {
         setTyping(data.status || false);
       } else if (data.type === "error" && data.message) {
@@ -39,7 +78,7 @@ export function ChatWidget() {
 
     const unsubscribe = chatWebSocket.onMessage(handleMessage);
     return unsubscribe;
-  }, [addMessage, setTyping]);
+  }, [addMessage, setTyping, isOpen]);
 
   useEffect(() => {
     if (isOpen) {
@@ -54,6 +93,8 @@ export function ChatWidget() {
         }
       });
       inputRef.current?.focus();
+      // Clear unread count when opening
+      setUnreadCount(0);
     }
   }, [isOpen, token, guestSession]);
 
@@ -65,7 +106,7 @@ export function ChatWidget() {
     e.preventDefault();
     if (!input.trim()) return;
 
-    const userMessage: ChatMessage = {
+    const userMessage: ChatMessageType = {
       id: crypto.randomUUID(),
       role: "user",
       content: input.trim(),
@@ -77,97 +118,186 @@ export function ChatWidget() {
     setInput("");
   };
 
+  const handleQuickAction = (message: string) => {
+    const userMessage: ChatMessageType = {
+      id: crypto.randomUUID(),
+      role: "user",
+      content: message,
+      timestamp: new Date(),
+    };
+
+    addMessage(userMessage);
+    chatWebSocket.sendMessage(message);
+  };
+
   return (
     <>
       {/* Toggle Button */}
       <Button
         onClick={toggleChat}
         size="icon"
-        className="fixed bottom-6 right-6 z-50 h-14 w-14 shadow-lg"
+        className="fixed bottom-6 right-6 z-50 size-14 rounded-full shadow-lg transition-transform duration-normal hover:scale-105"
+        aria-expanded={isOpen}
+        aria-controls={CHAT_WIDGET_ID}
+        aria-label={isOpen ? t.closeChat : t.openChat}
       >
-        {isOpen ? (
-          <IconX className="h-6 w-6" />
-        ) : (
-          <IconMessageCircle className="h-6 w-6" />
+        <span className="relative">
+          {/* Message icon with fade transition */}
+          <IconMessageCircle
+            className={cn(
+              "size-6 transition-all duration-normal",
+              isOpen ? "scale-0 opacity-0" : "scale-100 opacity-100"
+            )}
+            aria-hidden="true"
+          />
+          {/* Close icon with fade transition */}
+          <IconX
+            className={cn(
+              "absolute inset-0 size-6 transition-all duration-normal",
+              isOpen ? "scale-100 opacity-100" : "scale-0 opacity-0"
+            )}
+            aria-hidden="true"
+          />
+        </span>
+
+        {/* Unread badge */}
+        {unreadCount > 0 && !isOpen && (
+          <span
+            className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-destructive text-xs font-medium text-destructive-foreground"
+            aria-label={`${unreadCount} ${locale === "lv" ? "nelasītas ziņas" : "unread messages"}`}
+          >
+            {unreadCount > 9 ? "9+" : unreadCount}
+          </span>
         )}
       </Button>
 
       {/* Chat Window */}
       {isOpen && (
-        <Card className="fixed bottom-24 right-6 z-50 flex h-[500px] w-[380px] flex-col overflow-hidden shadow-2xl">
+        <Card
+          id={CHAT_WIDGET_ID}
+          role="dialog"
+          aria-modal="true"
+          aria-label={t.support}
+          data-slot="chat-widget"
+          className="fixed bottom-24 right-6 z-50 flex w-[min(380px,calc(100vw-3rem))] h-[min(500px,calc(100vh-8rem))] flex-col overflow-hidden shadow-2xl border-2 animate-in fade-in slide-in-from-bottom-4 duration-normal"
+        >
           {/* Header */}
-          <div className="flex items-center gap-3 border-b bg-primary px-4 py-3 text-primary-foreground">
-            <div className="flex h-10 w-10 items-center justify-center bg-primary-foreground/20">
-              <IconRobot className="h-5 w-5" />
+          <div
+            data-slot="chat-header"
+            className="flex items-center gap-3 border-b bg-primary px-4 py-3 text-primary-foreground"
+          >
+            <div className="flex size-10 items-center justify-center rounded-full bg-primary-foreground/20">
+              <IconRobot className="size-5" aria-hidden="true" />
             </div>
-            <div>
-              <h3 className="font-semibold">GERBONI Support</h3>
-              <p className="text-xs text-primary-foreground/80">AI Assistant</p>
+            <div className="flex-1">
+              <h3 className="font-semibold">{t.support}</h3>
+              <Row gap="element" className="items-center">
+                {/* Online indicator */}
+                <span className="size-2 rounded-full bg-green-400 animate-pulse" aria-hidden="true" />
+                <p className="text-xs text-primary-foreground/80">{t.online}</p>
+              </Row>
             </div>
           </div>
 
           {/* Messages */}
-          <ScrollArea className="flex-1 p-4">
-            {messages.length === 0 && (
-              <div className="flex h-full flex-col items-center justify-center text-center text-muted-foreground">
-                <IconMessageCircle className="h-12 w-12 mb-4 opacity-50" />
-                <p className="text-sm">
-                  Hi! How can I help you today?
-                  <br />
-                  Ask about orders, products, or refunds.
-                </p>
-              </div>
-            )}
-
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`mb-4 flex ${
-                  message.role === "user" ? "justify-end" : "justify-start"
-                }`}
-              >
-                <div
-                  className={`max-w-[80%] px-4 py-2 ${
-                    message.role === "user"
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted text-foreground"
-                  }`}
-                >
-                  <p className="whitespace-pre-wrap text-sm">{message.content}</p>
+          <ScrollArea className="flex-1 p-4" data-slot="chat-messages">
+            {messages.length === 0 ? (
+              <Stack gap="section" align="center" className="h-full justify-center py-8">
+                {/* Empty state */}
+                <div className="rounded-full bg-muted p-4">
+                  <IconMessageCircle className="size-10 text-muted-foreground" aria-hidden="true" />
                 </div>
-              </div>
-            ))}
+                <Stack gap="element" align="center">
+                  <Text variant="heading-sm" align="center">{t.welcomeTitle}</Text>
+                  <Text variant="muted-sm" align="center">{t.welcomeSubtitle}</Text>
+                </Stack>
 
-            {isTyping && (
-              <div className="mb-4 flex justify-start">
-                <div className="bg-muted px-4 py-3">
-                  <div className="flex gap-1">
-                    <span className="h-2 w-2 animate-bounce bg-muted-foreground" style={{ animationDelay: "0ms" }} />
-                    <span className="h-2 w-2 animate-bounce bg-muted-foreground" style={{ animationDelay: "150ms" }} />
-                    <span className="h-2 w-2 animate-bounce bg-muted-foreground" style={{ animationDelay: "300ms" }} />
-                  </div>
-                </div>
-              </div>
+                {/* Quick actions */}
+                <Stack gap="element" className="w-full">
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start"
+                    onClick={() => handleQuickAction(locale === "lv" ? "Kāds ir mana pasūtījuma statuss?" : "What's my order status?")}
+                  >
+                    <IconPackage className="size-4 mr-2" aria-hidden="true" />
+                    {t.orderStatus}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start"
+                    onClick={() => handleQuickAction(locale === "lv" ? "Man nepieciešama palīdzība ar produktu" : "I need help with a product")}
+                  >
+                    <IconHelp className="size-4 mr-2" aria-hidden="true" />
+                    {t.productHelp}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start"
+                    onClick={() => handleQuickAction(locale === "lv" ? "Kā es varu saņemt atmaksu?" : "How can I get a refund?")}
+                  >
+                    <IconRefresh className="size-4 mr-2" aria-hidden="true" />
+                    {t.refunds}
+                  </Button>
+                </Stack>
+              </Stack>
+            ) : (
+              <>
+                {messages.map((message) => (
+                  <ChatMessage
+                    key={message.id}
+                    role={message.role}
+                    content={message.content}
+                    timestamp={message.timestamp}
+                    showAvatar={message.role === "assistant"}
+                  />
+                ))}
+
+                {isTyping && <ChatTypingIndicator />}
+              </>
             )}
 
             <div ref={messagesEndRef} />
           </ScrollArea>
 
           {/* Input */}
-          <form onSubmit={handleSubmit} className="border-t p-4">
-            <div className="flex gap-2">
+          <form
+            onSubmit={handleSubmit}
+            className="border-t p-4"
+            data-slot="chat-input"
+          >
+            <Row gap="element">
               <Input
                 ref={inputRef}
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Type a message..."
+                placeholder={t.placeholder}
                 className="flex-1"
+                aria-label={t.placeholder}
+                maxLength={500}
               />
-              <Button type="submit" size="icon" disabled={!input.trim()}>
-                <IconSend className="h-4 w-4" />
+              <Button
+                type="submit"
+                size="icon"
+                disabled={!input.trim()}
+                aria-label={t.sendMessage}
+              >
+                <IconSend className="size-4" aria-hidden="true" />
               </Button>
-            </div>
+            </Row>
+
+            {/* Character count when approaching limit */}
+            {input.length > 400 && (
+              <Text
+                variant="fine"
+                className={cn(
+                  "mt-1 text-right",
+                  input.length >= 500 ? "text-destructive" : "text-muted-foreground"
+                )}
+              >
+                {input.length}/500
+              </Text>
+            )}
           </form>
         </Card>
       )}

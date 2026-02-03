@@ -30,7 +30,10 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Link href={`/products/${product.id}`} className="group block">
-      <Card className="overflow-hidden transition-all hover:border-primary hover:shadow-lg">
+      <Card
+        data-slot="product-card"
+        className="overflow-hidden transition-all duration-normal hover:border-primary hover:shadow-lg"
+      >
         <CardContent className="p-0">
           {/* Product Preview */}
           <div className="relative aspect-square bg-muted flex items-center justify-center p-8">
@@ -54,7 +57,7 @@ export function ProductCard({ product }: ProductCardProps) {
               </Badge>
             )}
             {isLowStock && (
-              <Badge variant="secondary" className="absolute top-3 right-3 z-10 bg-orange-100 text-orange-700 border-orange-200">
+              <Badge variant="secondary" className="absolute top-3 right-3 z-10 bg-warning/10 text-warning border-warning/20">
                 {locale === "lv" ? "Zems krājums" : "Low stock"}
               </Badge>
             )}
@@ -62,23 +65,24 @@ export function ProductCard({ product }: ProductCardProps) {
             <div className="relative h-full w-full">
               <svg
                 viewBox="0 0 100 100"
-                className="h-full w-full text-white drop-shadow-md transition-transform duration-300 group-hover:scale-105"
+                className="h-full w-full text-white drop-shadow-md transition-transform duration-normal group-hover:scale-105"
+                aria-hidden="true"
               >
                 <path
                   d="M20 25 L35 20 L40 30 L60 30 L65 20 L80 25 L85 40 L75 45 L75 85 L25 85 L25 45 L15 40 Z"
                   fill="currentColor"
-                  stroke="#e5e5e5"
+                  className="stroke-border-subtle"
                   strokeWidth="1"
                 />
               </svg>
               {/* Coat of arms */}
-              <div className="absolute left-1/2 top-1/2 h-16 w-16 -translate-x-1/2 -translate-y-1/4">
+              <div className="absolute left-1/2 top-1/2 size-16 -translate-x-1/2 -translate-y-1/4">
                 <Image
                   src={`/coats/${product.coat_of_arms_image}`}
                   alt={`${displayName} coat of arms`}
                   width={64}
                   height={64}
-                  className="h-full w-full object-contain drop-shadow-sm"
+                  className="h-full w-full object-contain drop-shadow-sm transition-transform duration-normal group-hover:scale-110 group-hover:-translate-y-1"
                   onError={(e) => {
                     e.currentTarget.src = "/coats/placeholder.svg";
                   }}
@@ -89,7 +93,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
           {/* Product Info */}
           <div className="p-4">
-            <Text as="h3" variant="heading-xs" className="transition-colors group-hover:text-primary">
+            <Text as="h3" variant="heading-xs" className="transition-colors duration-fast group-hover:text-primary">
               {displayName}
             </Text>
             <Text variant="muted-sm">
