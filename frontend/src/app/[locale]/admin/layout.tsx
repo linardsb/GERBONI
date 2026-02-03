@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/routing";
 import { IconLock } from "@tabler/icons-react";
 import { Skeleton } from "@/components/elements/skeleton";
 import { Container } from "@/components/elements/container";
@@ -34,8 +34,7 @@ export default function AdminLayout({
         setAuth(token, userData);
 
         // Check if user has admin role
-        const userRole = (userData as unknown as { role?: string }).role;
-        if (userRole === "admin" || userRole === "super_admin") {
+        if (userData.role === "admin" || userData.role === "super_admin") {
           setIsAdmin(true);
         } else {
           setIsAdmin(false);

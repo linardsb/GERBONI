@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import Link from "next/link";
+import { useParams } from "next/navigation";
+import { Link, useRouter } from "@/i18n/routing";
 import { IconChevronLeft, IconTruck } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { Button } from "@/components/elements/button";

@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/routing";
 import { IconPackage, IconTruck } from "@tabler/icons-react";
 import { Button } from "@/components/elements/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/elements/card";
@@ -29,10 +30,17 @@ const statusVariants: Record<string, "default" | "secondary" | "destructive" | "
 };
 
 export default function OrdersPage() {
+  const t = useTranslations("order");
+  const tStatus = useTranslations("orderStatus");
+  const tAuth = useTranslations("auth");
   const { token } = useAuthStore();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Get locale for date formatting
+  const locale = typeof window !== "undefined" ? window.location.pathname.split("/")[1] : "en";
+  const dateLocale = locale === "lv" ? "lv-LV" : "en-US";
 
   useEffect(() => {
     if (!token) {
@@ -51,10 +59,10 @@ export default function OrdersPage() {
       <Container padding="md" size="md">
         <EmptyState
           icon={IconPackage}
-          title="Please sign in to view orders"
+          title={t("signInRequired")}
         >
           <Button asChild>
-            <Link href="/login">Sign In</Link>
+            <Link href="/login">{tAuth("signIn")}</Link>
           </Button>
         </EmptyState>
       </Container>
@@ -88,11 +96,11 @@ export default function OrdersPage() {
       <Container padding="md" size="md">
         <EmptyState
           icon={IconPackage}
-          title="No orders yet"
-          description="Start shopping to see your orders here."
+          title={t("noOrders")}
+          description={t("noOrdersDescription")}
         >
           <Button asChild>
-            <Link href="/products">Browse Products</Link>
+            <Link href="/products">{t("browseProducts")}</Link>
           </Button>
         </EmptyState>
       </Container>
@@ -102,8 +110,8 @@ export default function OrdersPage() {
   return (
     <Container padding="md" size="md">
       <PageHeader
-        title="Your Orders"
-        description="Track and manage your orders"
+        title={t("ordersTitle")}
+        description={t("ordersDescription")}
       />
 
       <Stack gap="md">
@@ -112,13 +120,13 @@ export default function OrdersPage() {
             <CardHeader>
               <Row justify="between" align="start">
                 <Stack gap="xs">
-                  <CardTitle className="text-base">Order #{order.id}</CardTitle>
+                  <CardTitle className="text-base">#{order.id}</CardTitle>
                   <Text variant="muted-sm">
-                    {new Date(order.created_at).toLocaleDateString()}
+                    {new Date(order.created_at).toLocaleDateString(dateLocale)}
                   </Text>
                 </Stack>
                 <Badge variant={statusVariants[order.status] || "secondary"}>
-                  {order.status}
+                  {tStatus(order.status)}
                 </Badge>
               </Row>
             </CardHeader>
@@ -159,16 +167,16 @@ export default function OrdersPage() {
                     {order.tracking_number && (
                       <>
                         <IconTruck className="size-4 text-muted-foreground" aria-hidden="true" />
-                        <Text variant="muted-sm">Tracking: {order.tracking_number}</Text>
+                        <Text variant="muted-sm">{t("tracking")}: {order.tracking_number}</Text>
                       </>
                     )}
                   </Row>
                   <Row gap="group">
                     <Text as="span" variant="body-md" className="font-semibold">
-                      Total: €{Number(order.total).toFixed(2)}
+                      {t("total")}: €{Number(order.total).toFixed(2)}
                     </Text>
                     <Button variant="outline" size="sm" asChild>
-                      <Link href={`/orders/${order.id}`}>View Details</Link>
+                      <Link href={`/orders/${order.id}`}>{t("viewDetails")}</Link>
                     </Button>
                   </Row>
                 </Row>

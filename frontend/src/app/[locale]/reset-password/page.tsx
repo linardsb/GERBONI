@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { Link, useRouter } from "@/i18n/routing";
 import { IconLock, IconCheck, IconX, IconEye, IconEyeOff } from "@tabler/icons-react";
 import { Container } from "@/components/elements/container";
 import { Section } from "@/components/elements/section";

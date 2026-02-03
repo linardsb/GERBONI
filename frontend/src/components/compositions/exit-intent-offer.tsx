@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { usePathname } from "next/navigation";
-import Link from "next/link";
+import { Link, usePathname } from "@/i18n/routing";
 import { IconX, IconShoppingCart, IconPercentage } from "@tabler/icons-react";
 import { Button } from "@/components/elements/button";
 import { Text } from "@/components/elements/text";

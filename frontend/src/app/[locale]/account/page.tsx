@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/routing";
 import {
   IconUser,
   IconLock,
@@ -11,7 +12,6 @@ import {
   IconPlus,
   IconTruck,
   IconAlertCircle,
-  IconCheck,
 } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { Button } from "@/components/elements/button";
@@ -47,13 +47,6 @@ import { cn } from "@/lib/utils";
 
 type TabId = "profile" | "security" | "addresses" | "orders";
 
-const tabs: { id: TabId; label: string; icon: typeof IconUser }[] = [
-  { id: "profile", label: "Profile", icon: IconUser },
-  { id: "security", label: "Security", icon: IconLock },
-  { id: "addresses", label: "Addresses", icon: IconMapPin },
-  { id: "orders", label: "Orders", icon: IconPackage },
-];
-
 const statusVariants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
   pending: "secondary",
   paid: "default",
@@ -65,8 +58,17 @@ const statusVariants: Record<string, "default" | "secondary" | "destructive" | "
 };
 
 export default function AccountPage() {
+  const t = useTranslations("account");
+  const tStatus = useTranslations("orderStatus");
   const { token, user } = useAuthStore();
   const [activeTab, setActiveTab] = useState<TabId>("profile");
+
+  const tabs: { id: TabId; label: string; icon: typeof IconUser }[] = [
+    { id: "profile", label: t("profile"), icon: IconUser },
+    { id: "security", label: t("security"), icon: IconLock },
+    { id: "addresses", label: t("addresses"), icon: IconMapPin },
+    { id: "orders", label: t("orders"), icon: IconPackage },
+  ];
 
   // Address state
   const [addresses, setAddresses] = useState<Address[]>([]);
@@ -105,7 +107,7 @@ export default function AccountPage() {
       const data = await getAddresses(token);
       setAddresses(data);
     } catch {
-      toast.error("Failed to load addresses");
+      toast.error(t("failedLoadAddresses"));
     } finally {
       setAddressLoading(false);
     }
@@ -118,7 +120,7 @@ export default function AccountPage() {
       const data = await getOrders(token);
       setOrders(data);
     } catch {
-      toast.error("Failed to load orders");
+      toast.error(t("failedLoadOrders"));
     } finally {
       setOrdersLoading(false);
     }
@@ -130,10 +132,10 @@ export default function AccountPage() {
     try {
       if (editingAddress) {
         await updateAddress(editingAddress.id, data, token);
-        toast.success("Address updated");
+        toast.success(t("addressUpdated"));
       } else {
         await createAddress(data as AddressCreate, token);
-        toast.success("Address added");
+        toast.success(t("addressAdded"));
       }
       await loadAddresses();
       setEditingAddress(null);
@@ -144,13 +146,13 @@ export default function AccountPage() {
 
   const handleDeleteAddress = async (address: Address) => {
     if (!token) return;
-    if (!confirm("Are you sure you want to delete this address?")) return;
+    if (!confirm(t("confirmDelete"))) return;
     try {
       await deleteAddress(address.id, token);
-      toast.success("Address deleted");
+      toast.success(t("addressDeleted"));
       await loadAddresses();
     } catch {
-      toast.error("Failed to delete address");
+      toast.error(t("failedDeleteAddress"));
     }
   };
 
@@ -158,10 +160,10 @@ export default function AccountPage() {
     if (!token) return;
     try {
       await setDefaultAddress(address.id, token);
-      toast.success("Default address updated");
+      toast.success(t("defaultUpdated"));
       await loadAddresses();
     } catch {
-      toast.error("Failed to set default address");
+      toast.error(t("failedSetDefault"));
     }
   };
 
@@ -172,12 +174,12 @@ export default function AccountPage() {
     setPasswordError(null);
 
     if (newPassword !== confirmPassword) {
-      setPasswordError("New passwords do not match");
+      setPasswordError(t("passwordMismatch"));
       return;
     }
 
     if (newPassword.length < 8) {
-      setPasswordError("Password must be at least 8 characters long");
+      setPasswordError(t("passwordTooShort"));
       return;
     }
 
@@ -187,26 +189,30 @@ export default function AccountPage() {
         { current_password: currentPassword, new_password: newPassword },
         token
       );
-      toast.success("Password changed successfully");
+      toast.success(t("passwordChanged"));
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
     } catch (err) {
-      setPasswordError(err instanceof Error ? err.message : "Failed to change password");
+      setPasswordError(err instanceof Error ? err.message : t("failedChangePassword"));
     } finally {
       setChangingPassword(false);
     }
   };
+
+  // Get locale for date formatting
+  const locale = typeof window !== "undefined" ? window.location.pathname.split("/")[1] : "en";
+  const dateLocale = locale === "lv" ? "lv-LV" : "en-US";
 
   if (!token || !user) {
     return (
       <Container padding="md" size="md">
         <EmptyState
           icon={IconUser}
-          title="Please sign in to view your account"
+          title={t("signInRequired")}
         >
           <Button asChild>
-            <Link href="/login">Sign In</Link>
+            <Link href="/login">{t("profile")}</Link>
           </Button>
         </EmptyState>
       </Container>
@@ -216,8 +222,8 @@ export default function AccountPage() {
   return (
     <Container padding="md" size="lg">
       <PageHeader
-        title="Account Settings"
-        description="Manage your profile, security, and preferences"
+        title={t("settingsTitle")}
+        description={t("settingsDescription")}
       />
 
       <div className="flex flex-col md:flex-row gap-section">
@@ -254,35 +260,35 @@ export default function AccountPage() {
           {activeTab === "profile" && (
             <Card>
               <CardHeader>
-                <CardTitle>Profile Information</CardTitle>
+                <CardTitle>{t("profileInfo")}</CardTitle>
                 <CardDescription>
-                  Your account details and registration information
+                  {t("profileDescription")}
                 </CardDescription>
               </CardHeader>
               <CardContent padding="md">
                 <Stack gap="group">
                   <Row justify="between" className="py-3 border-b border-border-subtle">
-                    <Text variant="muted-sm">Email</Text>
+                    <Text variant="muted-sm">{t("email")}</Text>
                     <Text as="span" variant="body-sm" className="font-medium">
                       {user.email}
                     </Text>
                   </Row>
                   <Row justify="between" className="py-3 border-b border-border-subtle">
-                    <Text variant="muted-sm">Account Type</Text>
+                    <Text variant="muted-sm">{t("accountType")}</Text>
                     <Badge variant={user.is_guest ? "secondary" : "default"}>
-                      {user.is_guest ? "Guest" : "Registered"}
+                      {user.is_guest ? t("guest") : t("registered")}
                     </Badge>
                   </Row>
                   <Row justify="between" className="py-3 border-b border-border-subtle">
-                    <Text variant="muted-sm">Status</Text>
+                    <Text variant="muted-sm">{t("status")}</Text>
                     <Badge variant={user.is_active ? "default" : "destructive"}>
-                      {user.is_active ? "Active" : "Inactive"}
+                      {user.is_active ? t("active") : t("inactive")}
                     </Badge>
                   </Row>
                   <Row justify="between" className="py-3">
-                    <Text variant="muted-sm">Member Since</Text>
+                    <Text variant="muted-sm">{t("memberSince")}</Text>
                     <Text as="span" variant="body-sm" className="font-medium">
-                      {new Date(user.created_at).toLocaleDateString("en-US", {
+                      {new Date(user.created_at).toLocaleDateString(dateLocale, {
                         year: "numeric",
                         month: "long",
                         day: "numeric",
@@ -298,9 +304,9 @@ export default function AccountPage() {
           {activeTab === "security" && (
             <Card>
               <CardHeader>
-                <CardTitle>Change Password</CardTitle>
+                <CardTitle>{t("changePassword")}</CardTitle>
                 <CardDescription>
-                  Update your password to keep your account secure
+                  {t("securityDescription")}
                 </CardDescription>
               </CardHeader>
               <CardContent padding="md">
@@ -316,7 +322,7 @@ export default function AccountPage() {
                     )}
 
                     <Stack gap="element">
-                      <Label htmlFor="current_password">Current Password</Label>
+                      <Label htmlFor="current_password">{t("currentPassword")}</Label>
                       <Input
                         id="current_password"
                         type="password"
@@ -328,7 +334,7 @@ export default function AccountPage() {
                     </Stack>
 
                     <Stack gap="element">
-                      <Label htmlFor="new_password">New Password</Label>
+                      <Label htmlFor="new_password">{t("newPassword")}</Label>
                       <Input
                         id="new_password"
                         type="password"
@@ -339,12 +345,12 @@ export default function AccountPage() {
                         aria-describedby="password-requirements"
                       />
                       <Text variant="muted-sm" id="password-requirements">
-                        Must be at least 8 characters with uppercase, lowercase, and a number.
+                        {t("passwordRequirements")}
                       </Text>
                     </Stack>
 
                     <Stack gap="element">
-                      <Label htmlFor="confirm_password">Confirm New Password</Label>
+                      <Label htmlFor="confirm_password">{t("confirmNewPassword")}</Label>
                       <Input
                         id="confirm_password"
                         type="password"
@@ -356,7 +362,7 @@ export default function AccountPage() {
                     </Stack>
 
                     <Button type="submit" disabled={changingPassword} className="w-fit">
-                      {changingPassword ? "Changing Password..." : "Change Password"}
+                      {changingPassword ? t("changingPassword") : t("changePassword")}
                     </Button>
                   </Stack>
                 </form>
@@ -369,7 +375,7 @@ export default function AccountPage() {
             <Stack gap="group">
               <Row justify="between" align="center">
                 <Text as="h2" variant="heading-md">
-                  Your Addresses
+                  {t("yourAddresses")}
                 </Text>
                 <Button
                   onClick={() => {
@@ -378,7 +384,7 @@ export default function AccountPage() {
                   }}
                 >
                   <IconPlus className="size-4" aria-hidden="true" />
-                  Add Address
+                  {t("addAddress")}
                 </Button>
               </Row>
 
@@ -392,8 +398,8 @@ export default function AccountPage() {
                   <CardContent padding="md">
                     <EmptyState
                       icon={IconMapPin}
-                      title="No addresses yet"
-                      description="Add a shipping address to make checkout faster."
+                      title={t("noAddresses")}
+                      description={t("noAddressesDescription")}
                     >
                       <Button
                         onClick={() => {
@@ -401,7 +407,7 @@ export default function AccountPage() {
                           setAddressFormOpen(true);
                         }}
                       >
-                        Add Your First Address
+                        {t("addFirstAddress")}
                       </Button>
                     </EmptyState>
                   </CardContent>
@@ -437,7 +443,7 @@ export default function AccountPage() {
           {activeTab === "orders" && (
             <Stack gap="group">
               <Text as="h2" variant="heading-md">
-                Order History
+                {t("orders")}
               </Text>
 
               {ordersLoading ? (
@@ -450,11 +456,11 @@ export default function AccountPage() {
                   <CardContent padding="md">
                     <EmptyState
                       icon={IconPackage}
-                      title="No orders yet"
-                      description="Start shopping to see your orders here."
+                      title={t("noOrders")}
+                      description={t("noOrdersDescription")}
                     >
                       <Button asChild>
-                        <Link href="/products">Browse Products</Link>
+                        <Link href="/products">{t("browseProducts")}</Link>
                       </Button>
                     </EmptyState>
                   </CardContent>
@@ -468,14 +474,14 @@ export default function AccountPage() {
                           <Row justify="between" align="start">
                             <Stack gap="element">
                               <Text as="span" variant="body-md" className="font-semibold">
-                                Order #{order.id}
+                                #{order.id}
                               </Text>
                               <Text variant="muted-sm">
-                                {new Date(order.created_at).toLocaleDateString()}
+                                {new Date(order.created_at).toLocaleDateString(dateLocale)}
                               </Text>
                             </Stack>
                             <Badge variant={statusVariants[order.status] || "secondary"}>
-                              {order.status}
+                              {tStatus(order.status)}
                             </Badge>
                           </Row>
 
@@ -503,7 +509,7 @@ export default function AccountPage() {
                             ))}
                             {order.items.length > 2 && (
                               <Text variant="muted-sm">
-                                +{order.items.length - 2} more items
+                                {t("moreItems", { count: order.items.length - 2 })}
                               </Text>
                             )}
                           </Stack>
@@ -516,7 +522,7 @@ export default function AccountPage() {
                                 <>
                                   <IconTruck className="size-4 text-muted-foreground" aria-hidden="true" />
                                   <Text variant="muted-sm">
-                                    Tracking: {order.tracking_number}
+                                    {t("tracking")}: {order.tracking_number}
                                   </Text>
                                 </>
                               )}
@@ -526,7 +532,7 @@ export default function AccountPage() {
                                 €{Number(order.total).toFixed(2)}
                               </Text>
                               <Button variant="outline" size="sm" asChild>
-                                <Link href={`/orders/${order.id}`}>Details</Link>
+                                <Link href={`/orders/${order.id}`}>{t("details")}</Link>
                               </Button>
                             </Row>
                           </Row>
@@ -537,7 +543,7 @@ export default function AccountPage() {
 
                   {orders.length > 5 && (
                     <Button variant="outline" asChild>
-                      <Link href="/orders">View All Orders ({orders.length})</Link>
+                      <Link href="/orders">{t("viewAllOrders", { count: orders.length })}</Link>
                     </Button>
                   )}
                 </Stack>
