@@ -10,6 +10,21 @@
 /**
  * Semantic spacing tokens for gap, padding, and margin
  */
+/**
+ * Font family tokens
+ */
+export const FONTS = {
+  sans: { css: '--font-sans', class: 'font-sans', description: 'Primary body font (Figtree)' },
+  mono: { css: '--font-mono', class: 'font-mono', description: 'Code and monospace (Geist Mono)' },
+  serif: { css: '--font-serif', class: 'font-serif', description: 'Display serif (Playfair Display)' },
+  latvian: { css: '--font-latvian', class: 'font-latvian', description: 'Latvian display font (Liva) - authentic Latvian typography with proper diacritics' },
+} as const
+
+export type FontFamily = keyof typeof FONTS
+
+/**
+ * Semantic spacing tokens for gap, padding, and margin
+ */
 export const SPACING = {
   // Semantic tokens (preferred)
   semantic: {
@@ -233,6 +248,11 @@ export const TEXT_VARIANTS = [
   'display-lg',
   'display-md',
   'display-sm',
+  // Latvian display - authentic Latvian typography
+  'latvian-xl',
+  'latvian-lg',
+  'latvian-md',
+  'latvian-sm',
   // Headings
   'heading-xl',
   'heading-lg',

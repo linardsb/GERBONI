@@ -242,8 +242,8 @@ export default function HomePage() {
               <Text variant="label">{locale === "lv" ? "Jaunā kolekcija 2026" : "New Collection 2026"}</Text>
             </div>
 
-            {/* Massive title */}
-            <h1 className="text-display text-[12vw] lg:text-[10rem] xl:text-[12rem] leading-[0.85] tracking-tighter">
+            {/* Massive title - uses Latvian font for authentic typography */}
+            <h1 className="font-latvian text-[12vw] lg:text-[10rem] xl:text-[12rem] leading-[0.85] tracking-tight">
               {locale === "lv" ? "Mantojums" : "Heritage"}
             </h1>
 
@@ -518,29 +518,44 @@ export default function HomePage() {
         </Container>
       </Section>
 
-      {/* Final CTA Section */}
-      <Section spacing="large" background="muted">
-        <Container>
-          <Stack gap="section" align="center" className="max-w-2xl mx-auto">
-            <Text as="h2" variant="display-md" align="center">
-              {locale === "lv"
-                ? "Gatavs velciet savu mantojumu?"
-                : "Ready to wear your heritage?"}
-            </Text>
-            <Text variant="muted" align="center">
-              {locale === "lv"
-                ? "Pievienojieties tūkstošiem latviešu un Latvijas entuziastu, kuri lepni velk savas pilsētas ģerboni."
-                : "Join thousands of Latvians and Latvia enthusiasts who proudly wear their city's coat of arms."}
-            </Text>
-            <Row gap="group" wrap="wrap" justify="center">
-              <Button variant="minimal" asChild size="lg" className="text-label">
-                <Link href="/products">
-                  <IconShoppingBag className="size-4" aria-hidden="true" />
-                  {t("shopNow")}
-                </Link>
-              </Button>
-            </Row>
-          </Stack>
+      {/* Final CTA Section - with Latvian landscape background */}
+      <Section spacing="none">
+        <Container size="full">
+          <div className="relative overflow-hidden rounded-card">
+            {/* Background image - Latvian landscape */}
+            <Image
+              src="/bg_images/pexels-vilnisphoto-7449712.jpg"
+              alt=""
+              fill
+              className="object-cover"
+              aria-hidden="true"
+            />
+            {/* Overlay for text readability */}
+            <div className="absolute inset-0 bg-foreground/60" />
+
+            <div className="relative py-page px-section">
+              <Stack gap="section" align="center" className="max-w-2xl mx-auto">
+                <Text as="h2" variant="display-md" align="center" className="text-overlay-foreground">
+                  {locale === "lv"
+                    ? "Gatavs velciet savu mantojumu?"
+                    : "Ready to wear your heritage?"}
+                </Text>
+                <Text variant="overlay-muted" align="center">
+                  {locale === "lv"
+                    ? "Pievienojieties tūkstošiem latviešu un Latvijas entuziastu, kuri lepni velk savas pilsētas ģerboni."
+                    : "Join thousands of Latvians and Latvia enthusiasts who proudly wear their city's coat of arms."}
+                </Text>
+                <Row gap="group" wrap="wrap" justify="center">
+                  <Button variant="minimal-light" asChild size="lg" className="text-label">
+                    <Link href="/products">
+                      <IconShoppingBag className="size-4" aria-hidden="true" />
+                      {t("shopNow")}
+                    </Link>
+                  </Button>
+                </Row>
+              </Stack>
+            </div>
+          </div>
         </Container>
       </Section>
     </div>

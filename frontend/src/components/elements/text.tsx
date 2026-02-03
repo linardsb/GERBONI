@@ -12,6 +12,11 @@ const textVariants = cva("", {
       "display-lg": "text-display text-4xl md:text-5xl lg:text-6xl",
       "display-md": "text-display text-3xl md:text-4xl lg:text-5xl",
       "display-sm": "text-display text-2xl md:text-3xl",
+      // Latvian display - authentic Latvian font for branded headings
+      "latvian-xl": "text-latvian text-5xl md:text-7xl lg:text-8xl",
+      "latvian-lg": "text-latvian text-4xl md:text-5xl lg:text-6xl",
+      "latvian-md": "text-latvian text-3xl md:text-4xl lg:text-5xl",
+      "latvian-sm": "text-latvian text-2xl md:text-3xl",
       // Headings - sans-serif bold
       "heading-xl": "text-4xl font-bold tracking-tight",
       "heading-lg": "text-3xl font-bold",
