@@ -496,7 +496,7 @@ export default function HomePage() {
                     type="email"
                     placeholder={t("newsletterPlaceholder")}
                     variant="minimal"
-                    className="flex-1 min-w-[200px]"
+                    className="flex-1 min-w-52"
                     aria-label={locale === "lv" ? "E-pasta adrese" : "Email address"}
                   />
                   <Button

@@ -28,7 +28,7 @@ export function ReviewSummary({ summary }: ReviewSummaryProps) {
   return (
     <Row gap="section" align="start" data-slot="review-summary">
       {/* Average Rating */}
-      <Stack gap="element" align="center" className="min-w-[120px]">
+      <Stack gap="element" align="center" className="min-w-32">
         <Text variant="display-lg" className="font-bold">
           {average_rating.toFixed(1)}
         </Text>

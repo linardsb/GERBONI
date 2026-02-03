@@ -99,7 +99,7 @@ export function OrderTimeline({ currentStatus, trackingNumber, createdAt, classN
             {index < timelineSteps.length - 1 && (
               <div
                 className={cn(
-                  "absolute left-[15px] top-[32px] h-full w-0.5",
+                  "absolute left-4 top-8 h-full w-0.5",
                   isCompleted ? "bg-primary" : "bg-border"
                 )}
               />

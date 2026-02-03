@@ -179,7 +179,7 @@ export function ChatWidget() {
           aria-modal="true"
           aria-label={t.support}
           data-slot="chat-widget"
-          className="fixed bottom-24 right-6 z-50 flex w-[min(380px,calc(100vw-3rem))] h-[min(500px,calc(100vh-8rem))] flex-col overflow-hidden shadow-2xl border-2 animate-in fade-in slide-in-from-bottom-4 duration-normal"
+          className="fixed bottom-24 right-6 z-50 flex w-[min(var(--size-chat-widget-width),calc(100vw-3rem))] h-[min(var(--size-chat-widget-height),calc(100vh-8rem))] flex-col overflow-hidden shadow-2xl border-2 animate-in fade-in slide-in-from-bottom-4 duration-normal"
         >
           {/* Header */}
           <div

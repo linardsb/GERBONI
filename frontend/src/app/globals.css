@@ -43,6 +43,9 @@
   --transition-duration-normal: 300ms;
   --transition-duration-slow: 500ms;
   --transition-duration-slower: 700ms;
+  /* Component sizing tokens */
+  --size-chat-widget-width: 24rem;
+  --size-chat-widget-height: 31.25rem;
   --font-sans: var(--font-figtree);
   --font-mono: var(--font-geist-mono);
   --font-serif: var(--font-playfair);
