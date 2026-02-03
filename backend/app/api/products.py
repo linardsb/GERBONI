@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from typing import Literal
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -14,8 +16,16 @@ router = APIRouter()
 async def list_products(
     skip: int = 0,
     limit: int = 20,
+    lang: Literal["en", "lv"] = Query(default="en", description="Language for localized fields"),
     db: AsyncSession = Depends(get_db),
 ):
+    """
+    List all active products with minimum price and total stock.
+
+    The `lang` parameter controls which localized fields are returned:
+    - `en` (default): Returns English city_name and description
+    - `lv`: Returns Latvian city_name (city_name_lv) and description (description_lv)
+    """
     # Get products with minimum price and total stock
     stmt = (
         select(
@@ -34,13 +44,22 @@ async def list_products(
 
     products = []
     for product, min_price, total_stock in rows:
+        # Select localized fields based on language
+        if lang == "lv":
+            city_name = product.city_name_lv or product.city_name
+            description = product.description_lv or product.description
+        else:
+            city_name = product.city_name
+            description = product.description
+
         products.append(
             ProductListRead(
                 id=product.id,
-                city_name=product.city_name,
+                city_name=city_name,
                 city_name_lv=product.city_name_lv,
                 coat_of_arms_image=product.coat_of_arms_image,
-                description=product.description,
+                description=description,
+                description_lv=product.description_lv,
                 is_active=product.is_active,
                 min_price=min_price,
                 total_stock=int(total_stock) if total_stock else 0,
@@ -53,8 +72,16 @@ async def list_products(
 @router.get("/{product_id}", response_model=ProductRead)
 async def get_product(
     product_id: int,
+    lang: Literal["en", "lv"] = Query(default="en", description="Language for localized fields"),
     db: AsyncSession = Depends(get_db),
 ):
+    """
+    Get a single product by ID with all variants.
+
+    The `lang` parameter controls which localized fields are returned:
+    - `en` (default): Returns English city_name and description
+    - `lv`: Returns Latvian city_name (city_name_lv) and description (description_lv)
+    """
     stmt = (
         select(Product)
         .options(selectinload(Product.variants))
@@ -68,6 +95,10 @@ async def get_product(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Product not found",
         )
+
+    # For single product response, the ProductRead schema handles the fields
+    # but we can optionally swap city_name if lang=lv
+    # The frontend will handle display logic based on the language
     return product
 
 

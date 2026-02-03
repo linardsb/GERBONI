@@ -64,10 +64,11 @@ export interface Variant {
   sku: string;
 }
 
-export const getProducts = () => fetchApi<Product[]>("/products");
+export const getProducts = (lang?: "en" | "lv") =>
+  fetchApi<Product[]>(`/products${lang ? `?lang=${lang}` : ""}`);
 
-export const getProduct = (id: number) =>
-  fetchApi<ProductDetail>(`/products/${id}`);
+export const getProduct = (id: number, lang?: "en" | "lv") =>
+  fetchApi<ProductDetail>(`/products/${id}${lang ? `?lang=${lang}` : ""}`);
 
 // Cart
 export interface CartItem {

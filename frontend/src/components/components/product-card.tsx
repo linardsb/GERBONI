@@ -1,5 +1,8 @@
-import Link from "next/link";
+"use client";
+
 import Image from "next/image";
+import { useTranslations, useLocale } from "next-intl";
+import { Link } from "@/i18n/routing";
 import { Card, CardContent } from "@/components/elements/card";
 import { Text } from "@/components/elements/text";
 import { Badge } from "@/components/elements/badge";
@@ -14,9 +17,16 @@ const LOW_STOCK_THRESHOLD = 10;
 const VERY_LOW_STOCK_THRESHOLD = 3;
 
 export function ProductCard({ product }: ProductCardProps) {
+  const t = useTranslations("product");
+  const locale = useLocale();
+
   const isVeryLowStock = product.total_stock !== undefined && product.total_stock > 0 && product.total_stock <= VERY_LOW_STOCK_THRESHOLD;
   const isLowStock = product.total_stock !== undefined && product.total_stock > VERY_LOW_STOCK_THRESHOLD && product.total_stock <= LOW_STOCK_THRESHOLD;
   const isOutOfStock = product.total_stock === 0;
+
+  // Use Latvian name if locale is 'lv', otherwise English
+  const displayName = locale === "lv" ? product.city_name_lv : product.city_name;
+  const secondaryName = locale === "lv" ? product.city_name : product.city_name_lv;
 
   return (
     <Link href={`/products/${product.id}`} className="group block">
@@ -28,24 +38,24 @@ export function ProductCard({ product }: ProductCardProps) {
             <div className="absolute top-3 left-3 z-10">
               <WishlistButton
                 productId={product.id}
-                productName={product.city_name}
+                productName={displayName}
                 size="icon-sm"
               />
             </div>
             {/* Stock badges */}
             {isOutOfStock && (
               <Badge variant="destructive" className="absolute top-3 right-3 z-10">
-                Out of Stock
+                {t("outOfStock")}
               </Badge>
             )}
             {isVeryLowStock && (
               <Badge variant="destructive" className="absolute top-3 right-3 z-10">
-                Only {product.total_stock} left - order soon!
+                {t("lowStock", { count: product.total_stock ?? 0 })}
               </Badge>
             )}
             {isLowStock && (
               <Badge variant="secondary" className="absolute top-3 right-3 z-10 bg-orange-100 text-orange-700 border-orange-200">
-                Low stock
+                {locale === "lv" ? "Zems krājums" : "Low stock"}
               </Badge>
             )}
             {/* T-shirt mockup */}
@@ -65,7 +75,7 @@ export function ProductCard({ product }: ProductCardProps) {
               <div className="absolute left-1/2 top-1/2 h-16 w-16 -translate-x-1/2 -translate-y-1/4">
                 <Image
                   src={`/coats/${product.coat_of_arms_image}`}
-                  alt={`${product.city_name} coat of arms`}
+                  alt={`${displayName} coat of arms`}
                   width={64}
                   height={64}
                   className="h-full w-full object-contain drop-shadow-sm"
@@ -80,14 +90,14 @@ export function ProductCard({ product }: ProductCardProps) {
           {/* Product Info */}
           <div className="p-4">
             <Text as="h3" variant="heading-xs" className="transition-colors group-hover:text-primary">
-              {product.city_name}
+              {displayName}
             </Text>
             <Text variant="muted-sm">
-              {product.city_name_lv}
+              {secondaryName}
             </Text>
             {product.min_price && (
               <Text variant="price" className="mt-2">
-                From €{Number(product.min_price).toFixed(2)}
+                {locale === "lv" ? "No" : "From"} €{Number(product.min_price).toFixed(2)}
               </Text>
             )}
           </div>

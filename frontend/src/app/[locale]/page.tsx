@@ -1,7 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
+import { useTranslations, useLocale } from "next-intl";
+import { Link } from "@/i18n/routing";
 import {
   IconArrowRight,
   IconArrowUpRight,
@@ -18,7 +19,6 @@ import { Stack } from "@/components/elements/stack";
 import { Row } from "@/components/elements/row";
 import { Text } from "@/components/elements/text";
 import { Grid } from "@/components/elements/grid";
-import { Card, CardContent } from "@/components/elements/card";
 import { Input } from "@/components/elements/input";
 import { RecentlyViewedSection } from "@/components/compositions/recently-viewed-section";
 
@@ -79,27 +79,6 @@ const featuredProducts = [
   },
 ];
 
-const features = [
-  {
-    icon: IconSparkles,
-    title: "Premium Quality",
-    description:
-      "100% cotton, pre-shrunk fabric with high-quality screen printing that lasts.",
-  },
-  {
-    icon: IconTruck,
-    title: "Fast Shipping",
-    description:
-      "2-4 days within Latvia, 5-10 days for EU. Free shipping over €50.",
-  },
-  {
-    icon: IconMessageCircle,
-    title: "AI Support",
-    description:
-      "24/7 AI-powered customer support for orders, returns, and questions.",
-  },
-];
-
 function StarRating({ rating, reviews }: { rating: number; reviews: number }) {
   return (
     <Row gap="xs" align="center">
@@ -126,9 +105,13 @@ function StarRating({ rating, reviews }: { rating: number; reviews: number }) {
 
 function ProductCard({
   product,
+  quickAddLabel,
 }: {
   product: (typeof featuredProducts)[number];
+  quickAddLabel: string;
 }) {
+  const locale = useLocale();
+
   return (
     <Link href={`/products/${product.id}`} className="group block">
       <div data-slot="product-card">
@@ -182,10 +165,10 @@ function ProductCard({
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                window.location.href = `/products/${product.id}`;
+                window.location.href = `/${locale}/products/${product.id}`;
               }}
             >
-              Quick Add
+              {quickAddLabel}
             </Button>
           </div>
         </div>
@@ -197,10 +180,10 @@ function ProductCard({
             variant="heading-xs"
             className="mb-1 transition-colors group-hover:text-primary"
           >
-            {product.name}
+            {locale === "lv" ? product.nameLv : product.name}
           </Text>
           <Text variant="muted-sm" className="mb-2">
-            {product.nameLv}
+            {locale === "lv" ? product.name : product.nameLv}
           </Text>
           <StarRating rating={product.rating} reviews={product.reviews} />
           <Row justify="between" align="center" className="mt-3">
@@ -214,6 +197,37 @@ function ProductCard({
 }
 
 export default function HomePage() {
+  const t = useTranslations("home");
+  const tCommon = useTranslations("common");
+  const tProduct = useTranslations("product");
+  const locale = useLocale();
+
+  const features = [
+    {
+      icon: IconSparkles,
+      title: t("feature2Title"),
+      description: t("feature2Description"),
+    },
+    {
+      icon: IconTruck,
+      title: t("feature4Title"),
+      description: t("feature4Description"),
+    },
+    {
+      icon: IconMessageCircle,
+      title: locale === "lv" ? "AI Atbalsts" : "AI Support",
+      description: locale === "lv"
+        ? "24/7 AI-balstīts klientu atbalsts pasūtījumiem, atgriešanai un jautājumiem."
+        : "24/7 AI-powered customer support for orders, returns, and questions.",
+    },
+  ];
+
+  const stats = [
+    { value: "10", label: locale === "lv" ? "Latvijas pilsētas" : "Latvian Cities" },
+    { value: "360", label: locale === "lv" ? "Unikāli varianti" : "Unique Variants" },
+    { value: "5★", label: locale === "lv" ? "Klientu vērtējums" : "Customer Rating" },
+  ];
+
   return (
     <div data-slot="home-page">
       {/* Hero Section - Aurova-inspired with gradient and massive typography */}
@@ -225,23 +239,21 @@ export default function HomePage() {
           <Stack gap="section" align="center" className="text-center">
             {/* Badge */}
             <div className="inline-block px-4 py-2 bg-background/60 backdrop-blur-sm border border-border-subtle">
-              <Text variant="label">New Collection 2026</Text>
+              <Text variant="label">{locale === "lv" ? "Jaunā kolekcija 2026" : "New Collection 2026"}</Text>
             </div>
 
             {/* Massive title */}
             <h1 className="text-display text-[12vw] lg:text-[10rem] xl:text-[12rem] leading-[0.85] tracking-tighter">
-              Heritage
+              {locale === "lv" ? "Mantojums" : "Heritage"}
             </h1>
 
             {/* Two-column description */}
             <div className="max-w-2xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-group text-lg leading-relaxed">
               <Text variant="muted" className="opacity-80">
-                Premium t-shirts featuring authentic coats of arms from
-                Latvia&apos;s most iconic cities.
+                {t("heroSubtitle")}
               </Text>
               <Text variant="muted" className="opacity-80">
-                Each design tells a story of centuries of history, culture, and
-                national pride.
+                {t("heroDescription")}
               </Text>
             </div>
 
@@ -249,7 +261,7 @@ export default function HomePage() {
             <Row gap="group" wrap="wrap" justify="center" className="pt-section">
               <Button variant="minimal" size="lg" asChild className="group">
                 <Link href="/products">
-                  <span className="text-label">Explore Collection</span>
+                  <span className="text-label">{t("exploreCollection")}</span>
                   <IconArrowRight
                     className="size-4 transition-transform duration-300 group-hover:translate-x-1"
                     aria-hidden="true"
@@ -257,7 +269,7 @@ export default function HomePage() {
                 </Link>
               </Button>
               <Button variant="text-underline" size="lg" asChild>
-                <Link href="/about">Our Story</Link>
+                <Link href="/about">{locale === "lv" ? "Mūsu stāsts" : "Our Story"}</Link>
               </Button>
             </Row>
           </Stack>
@@ -291,12 +303,16 @@ export default function HomePage() {
                     variant="display-sm"
                     className="text-overlay-foreground"
                   >
-                    Latvian Heritage Collection
+                    {locale === "lv" ? "Latvijas mantojuma kolekcija" : "Latvian Heritage Collection"}
                   </Text>
-                  <Text variant="overlay-muted">10 Cities • 360 Variants</Text>
+                  <Text variant="overlay-muted">
+                    {locale === "lv" ? "10 pilsētas • 360 varianti" : "10 Cities • 360 Variants"}
+                  </Text>
                 </Stack>
                 <Stack gap="element" align="end" className="hidden md:flex">
-                  <Text variant="overlay-muted">Starting from</Text>
+                  <Text variant="overlay-muted">
+                    {locale === "lv" ? "Sākot no" : "Starting from"}
+                  </Text>
                   <Text className="text-lg font-medium text-overlay-foreground">
                     €24.99
                   </Text>
@@ -311,11 +327,7 @@ export default function HomePage() {
       <Section spacing="large">
         <Container>
           <Grid cols={3} gap="xl">
-            {[
-              { value: "10", label: "Latvian Cities" },
-              { value: "360", label: "Unique Variants" },
-              { value: "5★", label: "Customer Rating" },
-            ].map((stat, index) => (
+            {stats.map((stat, index) => (
               <Stack key={index} gap="element" align="center" className="group">
                 <Text
                   variant="display-lg"
@@ -348,33 +360,39 @@ export default function HomePage() {
                       variant="label"
                       className="text-muted-foreground opacity-60"
                     >
-                      /01 Featured
+                      /01 {t("featuredProducts")}
                     </Text>
                     <Text as="h2" variant="display-md">
-                      City Crests
+                      {locale === "lv" ? "Pilsētu ģerboņi" : "City Crests"}
                     </Text>
                     <Text variant="muted" className="leading-relaxed">
-                      Each coat of arms represents centuries of history,
-                      craftsmanship, and cultural identity. Wear your heritage
-                      with pride.
+                      {locale === "lv"
+                        ? "Katrs ģerbonis pārstāv gadsimtiem vēstures, meistara darba un kultūras identitātes. Velciet savu mantojumu ar lepnumu."
+                        : "Each coat of arms represents centuries of history, craftsmanship, and cultural identity. Wear your heritage with pride."}
                     </Text>
                   </Stack>
 
                   <Stack gap="group">
                     <Row justify="between">
-                      <Text variant="muted-sm">Available designs</Text>
+                      <Text variant="muted-sm">
+                        {locale === "lv" ? "Pieejamie dizaini" : "Available designs"}
+                      </Text>
                       <Text variant="body-sm" className="font-medium">
                         10
                       </Text>
                     </Row>
                     <Row justify="between">
-                      <Text variant="muted-sm">Price range</Text>
+                      <Text variant="muted-sm">
+                        {locale === "lv" ? "Cenu diapazons" : "Price range"}
+                      </Text>
                       <Text variant="body-sm" className="font-medium">
                         €24.99 - €28.99
                       </Text>
                     </Row>
                     <Row justify="between">
-                      <Text variant="muted-sm">Sizes</Text>
+                      <Text variant="muted-sm">
+                        {locale === "lv" ? "Izmēri" : "Sizes"}
+                      </Text>
                       <Text variant="body-sm" className="font-medium">
                         XS - XXL
                       </Text>
@@ -383,7 +401,7 @@ export default function HomePage() {
 
                   <Button variant="minimal" asChild className="w-full group">
                     <Link href="/products">
-                      <span className="text-label">Browse All</span>
+                      <span className="text-label">{tCommon("viewAll")}</span>
                       <IconArrowUpRight
                         className="size-4 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"
                         aria-hidden="true"
@@ -397,7 +415,11 @@ export default function HomePage() {
             {/* Product Grid */}
             <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-group">
               {featuredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  quickAddLabel={tProduct("quickView")}
+                />
               ))}
             </div>
           </div>
@@ -462,32 +484,33 @@ export default function HomePage() {
             <div className="relative text-center py-page px-section">
               <Stack gap="section" align="center">
                 <Text as="h2" variant="display-md">
-                  Join the Heritage Community
+                  {t("newsletterTitle")}
                 </Text>
                 <Text variant="muted" className="max-w-2xl mx-auto">
-                  Be the first to discover new city designs, exclusive drops,
-                  and member-only benefits.
+                  {t("newsletterDescription")}
                 </Text>
 
                 {/* Email form */}
                 <Row gap="group" wrap="wrap" justify="center" className="w-full max-w-md">
                   <Input
                     type="email"
-                    placeholder="Enter your email"
+                    placeholder={t("newsletterPlaceholder")}
                     variant="minimal"
                     className="flex-1 min-w-[200px]"
-                    aria-label="Email address"
+                    aria-label={locale === "lv" ? "E-pasta adrese" : "Email address"}
                   />
                   <Button
                     variant="minimal"
                     className="text-label whitespace-nowrap"
                   >
-                    Subscribe
+                    {t("newsletterButton")}
                   </Button>
                 </Row>
 
                 <Text variant="muted-sm">
-                  No spam, just curated content and exclusive access.
+                  {locale === "lv"
+                    ? "Nav spama, tikai izvēlēts saturs un ekskluzīva piekļuve."
+                    : "No spam, just curated content and exclusive access."}
                 </Text>
               </Stack>
             </div>
@@ -500,17 +523,20 @@ export default function HomePage() {
         <Container>
           <Stack gap="section" align="center" className="max-w-2xl mx-auto">
             <Text as="h2" variant="display-md" align="center">
-              Ready to wear your heritage?
+              {locale === "lv"
+                ? "Gatavs velciet savu mantojumu?"
+                : "Ready to wear your heritage?"}
             </Text>
             <Text variant="muted" align="center">
-              Join thousands of Latvians and Latvia enthusiasts who proudly wear
-              their city&apos;s coat of arms.
+              {locale === "lv"
+                ? "Pievienojieties tūkstošiem latviešu un Latvijas entuziastu, kuri lepni velk savas pilsētas ģerboni."
+                : "Join thousands of Latvians and Latvia enthusiasts who proudly wear their city's coat of arms."}
             </Text>
             <Row gap="group" wrap="wrap" justify="center">
               <Button variant="minimal" asChild size="lg" className="text-label">
                 <Link href="/products">
                   <IconShoppingBag className="size-4" aria-hidden="true" />
-                  Shop Now
+                  {t("shopNow")}
                 </Link>
               </Button>
             </Row>

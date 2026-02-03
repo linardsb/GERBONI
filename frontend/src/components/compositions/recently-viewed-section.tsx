@@ -14,7 +14,7 @@ export function RecentlyViewedSection() {
   }
 
   return (
-    <Section spacing="medium">
+    <Section spacing="compact">
       <Container>
         <RecentlyViewed maxItems={6} />
       </Container>

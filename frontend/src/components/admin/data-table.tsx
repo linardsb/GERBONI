@@ -21,7 +21,7 @@ interface DataTableProps<T> {
 
 type SortDirection = "asc" | "desc" | null;
 
-export function DataTable<T extends Record<string, unknown>>({
+export function DataTable<T extends object>({
   data,
   columns,
   keyExtractor,
@@ -49,8 +49,8 @@ export function DataTable<T extends Record<string, unknown>>({
   const sortedData = [...data].sort((a, b) => {
     if (!sortColumn || !sortDirection) return 0;
 
-    const aValue = a[sortColumn];
-    const bValue = b[sortColumn];
+    const aValue = (a as Record<string, unknown>)[sortColumn];
+    const bValue = (b as Record<string, unknown>)[sortColumn];
 
     if (aValue === bValue) return 0;
     if (aValue === null || aValue === undefined) return 1;
@@ -118,7 +118,7 @@ export function DataTable<T extends Record<string, unknown>>({
                   <td key={column.key} className="px-4 py-3">
                     {column.render
                       ? column.render(item)
-                      : String(item[column.key] ?? "-")}
+                      : String((item as Record<string, unknown>)[column.key] ?? "-")}
                   </td>
                 ))}
               </tr>

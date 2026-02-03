@@ -141,7 +141,7 @@ export function AddressForm({
               <Label htmlFor="label">Label (optional)</Label>
               <Input
                 id="label"
-                value={formData.label}
+                value={formData.label ?? ""}
                 onChange={(e) => updateField("label", e.target.value)}
                 placeholder="e.g., Home, Work"
               />

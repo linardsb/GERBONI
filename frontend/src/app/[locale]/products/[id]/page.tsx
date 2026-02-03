@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
+import { useTranslations, useLocale } from "next-intl";
 import { IconMinus, IconPlus, IconCheck, IconRuler } from "@tabler/icons-react";
 import { Button } from "@/components/elements/button";
 import { SizeGuideModal } from "@/components/compositions/size-guide-modal";
@@ -40,6 +41,10 @@ const COLOR_MAP: Record<string, string> = {
 };
 
 export default function ProductPage() {
+  const t = useTranslations("product");
+  const tColors = useTranslations("colors");
+  const tCommon = useTranslations("common");
+  const locale = useLocale();
   const params = useParams();
   const { token, guestSession, setGuestSession } = useAuthStore();
   const { setCart } = useCartStore();
@@ -57,12 +62,12 @@ export default function ProductPage() {
   useEffect(() => {
     const id = Number(params.id);
     if (isNaN(id)) {
-      setError("Invalid product ID");
+      setError(locale === "lv" ? "Nederīgs produkta ID" : "Invalid product ID");
       setLoading(false);
       return;
     }
 
-    getProduct(id)
+    getProduct(id, locale as "en" | "lv")
       .then((fetchedProduct) => {
         setProduct(fetchedProduct);
         // Track recently viewed
@@ -76,11 +81,26 @@ export default function ProductPage() {
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, [params.id, addRecentlyViewed]);
+  }, [params.id, addRecentlyViewed, locale]);
 
   const selectedVariant = product?.variants.find(
     (v) => v.color === selectedColor && v.size === selectedSize
   );
+
+  // Get translated color name
+  const getColorName = (color: string) => {
+    const colorKeys: Record<string, string> = {
+      Black: tColors("Black"),
+      White: tColors("White"),
+      Navy: tColors("Navy"),
+      Gray: tColors("Gray"),
+      Burgundy: tColors("Burgundy"),
+      Forest: tColors("Forest"),
+      Red: locale === "lv" ? "Sarkans" : "Red",
+      Green: locale === "lv" ? "Zaļš" : "Green",
+    };
+    return colorKeys[color] || color;
+  };
 
   const handleAddToCart = async () => {
     if (!selectedVariant) return;
@@ -101,12 +121,13 @@ export default function ProductPage() {
         session?.session_token
       );
       setCart(cart);
-      toast.success("Added to cart", {
-        description: `${product?.city_name} T-Shirt (${selectedColor}, ${selectedSize})`,
+      const cityName = locale === "lv" ? product?.city_name_lv : product?.city_name;
+      toast.success(t("addedToCart"), {
+        description: `${cityName} T-Shirt (${getColorName(selectedColor)}, ${selectedSize})`,
       });
     } catch (err) {
-      toast.error("Failed to add to cart", {
-        description: err instanceof Error ? err.message : "Please try again",
+      toast.error(locale === "lv" ? "Neizdevās pievienot grozam" : "Failed to add to cart", {
+        description: err instanceof Error ? err.message : tCommon("tryAgain"),
       });
     } finally {
       setAdding(false);
@@ -132,10 +153,14 @@ export default function ProductPage() {
   if (error || !product) {
     return (
       <Container padding="md">
-        <Text variant="error" align="center">{error || "Product not found"}</Text>
+        <Text variant="error" align="center">{error || (locale === "lv" ? "Produkts nav atrasts" : "Product not found")}</Text>
       </Container>
     );
   }
+
+  const displayName = locale === "lv" ? product.city_name_lv : product.city_name;
+  const secondaryName = locale === "lv" ? product.city_name : product.city_name_lv;
+  const displayDescription = locale === "lv" ? (product.description_lv || product.description) : product.description;
 
   return (
     <Container padding="md">
@@ -160,7 +185,7 @@ export default function ProductPage() {
                 <div className="absolute left-1/2 top-1/2 h-24 w-24 -translate-x-1/2 -translate-y-1/4">
                   <Image
                     src={`/coats/${product.coat_of_arms_image}`}
-                    alt={`${product.city_name} coat of arms`}
+                    alt={`${displayName} coat of arms`}
                     width={96}
                     height={96}
                     className="h-full w-full object-contain drop-shadow-md"
@@ -174,9 +199,9 @@ export default function ProductPage() {
         {/* Product Info */}
         <Stack gap="section">
           <Stack gap="element">
-            <Text as="h1" variant="heading-xl">{product.city_name}</Text>
+            <Text as="h1" variant="heading-xl">{displayName}</Text>
             <Text variant="muted-lg">
-              {product.city_name_lv} Coat of Arms T-Shirt
+              {secondaryName} {locale === "lv" ? "ģerboņa krekls" : "Coat of Arms T-Shirt"}
             </Text>
           </Stack>
 
@@ -184,13 +209,13 @@ export default function ProductPage() {
             €{selectedVariant ? Number(selectedVariant.price).toFixed(2) : "24.99"}
           </Text>
 
-          <Text variant="muted">{product.description}</Text>
+          <Text variant="muted">{displayDescription}</Text>
 
           <Separator />
 
           {/* Color Selection */}
           <Stack gap="group">
-            <Text variant="label">Color: {selectedColor}</Text>
+            <Text variant="label">{t("color")}: {getColorName(selectedColor)}</Text>
             <Row gap="group" wrap="wrap">
               {COLORS.map((color) => {
                 const variant = product.variants.find(
@@ -203,7 +228,7 @@ export default function ProductPage() {
                     key={color}
                     onClick={() => setSelectedColor(color)}
                     disabled={!inStock}
-                    aria-label={`Select ${color} color${!inStock ? " (out of stock)" : ""}`}
+                    aria-label={`${locale === "lv" ? "Izvēlēties" : "Select"} ${getColorName(color)}${!inStock ? (locale === "lv" ? " (nav noliktavā)" : " (out of stock)") : ""}`}
                     aria-pressed={selectedColor === color}
                     className={`relative size-10 border-2 transition-all ${
                       selectedColor === color
@@ -231,12 +256,12 @@ export default function ProductPage() {
           {/* Size Selection */}
           <Stack gap="group">
             <Row justify="between">
-              <Text variant="label">Size: {selectedSize}</Text>
+              <Text variant="label">{t("size")}: {selectedSize}</Text>
               <SizeGuideModal
                 trigger={
                   <button className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-element transition-colors">
                     <IconRuler className="size-4" aria-hidden="true" />
-                    Size Guide
+                    {t("sizeGuide")}
                   </button>
                 }
               />
@@ -266,13 +291,13 @@ export default function ProductPage() {
 
           {/* Quantity */}
           <Stack gap="group">
-            <Text variant="label">Quantity</Text>
+            <Text variant="label">{t("quantity")}</Text>
             <Row gap="group">
               <Button
                 variant="outline"
                 size="icon"
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                aria-label="Decrease quantity"
+                aria-label={locale === "lv" ? "Samazināt daudzumu" : "Decrease quantity"}
               >
                 <IconMinus className="size-4" aria-hidden="true" />
               </Button>
@@ -283,7 +308,7 @@ export default function ProductPage() {
                 variant="outline"
                 size="icon"
                 onClick={() => setQuantity(quantity + 1)}
-                aria-label="Increase quantity"
+                aria-label={locale === "lv" ? "Palielināt daudzumu" : "Increase quantity"}
               >
                 <IconPlus className="size-4" aria-hidden="true" />
               </Button>
@@ -298,17 +323,17 @@ export default function ProductPage() {
               onClick={handleAddToCart}
               disabled={adding || !selectedVariant || selectedVariant.stock < 1}
             >
-              {adding ? "Adding..." : "Add to Cart"}
+              {adding ? tCommon("loading") : t("addToCart")}
             </Button>
 
             {selectedVariant && selectedVariant.stock > 0 && selectedVariant.stock <= 3 && (
               <Text variant="error" align="center" className="font-medium">
-                Only {selectedVariant.stock} left - order soon!
+                {t("lowStock", { count: selectedVariant.stock })}
               </Text>
             )}
             {selectedVariant && selectedVariant.stock > 3 && selectedVariant.stock <= 10 && (
               <Text variant="warning" align="center">
-                Low stock - {selectedVariant.stock} remaining
+                {locale === "lv" ? `Zems krājums - atlikuši ${selectedVariant.stock}` : `Low stock - ${selectedVariant.stock} remaining`}
               </Text>
             )}
           </Stack>
@@ -317,23 +342,23 @@ export default function ProductPage() {
 
           {/* Product Details */}
           <Stack gap="group">
-            <Text as="h3" variant="heading-xs">Product Details</Text>
+            <Text as="h3" variant="heading-xs">{t("details")}</Text>
             <Stack gap="sm">
               <Row gap="element">
-                <Badge variant="secondary">Material</Badge>
-                <Text variant="muted-sm">100% premium cotton</Text>
+                <Badge variant="secondary">{locale === "lv" ? "Materiāls" : "Material"}</Badge>
+                <Text variant="muted-sm">{locale === "lv" ? "100% premium kokvilna" : "100% premium cotton"}</Text>
               </Row>
               <Row gap="element">
-                <Badge variant="secondary">Print</Badge>
-                <Text variant="muted-sm">High-quality screen print</Text>
+                <Badge variant="secondary">{locale === "lv" ? "Apdruka" : "Print"}</Badge>
+                <Text variant="muted-sm">{locale === "lv" ? "Augstas kvalitātes sietspiede" : "High-quality screen print"}</Text>
               </Row>
               <Row gap="element">
-                <Badge variant="secondary">Care</Badge>
-                <Text variant="muted-sm">Machine washable</Text>
+                <Badge variant="secondary">{locale === "lv" ? "Kopšana" : "Care"}</Badge>
+                <Text variant="muted-sm">{locale === "lv" ? "Mazgājams mašīnā" : "Machine washable"}</Text>
               </Row>
               <Row gap="element">
-                <Badge variant="secondary">Design</Badge>
-                <Text variant="muted-sm">Authentic coat of arms</Text>
+                <Badge variant="secondary">{locale === "lv" ? "Dizains" : "Design"}</Badge>
+                <Text variant="muted-sm">{locale === "lv" ? "Autentisks ģerbonis" : "Authentic coat of arms"}</Text>
               </Row>
             </Stack>
           </Stack>
@@ -350,7 +375,7 @@ export default function ProductPage() {
         <ProductRecommendations
           type="related"
           productId={product.id}
-          title="You May Also Like"
+          title={t("relatedProducts")}
           limit={4}
         />
       </div>

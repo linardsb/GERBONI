@@ -36,6 +36,7 @@ class ProductListRead(BaseModel):
     city_name_lv: str
     coat_of_arms_image: str
     description: str
+    description_lv: str | None = None
     is_active: bool
     min_price: Decimal | None = None
     total_stock: int = 0

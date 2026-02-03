@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { Link, usePathname } from "@/i18n/routing";
 import { IconShoppingCart, IconUser, IconMenu2, IconChevronDown, IconTruck, IconPhone, IconQuestionMark, IconRefresh, IconHeart } from "@tabler/icons-react";
 import { Button } from "@/components/elements/button";
 import { Badge } from "@/components/elements/badge";
@@ -23,23 +23,25 @@ import {
 } from "@/components/elements/dropdown-menu";
 import { useAuthStore, useCartStore, useWishlistStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
+import { LanguageSwitcher } from "@/components/elements/language-switcher";
 
 export function Header() {
+  const t = useTranslations("nav");
   const { user, logout } = useAuthStore();
   const { cart } = useCartStore();
   const { wishlist } = useWishlistStore();
   const pathname = usePathname();
 
   const mainNavItems = [
-    { href: "/products", label: "Shop" },
-    { href: "/about", label: "Our Story" },
+    { href: "/products" as const, label: t("shop") },
+    { href: "/about" as const, label: t("ourStory") },
   ];
 
   const infoNavItems = [
-    { href: "/shipping", label: "Shipping", icon: IconTruck },
-    { href: "/returns", label: "Returns", icon: IconRefresh },
-    { href: "/faq", label: "FAQ", icon: IconQuestionMark },
-    { href: "/contact", label: "Contact", icon: IconPhone },
+    { href: "/shipping" as const, label: t("shipping"), icon: IconTruck },
+    { href: "/returns" as const, label: t("returns"), icon: IconRefresh },
+    { href: "/faq" as const, label: t("faq"), icon: IconQuestionMark },
+    { href: "/contact" as const, label: t("contact"), icon: IconPhone },
   ];
 
   const isActive = (href: string) => pathname === href;
@@ -78,7 +80,7 @@ export function Header() {
                   isInfoActive && "text-primary"
                 )}
               >
-                Help
+                {t("help")}
                 <IconChevronDown className="size-4" aria-hidden="true" />
               </button>
             </DropdownMenuTrigger>
@@ -98,8 +100,11 @@ export function Header() {
 
         {/* Actions */}
         <Row gap="element">
+          {/* Language Switcher */}
+          <LanguageSwitcher />
+
           {/* Wishlist */}
-          <Button variant="ghost" size="icon" asChild className="relative" aria-label="Wishlist">
+          <Button variant="ghost" size="icon" asChild className="relative" aria-label={t("wishlist")}>
             <Link href="/wishlist">
               <IconHeart className="size-5" aria-hidden="true" />
               {wishlist && wishlist.count > 0 && (
@@ -114,7 +119,7 @@ export function Header() {
           </Button>
 
           {/* Cart */}
-          <Button variant="ghost" size="icon" asChild className="relative" aria-label="Shopping cart">
+          <Button variant="ghost" size="icon" asChild className="relative" aria-label={t("cart")}>
             <Link href="/cart">
               <IconShoppingCart className="size-5" aria-hidden="true" />
               {cart && cart.item_count > 0 && (
@@ -131,33 +136,33 @@ export function Header() {
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label="Account menu">
+                <Button variant="ghost" size="icon" aria-label={t("account")}>
                   <IconUser className="size-5" aria-hidden="true" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem asChild>
-                  <Link href="/account">Account Settings</Link>
+                  <Link href="/account">{t("account")}</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/orders">My Orders</Link>
+                  <Link href="/orders">{t("orders")}</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={logout}>
-                  Logout
+                  {t("logout")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
             <Button variant="minimal" asChild size="sm" className="hidden sm:inline-flex text-label text-xs">
-              <Link href="/login">Login</Link>
+              <Link href="/login">{t("login")}</Link>
             </Button>
           )}
 
           {/* Mobile Menu */}
           <Sheet>
             <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="icon" aria-label="Open menu">
+              <Button variant="ghost" size="icon" aria-label={t("menu")}>
                 <IconMenu2 className="size-5" aria-hidden="true" />
               </Button>
             </SheetTrigger>
@@ -166,7 +171,7 @@ export function Header() {
                 <Stack gap="section" className="mt-4">
                   {/* Main Nav */}
                   <Stack gap="group">
-                    <Text variant="muted-sm" className="uppercase tracking-wider">Shop</Text>
+                    <Text variant="muted-sm" className="uppercase tracking-wider">{t("shop")}</Text>
                     {mainNavItems.map((item) => (
                       <Link
                         key={item.href}
@@ -181,7 +186,7 @@ export function Header() {
 
                   {/* Info Nav */}
                   <Stack gap="group">
-                    <Text variant="muted-sm" className="uppercase tracking-wider">Help & Info</Text>
+                    <Text variant="muted-sm" className="uppercase tracking-wider">{t("help")}</Text>
                     {infoNavItems.map((item) => (
                       <Link
                         key={item.href}
@@ -198,9 +203,9 @@ export function Header() {
                   {/* Auth on mobile */}
                   {!user && (
                     <Stack gap="group">
-                      <Text variant="muted-sm" className="uppercase tracking-wider">Account</Text>
+                      <Text variant="muted-sm" className="uppercase tracking-wider">{t("account")}</Text>
                       <Link href="/login" className="nav-link-mobile">
-                        Login / Register
+                        {t("login")} / {t("register")}
                       </Link>
                     </Stack>
                   )}

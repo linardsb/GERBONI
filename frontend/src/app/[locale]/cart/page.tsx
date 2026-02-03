@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useTranslations, useLocale } from "next-intl";
+import { Link, useRouter } from "@/i18n/routing";
 import { IconShoppingCart } from "@tabler/icons-react";
 import { Button } from "@/components/elements/button";
 import { Skeleton } from "@/components/elements/skeleton";
@@ -24,6 +24,9 @@ import { useAuthStore, useCartStore } from "@/lib/store";
 import { toast } from "sonner";
 
 export default function CartPage() {
+  const t = useTranslations("cart");
+  const tCommon = useTranslations("common");
+  const locale = useLocale();
   const router = useRouter();
   const { token, guestSession } = useAuthStore();
   const { cart, setCart } = useCartStore();
@@ -62,7 +65,7 @@ export default function CartPage() {
       );
       setCart(updatedCart);
     } catch {
-      toast.error("Failed to update cart");
+      toast.error(locale === "lv" ? "Neizdevās atjaunināt grozu" : "Failed to update cart");
     }
   };
 
@@ -74,9 +77,9 @@ export default function CartPage() {
         guestSession?.session_token
       );
       setCart(updatedCart);
-      toast.success("Item removed from cart");
+      toast.success(locale === "lv" ? "Priekšmets noņemts no groza" : "Item removed from cart");
     } catch {
-      toast.error("Failed to remove item");
+      toast.error(locale === "lv" ? "Neizdevās noņemt priekšmetu" : "Failed to remove item");
     }
   };
 
@@ -93,7 +96,7 @@ export default function CartPage() {
       );
       router.push(`/checkout/success?order_id=${order.id}`);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Checkout failed");
+      toast.error(err instanceof Error ? err.message : (locale === "lv" ? "Apmaksa neizdevās" : "Checkout failed"));
     } finally {
       setProcessing(false);
     }
@@ -118,11 +121,11 @@ export default function CartPage() {
       <Container padding="md" size="md">
         <EmptyState
           icon={IconShoppingCart}
-          title="Your cart is empty"
-          description="Add some Latvian coat of arms t-shirts to get started!"
+          title={t("empty")}
+          description={t("emptyDescription")}
         >
           <Button asChild>
-            <Link href="/products">Browse Products</Link>
+            <Link href="/products">{t("continueShopping")}</Link>
           </Button>
         </EmptyState>
       </Container>
@@ -147,11 +150,15 @@ export default function CartPage() {
     );
   }
 
+  const itemCountText = locale === "lv"
+    ? `${cart.item_count} ${cart.item_count === 1 ? "priekšmets" : "priekšmeti"} jūsu grozā`
+    : `${cart.item_count} item${cart.item_count !== 1 ? "s" : ""} in your cart`;
+
   return (
     <Container padding="md" size="md">
       <PageHeader
-        title="Shopping Cart"
-        description={`${cart.item_count} item${cart.item_count !== 1 ? "s" : ""} in your cart`}
+        title={t("title")}
+        description={itemCountText}
       />
 
       <Stack gap="section">

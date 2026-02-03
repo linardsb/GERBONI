@@ -1,35 +1,14 @@
-import Link from "next/link";
+"use client";
+
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/routing";
 import { IconBrandInstagram, IconBrandFacebook, IconMail, IconHeart } from "@tabler/icons-react";
 import { Separator } from "@/components/elements/separator";
-import { Grid } from "@/components/elements/grid";
 import { Stack } from "@/components/elements/stack";
 import { Row } from "@/components/elements/row";
 import { Text } from "@/components/elements/text";
 import { Section } from "@/components/elements/section";
 import { Container } from "@/components/elements/container";
-
-const footerLinks = {
-  shop: [
-    { href: "/products", label: "All Products" },
-    { href: "/products?city=riga", label: "Rīga Collection" },
-    { href: "/products?city=liepaja", label: "Liepāja Collection" },
-    { href: "/products?city=daugavpils", label: "Daugavpils Collection" },
-  ],
-  company: [
-    { href: "/about", label: "Our Story" },
-    { href: "/contact", label: "Contact Us" },
-    { href: "/faq", label: "FAQ" },
-  ],
-  support: [
-    { href: "/shipping", label: "Shipping & Delivery" },
-    { href: "/returns", label: "Returns & Refunds" },
-    { href: "/orders", label: "Track Order" },
-  ],
-  legal: [
-    { href: "/privacy", label: "Privacy Policy" },
-    { href: "/terms", label: "Terms of Service" },
-  ],
-};
 
 const socialLinks = [
   { href: "https://instagram.com/gerboni.lv", label: "Instagram", icon: IconBrandInstagram },
@@ -45,7 +24,7 @@ function FooterLinkGroup({ title, links }: { title: string; links: { href: strin
         {links.map((link) => (
           <Link
             key={link.href}
-            href={link.href}
+            href={link.href as "/products" | "/about" | "/contact" | "/faq" | "/shipping" | "/returns" | "/orders" | "/privacy" | "/terms"}
             className="footer-link"
           >
             {link.label}
@@ -57,7 +36,28 @@ function FooterLinkGroup({ title, links }: { title: string; links: { href: strin
 }
 
 export function Footer() {
+  const t = useTranslations("footer");
   const currentYear = new Date().getFullYear();
+
+  const footerLinks = {
+    shop: [
+      { href: "/products", label: t("allProducts") },
+    ],
+    company: [
+      { href: "/about", label: t("shop") === "Veikals" ? "Mūsu stāsts" : "Our Story" },
+      { href: "/contact", label: t("contact") },
+      { href: "/faq", label: t("faq") },
+    ],
+    support: [
+      { href: "/shipping", label: t("shipping") },
+      { href: "/returns", label: t("returns") },
+      { href: "/orders", label: t("shop") === "Veikals" ? "Izsekot pasūtījumu" : "Track Order" },
+    ],
+    legal: [
+      { href: "/privacy", label: t("privacy") },
+      { href: "/terms", label: t("terms") },
+    ],
+  };
 
   return (
     <footer className="border-t border-border-subtle">
@@ -73,7 +73,7 @@ export function Footer() {
                 </span>
               </Link>
               <Text variant="muted-sm" className="mt-4 max-w-xs">
-                Premium t-shirts featuring authentic Latvian city coats of arms. Wear your heritage with pride.
+                {t("tagline")}
               </Text>
 
               {/* Social Links */}
@@ -94,10 +94,10 @@ export function Footer() {
             </div>
 
             {/* Navigation Columns */}
-            <FooterLinkGroup title="Shop" links={footerLinks.shop} />
-            <FooterLinkGroup title="Company" links={footerLinks.company} />
-            <FooterLinkGroup title="Support" links={footerLinks.support} />
-            <FooterLinkGroup title="Legal" links={footerLinks.legal} />
+            <FooterLinkGroup title={t("shop")} links={footerLinks.shop} />
+            <FooterLinkGroup title={t("shop") === "Veikals" ? "Uzņēmums" : "Company"} links={footerLinks.company} />
+            <FooterLinkGroup title={t("support")} links={footerLinks.support} />
+            <FooterLinkGroup title={t("legal")} links={footerLinks.legal} />
           </div>
 
           <Separator className="my-section" />
@@ -105,10 +105,21 @@ export function Footer() {
           {/* Bottom Bar */}
           <Row wrap="wrap" gap="group" className="text-center md:text-left">
             <Text variant="muted-sm">
-              © {currentYear} GERBONI. All rights reserved.
+              {t("copyright", { year: currentYear })}
             </Text>
             <Text variant="muted-sm" className="hidden md:block">•</Text>
-            <Text variant="muted-sm" className="inline-flex items-center gap-1">Made with <IconHeart className="size-4 fill-current text-red-brand" aria-hidden="true" /></Text>
+            <Text variant="muted-sm" className="inline-flex items-center gap-1">
+              {t("madeIn").split("love").map((part, i) =>
+                i === 0 ? (
+                  <span key={i}>{part}</span>
+                ) : (
+                  <span key={i} className="inline-flex items-center gap-1">
+                    <IconHeart className="size-4 fill-current text-red-brand" aria-hidden="true" />
+                    {part}
+                  </span>
+                )
+              )}
+            </Text>
             <Text variant="muted-sm" className="hidden md:block">•</Text>
             <Text variant="muted-sm">
               <a href="mailto:hello@gerboni.lv" className="hover:text-primary transition-colors duration-fast">

@@ -33,13 +33,14 @@ const cardVariants = cva(
         md: "rounded-md",
         lg: "rounded-lg",
         xl: "rounded-xl",
+        card: "rounded-card",
       },
     },
     defaultVariants: {
       variant: "default",
       padding: "none",
       gap: "lg",
-      radius: "xl",
+      radius: "card",
     },
   }
 )

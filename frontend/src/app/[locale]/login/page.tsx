@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { Link, useRouter } from "@/i18n/routing";
 import { Button } from "@/components/elements/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/elements/card";
 import { Input } from "@/components/elements/input";
@@ -16,6 +16,9 @@ import { useAuthStore } from "@/lib/store";
 import { toast } from "sonner";
 
 export default function LoginPage() {
+  const t = useTranslations("auth");
+  const tCommon = useTranslations("common");
+  const tCheckout = useTranslations("checkout");
   const router = useRouter();
   const { setAuth } = useAuthStore();
 
@@ -33,18 +36,18 @@ export default function LoginPage() {
         const { access_token } = await login(email, password);
         const user = await getMe(access_token);
         setAuth(access_token, user);
-        toast.success("Welcome back!");
+        toast.success(t("loginSuccess"));
         router.push("/");
       } else {
         await register(email, password);
         const { access_token } = await login(email, password);
         const user = await getMe(access_token);
         setAuth(access_token, user);
-        toast.success("Account created successfully!");
+        toast.success(t("registerSuccess"));
         router.push("/");
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "An error occurred");
+      toast.error(err instanceof Error ? err.message : tCommon("error"));
     } finally {
       setLoading(false);
     }
@@ -56,20 +59,18 @@ export default function LoginPage() {
         <CardHeader className="text-center">
           <CardTitle>
             <Text as="span" variant="heading-md">
-              {isLogin ? "Welcome back" : "Create account"}
+              {isLogin ? t("loginTitle") : t("registerTitle")}
             </Text>
           </CardTitle>
           <CardDescription>
-            {isLogin
-              ? "Sign in to your GERBONI account"
-              : "Join GERBONI and start shopping"}
+            {isLogin ? t("loginDescription") : t("registerDescription")}
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent>
             <Stack gap="group">
               <Stack gap="element">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t("email")}</Label>
                 <Input
                   id="email"
                   type="email"
@@ -81,10 +82,10 @@ export default function LoginPage() {
               </Stack>
               <Stack gap="element">
                 <Row justify="between">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password">{t("password")}</Label>
                   {isLogin && (
                     <Link href="/forgot-password" className="text-sm text-primary hover:underline">
-                      Forgot password?
+                      {t("forgotPassword")}
                     </Link>
                   )}
                 </Row>
@@ -104,24 +105,24 @@ export default function LoginPage() {
             <Stack gap="group" className="w-full" align="center">
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading
-                  ? "Loading..."
+                  ? tCommon("loading")
                   : isLogin
-                  ? "Sign In"
-                  : "Create Account"}
+                  ? t("signIn")
+                  : t("register")}
               </Button>
               <Text variant="muted-sm">
-                {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
+                {isLogin ? t("noAccount") : t("hasAccount")}{" "}
                 <Text
                   as="span"
                   variant="link-primary"
                   onClick={() => setIsLogin(!isLogin)}
                   className="cursor-pointer"
                 >
-                  {isLogin ? "Sign up" : "Sign in"}
+                  {isLogin ? t("signUp") : t("signIn")}
                 </Text>
               </Text>
               <Link href="/products" className="footer-link">
-                Continue as guest
+                {tCheckout("guestCheckout")}
               </Link>
             </Stack>
           </CardFooter>
