@@ -44,3 +44,8 @@ htmlcov/
 
 # Playwright MCP state
 .playwright-mcp/
+
+# Claude Code memory plugin auto-generated files
+**/CLAUDE.md
+!/.claude/CLAUDE.md
+!/CLAUDE.md
