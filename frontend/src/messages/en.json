@@ -372,78 +372,173 @@
     }
   },
   "shipping": {
-    "title": "Shipping Information",
-    "subtitle": "Fast, reliable delivery to your door",
-    "domestic": {
-      "title": "Latvia",
-      "standard": "Standard Shipping (2-3 business days)",
-      "standardPrice": "€2.99",
-      "express": "Express Shipping (1 business day)",
-      "expressPrice": "€5.99",
-      "free": "Free shipping on orders over €50"
+    "label": "Information",
+    "title": "Shipping & Delivery",
+    "description": "All orders ship from Rīga, Latvia with tracking provided via email. We offer flexible shipping options to suit your needs.",
+    "freeOver": "Free over {amount}",
+    "options": {
+      "latvia": {
+        "title": "Latvia",
+        "time": "2-4 business days",
+        "price": "€3.99",
+        "freeOver": "€50"
+      },
+      "eu": {
+        "title": "EU Countries",
+        "time": "5-10 business days",
+        "price": "€7.99",
+        "freeOver": "€75"
+      },
+      "express": {
+        "title": "Express (Latvia)",
+        "time": "1-2 business days",
+        "price": "+€12",
+        "note": "Add to standard shipping"
+      }
     },
-    "baltic": {
-      "title": "Baltic States (Estonia, Lithuania)",
-      "standard": "Standard Shipping (3-5 business days)",
-      "standardPrice": "€4.99",
-      "free": "Free shipping on orders over €50"
+    "internationalTitle": "International Shipping",
+    "internationalDescription": "We ship worldwide. For destinations outside the EU, please note that customs duties and import taxes may apply upon arrival.",
+    "international": {
+      "uk": {
+        "region": "United Kingdom",
+        "time": "7-14 business days",
+        "price": "€12.99",
+        "note": "Customs fees may apply"
+      },
+      "usCanada": {
+        "region": "USA / Canada",
+        "time": "10-21 business days",
+        "price": "€19.99",
+        "note": "Import duties are buyer's responsibility"
+      },
+      "other": {
+        "region": "Other Countries",
+        "time": "Contact us",
+        "price": "Quote",
+        "note": "Email international@gerboni.lv"
+      }
     },
-    "eu": {
-      "title": "European Union",
-      "standard": "Standard Shipping (5-10 business days)",
-      "standardPrice": "€9.99"
+    "processing": {
+      "title": "Order Processing",
+      "text1": "Orders placed before 2:00 PM EET on business days are typically processed and shipped within 24 hours. Orders placed after this time or on weekends will be processed on the next business day.",
+      "text2": "You'll receive a shipping confirmation email with your tracking number once your order has been dispatched."
     },
-    "processing": "Processing Time",
-    "processingText": "Orders are typically processed within 1-2 business days. During peak seasons, processing may take longer.",
-    "tracking": "Order Tracking",
-    "trackingText": "All orders include tracking. You'll receive a tracking number via email once your order ships."
+    "notes": {
+      "title": "Important Notes",
+      "item1": "Delivery times are estimates and may vary during peak seasons",
+      "item2": "Tracking information updates may take 24-48 hours after shipment",
+      "item3": "We are not responsible for delays caused by customs or carrier issues",
+      "item4": "Contact us if your order hasn't arrived within the expected timeframe"
+    }
   },
   "returns": {
-    "title": "Returns & Exchanges",
-    "subtitle": "Hassle-free returns within 30 days",
+    "label": "Policy",
+    "title": "Returns & Refunds",
+    "description": "We want you to love your GERBONI purchase. If you're not completely satisfied, we're here to help.",
     "policy": {
       "title": "Return Policy",
-      "text": "We want you to love your GERBONI purchase. If you're not completely satisfied, you can return items within 30 days of delivery.",
-      "conditions": "Return Conditions",
-      "condition1": "Items must be unworn and unwashed",
-      "condition2": "Original tags must be attached",
-      "condition3": "Items must be in original packaging"
+      "window": "14 Days",
+      "windowDescription": "Return window from delivery date",
+      "condition1": "Items must be unworn with original tags attached",
+      "condition2": "Exchanges available for size/color (subject to stock)",
+      "condition3": "Free return shipping within Latvia",
+      "condition4": "EU customers pay return postage"
     },
-    "process": {
+    "damaged": {
+      "title": "Damaged or Defective Items",
+      "description": "If you receive a damaged or defective item, we'll make it right immediately.",
+      "item1": "Report within 48 hours of delivery with photos",
+      "item2": "Full replacement or refund offered (your choice)",
+      "item3": "No return shipping needed — keep or dispose of item",
+      "item4": "Wrong item sent: free replacement shipped immediately"
+    },
+    "howTo": {
       "title": "How to Return",
-      "step1": "Contact our support team to initiate a return",
-      "step2": "Print the prepaid return label",
-      "step3": "Pack items securely and drop off at any post office",
-      "step4": "Refund processed within 5-7 business days of receipt"
+      "description": "Follow these simple steps to process your return"
+    },
+    "steps": {
+      "step1": {
+        "title": "Contact Support",
+        "description": "Email support@gerboni.lv or use our live chat within 14 days of delivery"
+      },
+      "step2": {
+        "title": "Get Return Label",
+        "description": "We'll send you a return label (free within Latvia, paid for EU)"
+      },
+      "step3": {
+        "title": "Ship Your Item",
+        "description": "Pack the item securely with original tags attached"
+      },
+      "step4": {
+        "title": "Receive Refund",
+        "description": "Refund processed within 5-10 business days of receiving the item"
+      }
+    },
+    "refunds": {
+      "title": "Refund Information",
+      "description": "Once we receive your returned item, our team will inspect it and process your refund within 5-10 business days.",
+      "item1": "Refunds are issued to the original payment method",
+      "item2": "Original shipping costs are non-refundable (unless item was defective)",
+      "item3": "Bank processing may take additional 3-5 business days"
     },
     "exchanges": {
       "title": "Exchanges",
-      "text": "Want a different size or color? Contact us and we'll help arrange an exchange."
+      "text": "Want a different size or color? We offer exchanges subject to stock availability.",
+      "item1": "Contact us before shipping to confirm availability",
+      "item2": "Replacement shipped upon receipt of returned item",
+      "item3": "Price differences will be charged or refunded accordingly"
     }
   },
   "contact": {
+    "label": "Support",
     "title": "Contact Us",
-    "subtitle": "We're here to help",
+    "description": "Have a question or need help? Our team is here to assist you. Choose your preferred contact method below.",
+    "methods": {
+      "email": {
+        "title": "Email",
+        "value": "support@gerboni.lv",
+        "description": "Response within 24 hours"
+      },
+      "chat": {
+        "title": "Live Chat",
+        "value": "Available on website",
+        "description": "9:00-18:00 EET weekdays"
+      },
+      "phone": {
+        "title": "Phone",
+        "value": "+371 2XXX XXXX",
+        "description": "Weekdays 10:00-17:00 EET"
+      }
+    },
+    "responsePriority": {
+      "title": "Response Priority",
+      "order": "Chat > Email > Phone"
+    },
+    "sendMessage": {
+      "title": "Send Us a Message",
+      "description": "Fill out the form and we'll get back to you within 24 hours. For faster assistance, include your order number if applicable."
+    },
+    "specialized": {
+      "title": "Specialized Inquiries",
+      "bulk": "Bulk orders (25+)",
+      "custom": "Custom designs",
+      "international": "International shipping"
+    },
     "form": {
-      "name": "Your Name",
-      "email": "Email Address",
+      "name": "Name",
+      "namePlaceholder": "Your name",
+      "email": "Email",
+      "emailPlaceholder": "your@email.com",
+      "orderNumber": "Order Number",
+      "orderNumberPlaceholder": "e.g., #1234",
       "subject": "Subject",
+      "subjectPlaceholder": "What's this about?",
       "message": "Message",
+      "messagePlaceholder": "How can we help you?",
       "send": "Send Message",
       "sending": "Sending...",
-      "success": "Message sent successfully! We'll get back to you soon.",
+      "success": "Message sent! We'll get back to you within 24 hours.",
       "error": "Failed to send message. Please try again."
-    },
-    "info": {
-      "title": "Get in Touch",
-      "email": "support@gerboni.lv",
-      "hours": "Monday - Friday, 9:00 - 18:00 EET",
-      "response": "We typically respond within 24 hours"
-    },
-    "chat": {
-      "title": "Live Chat",
-      "text": "Chat with our AI assistant for instant help",
-      "button": "Start Chat"
     }
   },
   "terms": {

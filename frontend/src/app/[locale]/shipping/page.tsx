@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { Container } from "@/components/elements/container";
 import { Section } from "@/components/elements/section";
 import { Row } from "@/components/elements/row";
@@ -9,51 +12,63 @@ import { Grid } from "@/components/elements/grid";
 import { Badge } from "@/components/elements/badge";
 import { IconTruck, IconWorld, IconRocket, IconPackage } from "@tabler/icons-react";
 
-export const metadata = {
-  title: "Shipping Information - GERBONI",
-  description: "Learn about GERBONI shipping options, delivery times, and international shipping policies.",
-};
-
-const shippingOptions = [
-  {
-    icon: IconTruck,
-    title: "Latvia",
-    time: "2-4 business days",
-    price: "€3.99",
-    freeOver: "€50",
-    highlight: true,
-  },
-  {
-    icon: IconWorld,
-    title: "EU Countries",
-    time: "5-10 business days",
-    price: "€7.99",
-    freeOver: "€75",
-  },
-  {
-    icon: IconRocket,
-    title: "Express (Latvia)",
-    time: "1-2 business days",
-    price: "+€12",
-    note: "Add to standard shipping",
-  },
-];
-
-const internationalShipping = [
-  { region: "United Kingdom", time: "7-14 business days", price: "€12.99", note: "Customs fees may apply" },
-  { region: "USA / Canada", time: "10-21 business days", price: "€19.99", note: "Import duties are buyer's responsibility" },
-  { region: "Other Countries", time: "Contact us", price: "Quote", note: "Email international@gerboni.lv" },
-];
-
 export default function ShippingPage() {
+  const t = useTranslations("shipping");
+
+  const shippingOptions = [
+    {
+      icon: IconTruck,
+      title: t("options.latvia.title"),
+      time: t("options.latvia.time"),
+      price: t("options.latvia.price"),
+      freeOver: t("options.latvia.freeOver"),
+      highlight: true,
+    },
+    {
+      icon: IconWorld,
+      title: t("options.eu.title"),
+      time: t("options.eu.time"),
+      price: t("options.eu.price"),
+      freeOver: t("options.eu.freeOver"),
+    },
+    {
+      icon: IconRocket,
+      title: t("options.express.title"),
+      time: t("options.express.time"),
+      price: t("options.express.price"),
+      note: t("options.express.note"),
+    },
+  ];
+
+  const internationalShipping = [
+    {
+      region: t("international.uk.region"),
+      time: t("international.uk.time"),
+      price: t("international.uk.price"),
+      note: t("international.uk.note"),
+    },
+    {
+      region: t("international.usCanada.region"),
+      time: t("international.usCanada.time"),
+      price: t("international.usCanada.price"),
+      note: t("international.usCanada.note"),
+    },
+    {
+      region: t("international.other.region"),
+      time: t("international.other.time"),
+      price: t("international.other.price"),
+      note: t("international.other.note"),
+    },
+  ];
+
   return (
     <>
       <Section spacing="default">
         <Container>
           <PageHeader
-            label="Information"
-            title="Shipping & Delivery"
-            description="All orders ship from Rīga, Latvia with tracking provided via email. We offer flexible shipping options to suit your needs."
+            label={t("label")}
+            title={t("title")}
+            description={t("description")}
             align="center"
           />
 
@@ -76,7 +91,7 @@ export default function ShippingPage() {
                     <Row justify="between" align="baseline">
                       <Text variant="price-lg">{option.price}</Text>
                       {option.freeOver && (
-                        <Badge variant="secondary">Free over {option.freeOver}</Badge>
+                        <Badge variant="secondary">{t("freeOver", { amount: option.freeOver })}</Badge>
                       )}
                     </Row>
                     {option.note && (
@@ -93,9 +108,9 @@ export default function ShippingPage() {
       <Section spacing="default" background="muted">
         <Container>
           <Stack gap="lg">
-            <Text as="h2" variant="heading-lg" align="center">International Shipping</Text>
+            <Text as="h2" variant="heading-lg" align="center">{t("internationalTitle")}</Text>
             <Text variant="muted" align="center" className="max-w-2xl mx-auto">
-              We ship worldwide. For destinations outside the EU, please note that customs duties and import taxes may apply upon arrival.
+              {t("internationalDescription")}
             </Text>
 
             <Card>
@@ -126,34 +141,30 @@ export default function ShippingPage() {
             <Stack gap="md">
               <Row gap="group">
                 <IconPackage className="size-6 text-primary" aria-hidden="true" />
-                <Text as="h2" variant="heading-md">Order Processing</Text>
+                <Text as="h2" variant="heading-md">{t("processing.title")}</Text>
               </Row>
-              <Text variant="body-md">
-                Orders placed before 2:00 PM EET on business days are typically processed and shipped within 24 hours. Orders placed after this time or on weekends will be processed on the next business day.
-              </Text>
-              <Text variant="body-md">
-                You&apos;ll receive a shipping confirmation email with your tracking number once your order has been dispatched.
-              </Text>
+              <Text variant="body-md">{t("processing.text1")}</Text>
+              <Text variant="body-md">{t("processing.text2")}</Text>
             </Stack>
 
             <Stack gap="md">
-              <Text as="h3" variant="heading-sm">Important Notes</Text>
+              <Text as="h3" variant="heading-sm">{t("notes.title")}</Text>
               <ul className="flex flex-col gap-element">
                 <li className="flex items-start gap-element">
                   <span className="text-primary">•</span>
-                  <Text variant="muted">Delivery times are estimates and may vary during peak seasons</Text>
+                  <Text variant="muted">{t("notes.item1")}</Text>
                 </li>
                 <li className="flex items-start gap-element">
                   <span className="text-primary">•</span>
-                  <Text variant="muted">Tracking information updates may take 24-48 hours after shipment</Text>
+                  <Text variant="muted">{t("notes.item2")}</Text>
                 </li>
                 <li className="flex items-start gap-element">
                   <span className="text-primary">•</span>
-                  <Text variant="muted">We are not responsible for delays caused by customs or carrier issues</Text>
+                  <Text variant="muted">{t("notes.item3")}</Text>
                 </li>
                 <li className="flex items-start gap-element">
                   <span className="text-primary">•</span>
-                  <Text variant="muted">Contact us if your order hasn&apos;t arrived within the expected timeframe</Text>
+                  <Text variant="muted">{t("notes.item4")}</Text>
                 </li>
               </ul>
             </Stack>

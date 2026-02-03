@@ -372,78 +372,173 @@
     }
   },
   "shipping": {
-    "title": "Piegādes informācija",
-    "subtitle": "Ātra, uzticama piegāde līdz jūsu durvīm",
-    "domestic": {
-      "title": "Latvija",
-      "standard": "Standarta piegāde (2-3 darba dienas)",
-      "standardPrice": "€2.99",
-      "express": "Ekspress piegāde (1 darba diena)",
-      "expressPrice": "€5.99",
-      "free": "Bezmaksas piegāde pasūtījumiem virs €50"
+    "label": "Informācija",
+    "title": "Piegāde un piegādes laiks",
+    "description": "Visi pasūtījumi tiek nosūtīti no Rīgas, Latvijas ar izsekošanu pa e-pastu. Mēs piedāvājam elastīgas piegādes iespējas jūsu vajadzībām.",
+    "freeOver": "Bezmaksas virs {amount}",
+    "options": {
+      "latvia": {
+        "title": "Latvija",
+        "time": "2-4 darba dienas",
+        "price": "€3.99",
+        "freeOver": "€50"
+      },
+      "eu": {
+        "title": "ES valstis",
+        "time": "5-10 darba dienas",
+        "price": "€7.99",
+        "freeOver": "€75"
+      },
+      "express": {
+        "title": "Ekspress (Latvija)",
+        "time": "1-2 darba dienas",
+        "price": "+€12",
+        "note": "Papildus standarta piegādei"
+      }
     },
-    "baltic": {
-      "title": "Baltijas valstis (Igaunija, Lietuva)",
-      "standard": "Standarta piegāde (3-5 darba dienas)",
-      "standardPrice": "€4.99",
-      "free": "Bezmaksas piegāde pasūtījumiem virs €50"
+    "internationalTitle": "Starptautiskā piegāde",
+    "internationalDescription": "Mēs piegādājam visā pasaulē. Galamērķiem ārpus ES, lūdzu, ņemiet vērā, ka var tikt piemērotas muitas nodevas un importa nodokļi.",
+    "international": {
+      "uk": {
+        "region": "Apvienotā Karaliste",
+        "time": "7-14 darba dienas",
+        "price": "€12.99",
+        "note": "Var tikt piemērotas muitas nodevas"
+      },
+      "usCanada": {
+        "region": "ASV / Kanāda",
+        "time": "10-21 darba diena",
+        "price": "€19.99",
+        "note": "Importa nodevas sedz pircējs"
+      },
+      "other": {
+        "region": "Citas valstis",
+        "time": "Sazinieties ar mums",
+        "price": "Piedāvājums",
+        "note": "Rakstiet uz international@gerboni.lv"
+      }
     },
-    "eu": {
-      "title": "Eiropas Savienība",
-      "standard": "Standarta piegāde (5-10 darba dienas)",
-      "standardPrice": "€9.99"
+    "processing": {
+      "title": "Pasūtījumu apstrāde",
+      "text1": "Pasūtījumi, kas veikti pirms 14:00 EET darba dienās, parasti tiek apstrādāti un nosūtīti 24 stundu laikā. Pasūtījumi, kas veikti pēc šī laika vai nedēļas nogalēs, tiks apstrādāti nākamajā darba dienā.",
+      "text2": "Jūs saņemsiet nosūtīšanas apstiprinājuma e-pastu ar izsekošanas numuru, kad jūsu pasūtījums būs nosūtīts."
     },
-    "processing": "Apstrādes laiks",
-    "processingText": "Pasūtījumi parasti tiek apstrādāti 1-2 darba dienu laikā. Pīķa sezonās apstrāde var aizņemt ilgāku laiku.",
-    "tracking": "Pasūtījuma izsekošana",
-    "trackingText": "Visi pasūtījumi ietver izsekošanu. Jūs saņemsiet izsekošanas numuru pa e-pastu, kad jūsu pasūtījums tiks nosūtīts."
+    "notes": {
+      "title": "Svarīgas piezīmes",
+      "item1": "Piegādes laiki ir aptuveni un var mainīties pīķa sezonās",
+      "item2": "Izsekošanas informācijas atjauninājumi var aizņemt 24-48 stundas pēc nosūtīšanas",
+      "item3": "Mēs neesam atbildīgi par kavēšanos, ko izraisa muita vai pārvadātāja problēmas",
+      "item4": "Sazinieties ar mums, ja jūsu pasūtījums nav pienācis paredzētajā laikā"
+    }
   },
   "returns": {
-    "title": "Atgriešana un apmaiņa",
-    "subtitle": "Vienkārša atgriešana 30 dienu laikā",
+    "label": "Politika",
+    "title": "Atgriešana un atmaksa",
+    "description": "Mēs vēlamies, lai jums patiktu jūsu GERBONI pirkums. Ja neesat pilnībā apmierināts, mēs esam šeit, lai palīdzētu.",
     "policy": {
       "title": "Atgriešanas politika",
-      "text": "Mēs vēlamies, lai jums patiktu jūsu GERBONI pirkums. Ja neesat pilnībā apmierināts, jūs varat atgriezt priekšmetus 30 dienu laikā pēc piegādes.",
-      "conditions": "Atgriešanas nosacījumi",
-      "condition1": "Priekšmetiem jābūt nevalkātiem un nemazgātiem",
-      "condition2": "Oriģinālajām etiķetēm jābūt pievienotām",
-      "condition3": "Priekšmetiem jābūt oriģinālajā iepakojumā"
+      "window": "14 dienas",
+      "windowDescription": "Atgriešanas periods no piegādes datuma",
+      "condition1": "Precēm jābūt nevalkātām ar oriģinālajām etiķetēm",
+      "condition2": "Apmaiņa pieejama izmēram/krāsai (atkarībā no krājumiem)",
+      "condition3": "Bezmaksas atgriešanas piegāde Latvijā",
+      "condition4": "ES klienti maksā atgriešanas pasta izdevumus"
     },
-    "process": {
+    "damaged": {
+      "title": "Bojātas vai defektīvas preces",
+      "description": "Ja saņemat bojātu vai defektīvu preci, mēs to nekavējoties izlabosim.",
+      "item1": "Ziņojiet 48 stundu laikā pēc piegādes ar fotoattēliem",
+      "item2": "Pilna aizstāšana vai atmaksa (jūsu izvēle)",
+      "item3": "Nav nepieciešama atgriešanas piegāde — paturiet vai utilizējiet preci",
+      "item4": "Nepareiza prece nosūtīta: bezmaksas aizstājējs tiek nosūtīts nekavējoties"
+    },
+    "howTo": {
       "title": "Kā atgriezt",
-      "step1": "Sazinieties ar mūsu atbalsta komandu, lai uzsāktu atgriešanu",
-      "step2": "Izdrukājiet priekšapmaksātu atgriešanas etiķeti",
-      "step3": "Iesaiņojiet priekšmetus droši un nododiet jebkurā pasta nodaļā",
-      "step4": "Atmaksa tiek apstrādāta 5-7 darba dienu laikā pēc saņemšanas"
+      "description": "Sekojiet šiem vienkāršajiem soļiem, lai apstrādātu savu atgriešanu"
+    },
+    "steps": {
+      "step1": {
+        "title": "Sazināties ar atbalstu",
+        "description": "Rakstiet uz support@gerboni.lv vai izmantojiet tiešsaistes čatu 14 dienu laikā pēc piegādes"
+      },
+      "step2": {
+        "title": "Saņemt atgriešanas etiķeti",
+        "description": "Mēs nosūtīsim jums atgriešanas etiķeti (bezmaksas Latvijā, maksas ES)"
+      },
+      "step3": {
+        "title": "Nosūtīt preci",
+        "description": "Iesaiņojiet preci droši ar oriģinālajām etiķetēm pievienotām"
+      },
+      "step4": {
+        "title": "Saņemt atmaksu",
+        "description": "Atmaksa tiek apstrādāta 5-10 darba dienu laikā pēc preces saņemšanas"
+      }
+    },
+    "refunds": {
+      "title": "Atmaksas informācija",
+      "description": "Kad saņemsim jūsu atgriezto preci, mūsu komanda to pārbaudīs un apstrādās atmaksu 5-10 darba dienu laikā.",
+      "item1": "Atmaksas tiek veiktas uz sākotnējo maksājuma metodi",
+      "item2": "Sākotnējās piegādes izmaksas netiek atmaksātas (ja vien prece nebija defektīva)",
+      "item3": "Bankas apstrāde var aizņemt papildu 3-5 darba dienas"
     },
     "exchanges": {
       "title": "Apmaiņa",
-      "text": "Vēlaties citu izmēru vai krāsu? Sazinieties ar mums, un mēs palīdzēsim organizēt apmaiņu."
+      "text": "Vēlaties citu izmēru vai krāsu? Mēs piedāvājam apmaiņu atkarībā no krājumu pieejamības.",
+      "item1": "Sazinieties ar mums pirms nosūtīšanas, lai apstiprinātu pieejamību",
+      "item2": "Aizstājējs tiek nosūtīts pēc atgrieztās preces saņemšanas",
+      "item3": "Cenu starpības tiks iekasētas vai atmaksātas attiecīgi"
     }
   },
   "contact": {
+    "label": "Atbalsts",
     "title": "Sazināties ar mums",
-    "subtitle": "Mēs esam šeit, lai palīdzētu",
+    "description": "Ir jautājums vai nepieciešama palīdzība? Mūsu komanda ir gatava jums palīdzēt. Izvēlieties vēlamo saziņas metodi.",
+    "methods": {
+      "email": {
+        "title": "E-pasts",
+        "value": "support@gerboni.lv",
+        "description": "Atbilde 24 stundu laikā"
+      },
+      "chat": {
+        "title": "Tiešsaistes čats",
+        "value": "Pieejams mājaslapā",
+        "description": "9:00-18:00 EET darba dienās"
+      },
+      "phone": {
+        "title": "Tālrunis",
+        "value": "+371 2XXX XXXX",
+        "description": "Darba dienās 10:00-17:00 EET"
+      }
+    },
+    "responsePriority": {
+      "title": "Atbildes prioritāte",
+      "order": "Čats > E-pasts > Tālrunis"
+    },
+    "sendMessage": {
+      "title": "Sūtīt mums ziņojumu",
+      "description": "Aizpildiet veidlapu un mēs ar jums sazināsimies 24 stundu laikā. Ātrākai palīdzībai norādiet pasūtījuma numuru, ja attiecas."
+    },
+    "specialized": {
+      "title": "Specializēti pieprasījumi",
+      "bulk": "Vairumtirdzniecības pasūtījumi (25+)",
+      "custom": "Pielāgoti dizaini",
+      "international": "Starptautiskā piegāde"
+    },
     "form": {
-      "name": "Jūsu vārds",
-      "email": "E-pasta adrese",
+      "name": "Vārds",
+      "namePlaceholder": "Jūsu vārds",
+      "email": "E-pasts",
+      "emailPlaceholder": "jusu@epasts.lv",
+      "orderNumber": "Pasūtījuma numurs",
+      "orderNumberPlaceholder": "piem., #1234",
       "subject": "Tēma",
+      "subjectPlaceholder": "Par ko ir šis ziņojums?",
       "message": "Ziņojums",
+      "messagePlaceholder": "Kā mēs varam jums palīdzēt?",
       "send": "Sūtīt ziņojumu",
       "sending": "Sūta...",
-      "success": "Ziņojums veiksmīgi nosūtīts! Mēs ar jums drīz sazināsimies.",
+      "success": "Ziņojums nosūtīts! Mēs ar jums sazināsimies 24 stundu laikā.",
       "error": "Neizdevās nosūtīt ziņojumu. Lūdzu, mēģiniet vēlreiz."
-    },
-    "info": {
-      "title": "Sazināties",
-      "email": "support@gerboni.lv",
-      "hours": "Pirmdiena - Piektdiena, 9:00 - 18:00 EET",
-      "response": "Parasti atbildam 24 stundu laikā"
-    },
-    "chat": {
-      "title": "Tiešsaistes čats",
-      "text": "Tērzējiet ar mūsu AI asistentu tūlītējai palīdzībai",
-      "button": "Sākt čatu"
     }
   },
   "terms": {

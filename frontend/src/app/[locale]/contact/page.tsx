@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Container } from "@/components/elements/container";
 import { Section } from "@/components/elements/section";
 import { Row } from "@/components/elements/row";
@@ -16,31 +17,8 @@ import { Label } from "@/components/elements/label";
 import { IconMail, IconPhone, IconMessageCircle, IconClock, IconSend } from "@tabler/icons-react";
 import { toast } from "sonner";
 
-const contactMethods = [
-  {
-    icon: IconMail,
-    title: "Email",
-    value: "support@gerboni.lv",
-    description: "Response within 24 hours",
-    priority: "high",
-  },
-  {
-    icon: IconMessageCircle,
-    title: "Live Chat",
-    value: "Available on website",
-    description: "9:00-18:00 EET weekdays",
-    priority: "highest",
-  },
-  {
-    icon: IconPhone,
-    title: "Phone",
-    value: "+371 2XXX XXXX",
-    description: "Weekdays 10:00-17:00 EET",
-    priority: "normal",
-  },
-];
-
 export default function ContactPage() {
+  const t = useTranslations("contact");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -50,6 +28,27 @@ export default function ContactPage() {
   });
   const [sending, setSending] = useState(false);
 
+  const contactMethods = [
+    {
+      icon: IconMail,
+      title: t("methods.email.title"),
+      value: t("methods.email.value"),
+      description: t("methods.email.description"),
+    },
+    {
+      icon: IconMessageCircle,
+      title: t("methods.chat.title"),
+      value: t("methods.chat.value"),
+      description: t("methods.chat.description"),
+    },
+    {
+      icon: IconPhone,
+      title: t("methods.phone.title"),
+      value: t("methods.phone.value"),
+      description: t("methods.phone.description"),
+    },
+  ];
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSending(true);
@@ -57,9 +56,7 @@ export default function ContactPage() {
     // Simulate form submission
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    toast.success("Message sent!", {
-      description: "We'll get back to you within 24 hours.",
-    });
+    toast.success(t("form.success"));
 
     setFormData({
       name: "",
@@ -76,9 +73,9 @@ export default function ContactPage() {
       <Section spacing="default">
         <Container>
           <PageHeader
-            label="Support"
-            title="Contact Us"
-            description="Have a question or need help? Our team is here to assist you. Choose your preferred contact method below."
+            label={t("label")}
+            title={t("title")}
+            description={t("description")}
             align="center"
           />
 
@@ -107,9 +104,9 @@ export default function ContactPage() {
             <CardHeader className="text-center">
               <Row gap="element" justify="center">
                 <IconClock className="size-5 text-primary" aria-hidden="true" />
-                <CardTitle>Response Priority</CardTitle>
+                <CardTitle>{t("responsePriority.title")}</CardTitle>
               </Row>
-              <Text variant="muted">Chat &gt; Email &gt; Phone</Text>
+              <Text variant="muted">{t("responsePriority.order")}</Text>
             </CardHeader>
           </Card>
         </Container>
@@ -119,32 +116,30 @@ export default function ContactPage() {
         <Container>
           <Grid cols={2} gap="xl">
             <Stack gap="group">
-              <Text as="h2" variant="heading-lg">Send Us a Message</Text>
-              <Text variant="muted">
-                Fill out the form and we&apos;ll get back to you within 24 hours. For faster assistance, include your order number if applicable.
-              </Text>
+              <Text as="h2" variant="heading-lg">{t("sendMessage.title")}</Text>
+              <Text variant="muted">{t("sendMessage.description")}</Text>
 
               <Card>
                 <CardContent className="pt-6">
                   <Stack gap="sm">
-                    <Text variant="heading-xs">Specialized Inquiries</Text>
+                    <Text variant="heading-xs">{t("specialized.title")}</Text>
                     <Stack gap="element">
                       <Row gap="element">
                         <span className="text-primary">•</span>
                         <Text variant="muted-sm">
-                          <strong>Bulk orders (25+):</strong> sales@gerboni.lv
+                          <strong>{t("specialized.bulk")}:</strong> sales@gerboni.lv
                         </Text>
                       </Row>
                       <Row gap="element">
                         <span className="text-primary">•</span>
                         <Text variant="muted-sm">
-                          <strong>Custom designs:</strong> custom@gerboni.lv
+                          <strong>{t("specialized.custom")}:</strong> custom@gerboni.lv
                         </Text>
                       </Row>
                       <Row gap="element">
                         <span className="text-primary">•</span>
                         <Text variant="muted-sm">
-                          <strong>International shipping:</strong> international@gerboni.lv
+                          <strong>{t("specialized.international")}:</strong> international@gerboni.lv
                         </Text>
                       </Row>
                     </Stack>
@@ -159,21 +154,21 @@ export default function ContactPage() {
                   <Stack gap="group">
                     <Grid cols={2} gap="group">
                       <Stack gap="element">
-                        <Label htmlFor="name">Name *</Label>
+                        <Label htmlFor="name">{t("form.name")} *</Label>
                         <Input
                           id="name"
-                          placeholder="Your name"
+                          placeholder={t("form.namePlaceholder")}
                           value={formData.name}
                           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                           required
                         />
                       </Stack>
                       <Stack gap="element">
-                        <Label htmlFor="email">Email *</Label>
+                        <Label htmlFor="email">{t("form.email")} *</Label>
                         <Input
                           id="email"
                           type="email"
-                          placeholder="your@email.com"
+                          placeholder={t("form.emailPlaceholder")}
                           value={formData.email}
                           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                           required
@@ -183,19 +178,19 @@ export default function ContactPage() {
 
                     <Grid cols={2} gap="group">
                       <Stack gap="element">
-                        <Label htmlFor="orderNumber">Order Number</Label>
+                        <Label htmlFor="orderNumber">{t("form.orderNumber")}</Label>
                         <Input
                           id="orderNumber"
-                          placeholder="e.g., #1234"
+                          placeholder={t("form.orderNumberPlaceholder")}
                           value={formData.orderNumber}
                           onChange={(e) => setFormData({ ...formData, orderNumber: e.target.value })}
                         />
                       </Stack>
                       <Stack gap="element">
-                        <Label htmlFor="subject">Subject *</Label>
+                        <Label htmlFor="subject">{t("form.subject")} *</Label>
                         <Input
                           id="subject"
-                          placeholder="What's this about?"
+                          placeholder={t("form.subjectPlaceholder")}
                           value={formData.subject}
                           onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                           required
@@ -204,10 +199,10 @@ export default function ContactPage() {
                     </Grid>
 
                     <Stack gap="element">
-                      <Label htmlFor="message">Message *</Label>
+                      <Label htmlFor="message">{t("form.message")} *</Label>
                       <Textarea
                         id="message"
-                        placeholder="How can we help you?"
+                        placeholder={t("form.messagePlaceholder")}
                         rows={5}
                         value={formData.message}
                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
@@ -217,11 +212,11 @@ export default function ContactPage() {
 
                     <Button type="submit" size="lg" disabled={sending} className="w-full">
                       {sending ? (
-                        "Sending..."
+                        t("form.sending")
                       ) : (
                         <>
                           <IconSend className="mr-2 size-4" aria-hidden="true" />
-                          Send Message
+                          {t("form.send")}
                         </>
                       )}
                     </Button>
