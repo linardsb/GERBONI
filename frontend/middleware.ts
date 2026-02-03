@@ -1,17 +1,16 @@
 import createMiddleware from "next-intl/middleware";
+import { NextRequest } from "next/server";
 import { routing } from "./src/i18n/routing";
 
-export default createMiddleware(routing);
+const intlMiddleware = createMiddleware(routing);
+
+export default function middleware(request: NextRequest) {
+  return intlMiddleware(request);
+}
 
 export const config = {
-  // Match all pathnames except for
-  // - API routes (/api/*)
-  // - Static files (/_next/*, /images/*, etc.)
-  // - The favicon and other root files
   matcher: [
-    // Match all pathnames except for those that start with:
-    // - api, _next, _vercel, monitoring
-    // - files with extensions (e.g., favicon.ico, image.png)
-    "/((?!api|_next|_vercel|monitoring|.*\\..*).*)",
+    // Skip all internal paths (_next, api)
+    "/((?!_next|api|favicon.ico|coats|bg_images|fonts).*)",
   ],
 };
