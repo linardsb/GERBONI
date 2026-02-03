@@ -97,7 +97,7 @@ function SuccessContent() {
 
         {/* Order details */}
         {order && (
-          <Card className="w-full text-left animate-in fade-in slide-in-from-bottom-4 duration-normal" style={{ animationDelay: "200ms" }}>
+          <Card className="w-full text-left animate-in fade-in slide-in-from-bottom-4 duration-normal animation-delay-200 animation-fill-backwards">
             <CardHeader>
               <CardTitle>
                 <Row gap="element">
@@ -159,7 +159,7 @@ function SuccessContent() {
         )}
 
         {/* What's Next card */}
-        <Card className="w-full animate-in fade-in slide-in-from-bottom-4 duration-normal" style={{ animationDelay: "400ms" }}>
+        <Card className="w-full animate-in fade-in slide-in-from-bottom-4 duration-normal animation-delay-400 animation-fill-backwards">
           <CardHeader>
             <CardTitle>{t.whatsNext}</CardTitle>
           </CardHeader>
@@ -202,7 +202,7 @@ function SuccessContent() {
         </Card>
 
         {/* Action buttons */}
-        <Row gap="group" wrap="wrap" justify="center" className="animate-in fade-in duration-normal" style={{ animationDelay: "600ms" }}>
+        <Row gap="group" wrap="wrap" justify="center" className="animate-in fade-in duration-normal animation-delay-600 animation-fill-backwards">
           <Button asChild>
             <Link href="/products">
               <IconShoppingBag className="size-4 mr-2" aria-hidden="true" />

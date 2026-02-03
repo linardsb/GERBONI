@@ -18,6 +18,11 @@
   --color-overlay-foreground-subtle: var(--overlay-foreground-subtle);
   --color-red-brand: var(--red-brand);
   --color-red-brand-foreground: var(--red-brand-foreground);
+  --color-brand-visa: var(--brand-visa);
+  --color-brand-mastercard-red: var(--brand-mastercard-red);
+  --color-brand-mastercard-orange: var(--brand-mastercard-orange);
+  --color-brand-klarna: var(--brand-klarna);
+  --color-tshirt-stroke: var(--tshirt-stroke);
   /* Spacing tokens - semantic scale for gap, padding, margin */
   --spacing-page: var(--space-page);
   --spacing-section: var(--space-section);
@@ -110,6 +115,13 @@
   /* Brand red (#A4343A) - burgundy accent */
   --red-brand: oklch(0.463 0.142 23);
   --red-brand-foreground: oklch(0.98 0 0);
+  /* Payment brand colors */
+  --brand-visa: oklch(0.35 0.15 264);
+  --brand-mastercard-red: oklch(0.55 0.22 27);
+  --brand-mastercard-orange: oklch(0.75 0.16 70);
+  --brand-klarna: oklch(0.80 0.12 0);
+  /* T-shirt mockup stroke color */
+  --tshirt-stroke: oklch(0.92 0.004 286);
   /* Spacing scale */
   --space-page: 3rem;
   --space-section: 2rem;
@@ -358,3 +370,32 @@
 @custom-variant cq-5xl (@container (min-width: 64rem));
 @custom-variant cq-6xl (@container (min-width: 72rem));
 @custom-variant cq-7xl (@container (min-width: 80rem));
+
+/* Animation delay utilities for staggered animations */
+@layer utilities {
+  .animation-delay-100 {
+    animation-delay: 100ms;
+  }
+  .animation-delay-200 {
+    animation-delay: 200ms;
+  }
+  .animation-delay-300 {
+    animation-delay: 300ms;
+  }
+  .animation-delay-400 {
+    animation-delay: 400ms;
+  }
+  .animation-delay-500 {
+    animation-delay: 500ms;
+  }
+  .animation-delay-600 {
+    animation-delay: 600ms;
+  }
+  .animation-delay-700 {
+    animation-delay: 700ms;
+  }
+  /* Keep animation in initial state until delay completes */
+  .animation-fill-backwards {
+    animation-fill-mode: backwards;
+  }
+}

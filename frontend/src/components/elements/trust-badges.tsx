@@ -74,11 +74,11 @@ export function PaymentMethodBadges({ className }: { className?: string }) {
   return (
     <div className={cn("flex flex-wrap items-center justify-center gap-2", className)}>
       <div className="flex items-center gap-1 px-2 py-1 bg-muted/50 rounded text-xs text-muted-foreground">
-        <span className="font-semibold text-[#1434CB]">VISA</span>
+        <span className="font-semibold text-brand-visa">VISA</span>
       </div>
       <div className="flex items-center gap-1 px-2 py-1 bg-muted/50 rounded text-xs text-muted-foreground">
-        <span className="font-semibold text-[#EB001B]">Master</span>
-        <span className="font-semibold text-[#F79E1B]">card</span>
+        <span className="font-semibold text-brand-mastercard-red">Master</span>
+        <span className="font-semibold text-brand-mastercard-orange">card</span>
       </div>
       <div className="flex items-center gap-1 px-2 py-1 bg-muted/50 rounded text-xs text-muted-foreground">
         <span className="font-semibold">Apple Pay</span>
@@ -87,7 +87,7 @@ export function PaymentMethodBadges({ className }: { className?: string }) {
         <span className="font-semibold">Google Pay</span>
       </div>
       <div className="flex items-center gap-1 px-2 py-1 bg-muted/50 rounded text-xs text-muted-foreground">
-        <span className="font-semibold text-[#FFB3C7]">Klarna</span>
+        <span className="font-semibold text-brand-klarna">Klarna</span>
       </div>
     </div>
   );

@@ -144,7 +144,7 @@ function RecommendationCard({ product }: { product: RecommendedProduct }) {
                 <path
                   d="M20 25 L35 20 L40 30 L60 30 L65 20 L80 25 L85 40 L75 45 L75 85 L25 85 L25 45 L15 40 Z"
                   fill="currentColor"
-                  stroke="#e5e5e5"
+                  className="stroke-tshirt-stroke"
                   strokeWidth="1"
                 />
               </svg>
