@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { IconBrandInstagram, IconBrandFacebook, IconMail } from "@tabler/icons-react";
+import { IconBrandInstagram, IconBrandFacebook, IconMail, IconHeart } from "@tabler/icons-react";
 import { Separator } from "@/components/elements/separator";
 import { Grid } from "@/components/elements/grid";
 import { Stack } from "@/components/elements/stack";
@@ -67,11 +67,10 @@ export function Footer() {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-section">
             {/* Brand Column - spans 2 on large screens */}
             <div className="col-span-2">
-              <Link href="/" className="inline-flex items-center gap-3">
-                <div className="flex size-8 items-center justify-center border border-foreground text-foreground font-serif text-sm">
-                  G
-                </div>
-                <Text variant="label">GERBONI</Text>
+              <Link href="/" className="inline-flex items-center">
+                <span className="font-[family-name:var(--font-liva)] text-2xl tracking-wide text-foreground">
+                  ĢĒRBOŅI
+                </span>
               </Link>
               <Text variant="muted-sm" className="mt-4 max-w-xs">
                 Premium t-shirts featuring authentic Latvian city coats of arms. Wear your heritage with pride.
@@ -104,19 +103,18 @@ export function Footer() {
           <Separator className="my-section" />
 
           {/* Bottom Bar */}
-          <Row justify="between" wrap="wrap" gap="group" className="text-center md:text-left">
+          <Row wrap="wrap" gap="group" className="text-center md:text-left">
             <Text variant="muted-sm">
               © {currentYear} GERBONI. All rights reserved.
             </Text>
-            <Row gap="group" className="flex-wrap justify-center md:justify-end">
-              <Text variant="muted-sm">Made with ❤️ in Rīga, Latvia 🇱🇻</Text>
-              <Text variant="muted-sm" className="hidden md:block">•</Text>
-              <Text variant="muted-sm">
-                <a href="mailto:hello@gerboni.lv" className="hover:text-primary transition-colors duration-fast">
-                  hello@gerboni.lv
-                </a>
-              </Text>
-            </Row>
+            <Text variant="muted-sm" className="hidden md:block">•</Text>
+            <Text variant="muted-sm" className="inline-flex items-center gap-1">Made with <IconHeart className="size-4 fill-current text-red-brand" aria-hidden="true" /></Text>
+            <Text variant="muted-sm" className="hidden md:block">•</Text>
+            <Text variant="muted-sm">
+              <a href="mailto:hello@gerboni.lv" className="hover:text-primary transition-colors duration-fast">
+                hello@gerboni.lv
+              </a>
+            </Text>
           </Row>
         </Container>
       </Section>

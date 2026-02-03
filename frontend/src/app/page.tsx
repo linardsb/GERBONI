@@ -133,7 +133,7 @@ function ProductCard({
     <Link href={`/products/${product.id}`} className="group block">
       <div data-slot="product-card">
         {/* Image container with hover effects */}
-        <div className="relative overflow-hidden bg-surface-muted mb-4">
+        <div className="relative overflow-hidden bg-surface-muted mb-4 rounded-card">
           <div className="aspect-[3/4]">
             {/* T-shirt mockup with coat of arms */}
             <div className="relative h-full w-full flex items-center justify-center p-8">
@@ -267,23 +267,18 @@ export default function HomePage() {
       {/* Hero Image Section */}
       <Section spacing="none" className="-mt-32 relative z-10">
         <Container>
-          <div className="relative overflow-hidden shadow-2xl">
-            <div className="aspect-[16/9] lg:aspect-[21/9] bg-surface-muted">
-              {/* Placeholder hero image with gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-surface-muted to-muted" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Stack gap="group" align="center">
-                  <div className="size-32 border border-border-subtle flex items-center justify-center">
-                    <Image
-                      src="/coats/riga.svg"
-                      alt="Riga coat of arms"
-                      width={80}
-                      height={80}
-                      className="drop-shadow-lg"
-                    />
-                  </div>
-                </Stack>
-              </div>
+          <div className="relative overflow-hidden shadow-2xl rounded-card">
+            <div className="aspect-[16/9] lg:aspect-[21/9]">
+              {/* Background image */}
+              <Image
+                src="/bg_images/RigaSunset-1024x632.jpg"
+                alt="Riga sunset skyline"
+                fill
+                className="object-cover"
+                priority
+              />
+              {/* Subtle overlay for text readability */}
+              <div className="absolute inset-0 bg-background/70" />
             </div>
 
             {/* Bottom overlay with collection info */}
@@ -447,19 +442,29 @@ export default function HomePage() {
 
       {/* Newsletter Section - Aurova-inspired with background image */}
       <Section spacing="large">
-        <Container>
-          <div className="relative overflow-hidden bg-surface-dark text-overlay-foreground">
-            {/* Background pattern */}
-            <div className="absolute inset-0 opacity-10">
+        <Container size="full">
+          <div className="relative overflow-hidden text-foreground rounded-card">
+            {/* Background image */}
+            <Image
+              src="/bg_images/pexels-miami302-19405212.jpg"
+              alt=""
+              fill
+              className="object-cover"
+              aria-hidden="true"
+            />
+            {/* White overlay for text readability */}
+            <div className="absolute inset-0 bg-background/70" />
+            {/* Subtle gradient pattern */}
+            <div className="absolute inset-0 opacity-20">
               <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-transparent to-primary/20" />
             </div>
 
             <div className="relative text-center py-page px-section">
               <Stack gap="section" align="center">
-                <Text as="h2" variant="display-md" className="text-overlay-foreground">
+                <Text as="h2" variant="display-md">
                   Join the Heritage Community
                 </Text>
-                <Text variant="overlay-muted" className="max-w-2xl mx-auto">
+                <Text variant="muted" className="max-w-2xl mx-auto">
                   Be the first to discover new city designs, exclusive drops,
                   and member-only benefits.
                 </Text>
@@ -469,19 +474,19 @@ export default function HomePage() {
                   <Input
                     type="email"
                     placeholder="Enter your email"
-                    variant="minimal-dark"
+                    variant="minimal"
                     className="flex-1 min-w-[200px]"
                     aria-label="Email address"
                   />
                   <Button
-                    variant="minimal-light"
+                    variant="minimal"
                     className="text-label whitespace-nowrap"
                   >
                     Subscribe
                   </Button>
                 </Row>
 
-                <Text variant="overlay-subtle" className="text-sm">
+                <Text variant="muted-sm">
                   No spam, just curated content and exclusive access.
                 </Text>
               </Stack>

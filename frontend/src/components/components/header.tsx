@@ -13,6 +13,7 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/elements/sheet";
+import { Container } from "@/components/elements/container";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -46,17 +47,17 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border-subtle bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center border border-foreground text-foreground font-serif text-sm">
-            G
-          </div>
-          <Text variant="label">GERBONI</Text>
-        </Link>
+      <Container size="full" className="flex h-16 items-center justify-between">
+        {/* Logo + Nav */}
+        <Row gap="section" align="center">
+          <Link href="/" className="flex items-center">
+            <span className="font-[family-name:var(--font-liva)] text-2xl tracking-wide text-foreground">
+              ĢĒRBOŅI
+            </span>
+          </Link>
 
-        {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-6" aria-label="Main navigation">
+          {/* Desktop Nav */}
+          <nav className="hidden md:flex items-center gap-6" aria-label="Main navigation">
           {mainNavItems.map((item) => (
             <Link
               key={item.href}
@@ -93,6 +94,7 @@ export function Header() {
             </DropdownMenuContent>
           </DropdownMenu>
         </nav>
+        </Row>
 
         {/* Actions */}
         <Row gap="element">
@@ -207,7 +209,7 @@ export function Header() {
             </SheetContent>
           </Sheet>
         </Row>
-      </div>
+      </Container>
     </header>
   );
 }

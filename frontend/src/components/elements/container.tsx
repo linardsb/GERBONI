@@ -3,14 +3,16 @@ import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 
-const containerVariants = cva("mx-auto w-full px-4 sm:px-6 lg:px-8", {
+const containerVariants = cva("mx-auto w-full", {
   variants: {
     size: {
-      sm: "max-w-2xl",
-      md: "max-w-4xl",
-      lg: "max-w-5xl",
-      xl: "max-w-6xl",
-      full: "max-w-7xl",
+      sm: "max-w-2xl px-4 sm:px-6 lg:px-8",
+      md: "max-w-4xl px-4 sm:px-6 lg:px-8",
+      lg: "max-w-5xl px-4 sm:px-6 lg:px-8",
+      xl: "max-w-6xl px-4 sm:px-6 lg:px-8",
+      "2xl": "max-w-7xl px-4 sm:px-6 lg:px-8",
+      "3xl": "max-w-[90rem] px-4 sm:px-6 lg:px-8",
+      full: "px-[1.5%]",
     },
     padding: {
       none: "py-0",
