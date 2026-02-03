@@ -563,13 +563,29 @@
   "sizeGuide": {
     "title": "Izmēru tabula",
     "subtitle": "Atrodiet savu ideālo izmēru",
-    "measurementTips": "Kā izmērīt",
-    "chest": "Krūškurvis",
-    "chestTip": "Mēriet ap krūškurvja pilnāko daļu",
+    "description": "Visi mērījumi ir centimetros. Brīvākam piegriezumam iesakām izvēlēties lielāku izmēru.",
+    "table": {
+      "size": "Izmērs",
+      "chest": "Krūtis (cm)",
+      "length": "Garums (cm)",
+      "fit": "Piegriezums"
+    },
+    "fits": {
+      "slim": "Pieguļošs",
+      "standard": "Standarta",
+      "relaxed": "Brīvs"
+    },
+    "howToMeasure": "Kā izmērīt",
+    "chest": "Krūtis",
+    "chestTip": "Mēriet ap krūškurvja pilnāko daļu, turot mērlenti horizontāli.",
     "length": "Garums",
-    "lengthTip": "Mēriet no pleca augstākā punkta līdz apakšējai malai",
+    "lengthTip": "Mēriet no pleca augstākā punkta līdz apakšējai malai.",
     "shoulders": "Pleci",
     "shouldersTip": "Mēriet no pleca šuves līdz pleca šuvei",
+    "tip": "Padoms",
+    "tipText": "Mūsu krekli ir iepriekš sarauti, tāpēc tas, ko redzat, ir tas, ko saņemat.",
+    "betweenSizes": "Starp izmēriem?",
+    "betweenSizesText": "Iesakām izvēlēties lielāku izmēru ērtākam piegriezumam.",
     "cm": "cm",
     "inches": "collas",
     "recommendedSize": "Pamatojoties uz jūsu mērījumiem, mēs iesakām izmēru {size}"

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import {
   Dialog,
   DialogContent,
@@ -15,12 +16,12 @@ import { Badge } from "@/components/elements/badge";
 import { IconRuler } from "@tabler/icons-react";
 
 const sizeData = [
-  { size: "XS", chest: 86, length: 66, fit: "Slim" },
-  { size: "S", chest: 91, length: 69, fit: "Standard" },
-  { size: "M", chest: 97, length: 72, fit: "Standard" },
-  { size: "L", chest: 102, length: 74, fit: "Relaxed" },
-  { size: "XL", chest: 107, length: 76, fit: "Relaxed" },
-  { size: "XXL", chest: 112, length: 78, fit: "Relaxed" },
+  { size: "XS", chest: 86, length: 66, fitKey: "slim" },
+  { size: "S", chest: 91, length: 69, fitKey: "standard" },
+  { size: "M", chest: 97, length: 72, fitKey: "standard" },
+  { size: "L", chest: 102, length: 74, fitKey: "relaxed" },
+  { size: "XL", chest: 107, length: 76, fitKey: "relaxed" },
+  { size: "XXL", chest: 112, length: 78, fitKey: "relaxed" },
 ];
 
 interface SizeGuideModalProps {
@@ -28,22 +29,22 @@ interface SizeGuideModalProps {
 }
 
 export function SizeGuideModal({ trigger }: SizeGuideModalProps) {
+  const t = useTranslations("sizeGuide");
+
   return (
     <Dialog>
       <DialogTrigger asChild>
         {trigger || (
           <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
             <IconRuler className="mr-2 h-4 w-4" />
-            Size Guide
+            {t("title")}
           </Button>
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Size Guide</DialogTitle>
-          <DialogDescription>
-            All measurements are in centimeters. For a relaxed fit, we recommend sizing up.
-          </DialogDescription>
+          <DialogTitle>{t("title")}</DialogTitle>
+          <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
 
         <div className="mt-4">
@@ -51,10 +52,10 @@ export function SizeGuideModal({ trigger }: SizeGuideModalProps) {
             <table className="w-full border-collapse">
               <thead>
                 <tr className="border-b">
-                  <th className="py-3 px-2 text-left text-sm font-semibold">Size</th>
-                  <th className="py-3 px-2 text-center text-sm font-semibold">Chest (cm)</th>
-                  <th className="py-3 px-2 text-center text-sm font-semibold">Length (cm)</th>
-                  <th className="py-3 px-2 text-right text-sm font-semibold">Fit</th>
+                  <th className="py-3 px-2 text-left text-sm font-semibold">{t("table.size")}</th>
+                  <th className="py-3 px-2 text-center text-sm font-semibold">{t("table.chest")}</th>
+                  <th className="py-3 px-2 text-center text-sm font-semibold">{t("table.length")}</th>
+                  <th className="py-3 px-2 text-right text-sm font-semibold">{t("table.fit")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -69,7 +70,7 @@ export function SizeGuideModal({ trigger }: SizeGuideModalProps) {
                     <td className="py-3 px-2 text-center text-muted-foreground">{row.chest}</td>
                     <td className="py-3 px-2 text-center text-muted-foreground">{row.length}</td>
                     <td className="py-3 px-2 text-right">
-                      <Text variant="muted-sm">{row.fit}</Text>
+                      <Text variant="muted-sm">{t(`fits.${row.fitKey}`)}</Text>
                     </td>
                   </tr>
                 ))}
@@ -78,29 +79,25 @@ export function SizeGuideModal({ trigger }: SizeGuideModalProps) {
           </div>
 
           <Stack gap="sm" className="mt-6 p-4 bg-muted/50 rounded-lg">
-            <Text variant="heading-xs">How to Measure</Text>
+            <Text variant="heading-xs">{t("howToMeasure")}</Text>
             <div className="grid gap-2">
               <div className="flex items-start gap-2">
-                <span className="text-primary font-bold">Chest:</span>
-                <Text variant="muted-sm">
-                  Measure around the fullest part of your chest, keeping the tape level.
-                </Text>
+                <span className="text-primary font-bold">{t("chest")}:</span>
+                <Text variant="muted-sm">{t("chestTip")}</Text>
               </div>
               <div className="flex items-start gap-2">
-                <span className="text-primary font-bold">Length:</span>
-                <Text variant="muted-sm">
-                  Measure from the highest point of the shoulder to the bottom hem.
-                </Text>
+                <span className="text-primary font-bold">{t("length")}:</span>
+                <Text variant="muted-sm">{t("lengthTip")}</Text>
               </div>
             </div>
           </Stack>
 
           <Stack gap="xs" className="mt-4">
             <Text variant="muted-sm">
-              <strong>Tip:</strong> Our shirts are pre-shrunk, so what you see is what you get.
+              <strong>{t("tip")}:</strong> {t("tipText")}
             </Text>
             <Text variant="muted-sm">
-              <strong>Between sizes?</strong> We recommend going with the larger size for a more comfortable fit.
+              <strong>{t("betweenSizes")}:</strong> {t("betweenSizesText")}
             </Text>
           </Stack>
         </div>

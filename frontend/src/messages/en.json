@@ -563,13 +563,29 @@
   "sizeGuide": {
     "title": "Size Guide",
     "subtitle": "Find your perfect fit",
-    "measurementTips": "How to Measure",
+    "description": "All measurements are in centimeters. For a relaxed fit, we recommend sizing up.",
+    "table": {
+      "size": "Size",
+      "chest": "Chest (cm)",
+      "length": "Length (cm)",
+      "fit": "Fit"
+    },
+    "fits": {
+      "slim": "Slim",
+      "standard": "Standard",
+      "relaxed": "Relaxed"
+    },
+    "howToMeasure": "How to Measure",
     "chest": "Chest",
-    "chestTip": "Measure around the fullest part of your chest",
+    "chestTip": "Measure around the fullest part of your chest, keeping the tape level.",
     "length": "Length",
-    "lengthTip": "Measure from the highest point of the shoulder to the hem",
+    "lengthTip": "Measure from the highest point of the shoulder to the bottom hem.",
     "shoulders": "Shoulders",
     "shouldersTip": "Measure from shoulder seam to shoulder seam",
+    "tip": "Tip",
+    "tipText": "Our shirts are pre-shrunk, so what you see is what you get.",
+    "betweenSizes": "Between sizes?",
+    "betweenSizesText": "We recommend going with the larger size for a more comfortable fit.",
     "cm": "cm",
     "inches": "inches",
     "recommendedSize": "Based on your measurements, we recommend size {size}"
