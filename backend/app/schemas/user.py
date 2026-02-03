@@ -26,6 +26,7 @@ class UserCreate(BaseModel):
 class UserRead(BaseModel):
     id: int
     email: str
+    role: str
     is_guest: bool
     is_active: bool
     created_at: datetime

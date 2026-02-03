@@ -142,6 +142,7 @@ export interface AuthResponse {
 export interface User {
   id: number;
   email: string;
+  role: string;
   is_guest: boolean;
   is_active: boolean;
   created_at: string;

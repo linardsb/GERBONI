@@ -37,6 +37,7 @@ describe('Zustand Stores', () => {
         result.current.setAuth('test-token', {
           id: 1,
           email: 'test@example.com',
+          role: 'customer',
           is_guest: false,
           is_active: true,
           created_at: '2026-01-01T00:00:00Z',
@@ -69,6 +70,7 @@ describe('Zustand Stores', () => {
         result.current.setAuth('test-token', {
           id: 1,
           email: 'test@example.com',
+          role: 'customer',
           is_guest: false,
           is_active: true,
           created_at: '2026-01-01T00:00:00Z',
