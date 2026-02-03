@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/routing";
 import { IconShoppingCart, IconUser, IconMenu2, IconChevronDown, IconTruck, IconPhone, IconQuestionMark, IconRefresh, IconHeart } from "@tabler/icons-react";
@@ -27,6 +28,12 @@ import { LanguageSwitcher } from "@/components/elements/language-switcher";
 
 export function Header() {
   const t = useTranslations("nav");
+  const [mounted, setMounted] = useState(false);
+
+  // Wait for client hydration before rendering Radix components to avoid ID mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const { user, logout } = useAuthStore();
   const { cart } = useCartStore();
   const { wishlist } = useWishlistStore();
@@ -71,30 +78,37 @@ export function Header() {
             </Link>
           ))}
 
-          {/* Info Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button
-                className={cn(
-                  "nav-link inline-flex items-center gap-1",
-                  isInfoActive && "text-primary"
-                )}
-              >
-                {t("help")}
-                <IconChevronDown className="size-4" aria-hidden="true" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="center" className="w-48">
-              {infoNavItems.map((item) => (
-                <DropdownMenuItem key={item.href} asChild>
-                  <Link href={item.href} className="flex items-center gap-group">
-                    <item.icon className="size-4 text-muted-foreground" aria-hidden="true" />
-                    {item.label}
-                  </Link>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/* Info Dropdown - only render after mount to avoid hydration mismatch */}
+          {mounted ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className={cn(
+                    "nav-link inline-flex items-center gap-1",
+                    isInfoActive && "text-primary"
+                  )}
+                >
+                  {t("help")}
+                  <IconChevronDown className="size-4" aria-hidden="true" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="center" className="w-48">
+                {infoNavItems.map((item) => (
+                  <DropdownMenuItem key={item.href} asChild>
+                    <Link href={item.href} className="flex items-center gap-group">
+                      <item.icon className="size-4 text-muted-foreground" aria-hidden="true" />
+                      {item.label}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <span className={cn("nav-link inline-flex items-center gap-1", isInfoActive && "text-primary")}>
+              {t("help")}
+              <IconChevronDown className="size-4" aria-hidden="true" />
+            </span>
+          )}
         </nav>
         </Row>
 
@@ -133,7 +147,7 @@ export function Header() {
           </Button>
 
           {/* User Menu */}
-          {user ? (
+          {user && mounted ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" aria-label={t("account")}>
@@ -153,66 +167,76 @@ export function Header() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+          ) : user ? (
+            <Button variant="ghost" size="icon" aria-label={t("account")}>
+              <IconUser className="size-5" aria-hidden="true" />
+            </Button>
           ) : (
             <Button variant="minimal" asChild size="sm" className="hidden sm:inline-flex text-label text-xs">
               <Link href="/login">{t("login")}</Link>
             </Button>
           )}
 
-          {/* Mobile Menu */}
-          <Sheet>
-            <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="icon" aria-label={t("menu")}>
-                <IconMenu2 className="size-5" aria-hidden="true" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-80 p-6">
-              <nav aria-label="Mobile navigation">
-                <Stack gap="section" className="mt-4">
-                  {/* Main Nav */}
-                  <Stack gap="group">
-                    <Text variant="muted-sm" className="uppercase tracking-wider">{t("shop")}</Text>
-                    {mainNavItems.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className={cn("nav-link-mobile", isActive(item.href) && "text-primary")}
-                        aria-current={isActive(item.href) ? "page" : undefined}
-                      >
-                        {item.label}
-                      </Link>
-                    ))}
-                  </Stack>
-
-                  {/* Info Nav */}
-                  <Stack gap="group">
-                    <Text variant="muted-sm" className="uppercase tracking-wider">{t("help")}</Text>
-                    {infoNavItems.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className={cn("nav-link-mobile flex items-center gap-group", isActive(item.href) && "text-primary")}
-                        aria-current={isActive(item.href) ? "page" : undefined}
-                      >
-                        <item.icon className="size-4 text-muted-foreground" aria-hidden="true" />
-                        {item.label}
-                      </Link>
-                    ))}
-                  </Stack>
-
-                  {/* Auth on mobile */}
-                  {!user && (
+          {/* Mobile Menu - only render Sheet after mount to avoid hydration mismatch */}
+          {mounted ? (
+            <Sheet>
+              <SheetTrigger asChild className="md:hidden">
+                <Button variant="ghost" size="icon" aria-label={t("menu")}>
+                  <IconMenu2 className="size-5" aria-hidden="true" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-80 p-6">
+                <nav aria-label="Mobile navigation">
+                  <Stack gap="section" className="mt-4">
+                    {/* Main Nav */}
                     <Stack gap="group">
-                      <Text variant="muted-sm" className="uppercase tracking-wider">{t("account")}</Text>
-                      <Link href="/login" className="nav-link-mobile">
-                        {t("login")} / {t("register")}
-                      </Link>
+                      <Text variant="muted-sm" className="uppercase tracking-wider">{t("shop")}</Text>
+                      {mainNavItems.map((item) => (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          className={cn("nav-link-mobile", isActive(item.href) && "text-primary")}
+                          aria-current={isActive(item.href) ? "page" : undefined}
+                        >
+                          {item.label}
+                        </Link>
+                      ))}
                     </Stack>
-                  )}
-                </Stack>
-              </nav>
-            </SheetContent>
-          </Sheet>
+
+                    {/* Info Nav */}
+                    <Stack gap="group">
+                      <Text variant="muted-sm" className="uppercase tracking-wider">{t("help")}</Text>
+                      {infoNavItems.map((item) => (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          className={cn("nav-link-mobile flex items-center gap-group", isActive(item.href) && "text-primary")}
+                          aria-current={isActive(item.href) ? "page" : undefined}
+                        >
+                          <item.icon className="size-4 text-muted-foreground" aria-hidden="true" />
+                          {item.label}
+                        </Link>
+                      ))}
+                    </Stack>
+
+                    {/* Auth on mobile */}
+                    {!user && (
+                      <Stack gap="group">
+                        <Text variant="muted-sm" className="uppercase tracking-wider">{t("account")}</Text>
+                        <Link href="/login" className="nav-link-mobile">
+                          {t("login")} / {t("register")}
+                        </Link>
+                      </Stack>
+                    )}
+                  </Stack>
+                </nav>
+              </SheetContent>
+            </Sheet>
+          ) : (
+            <Button variant="ghost" size="icon" aria-label={t("menu")} className="md:hidden">
+              <IconMenu2 className="size-5" aria-hidden="true" />
+            </Button>
+          )}
         </Row>
       </Container>
     </header>

@@ -41,6 +41,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${figtree.variable} ${geistMono.variable} ${playfairDisplay.variable} ${liva.variable} font-sans antialiased min-h-screen flex flex-col`}
+        suppressHydrationWarning
       >
         {children}
       </body>
