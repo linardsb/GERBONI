@@ -14,6 +14,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
 
   backend:
     build: ./backend
@@ -35,6 +36,13 @@ services:
     volumes:
       - ./backend:/app
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/products"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
 
   frontend:
     build: ./frontend
@@ -45,12 +53,23 @@ services:
       - NEXT_PUBLIC_WS_URL=ws://localhost:8000/api
       - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY}
       - WATCHPACK_POLLING=true
+      - CHOKIDAR_USEPOLLING=true
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     volumes:
       - ./frontend:/app
-      - /app/node_modules
-      - /app/.next
+      - frontend_node_modules:/app/node_modules
+      - frontend_next:/app/.next
+    # Clear .next cache on start to prevent stale module resolution
+    command: sh -c "rm -rf /app/.next/cache && npm run dev"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
 
   # Development-only services
   seed:
@@ -66,3 +85,5 @@ services:
 
 volumes:
   postgres_data:
+  frontend_node_modules:
+  frontend_next:
