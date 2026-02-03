@@ -173,7 +173,7 @@ export default function CartPage() {
           ))}
         </Stack>
 
-        <CartSummary total={Number(cart.total)} onCheckout={() => setShowCheckout(true)} />
+        <CartSummary total={Number(cart.total)} onCheckout={() => setShowCheckout(true)} locale={locale as "en" | "lv"} />
       </Stack>
     </Container>
   );

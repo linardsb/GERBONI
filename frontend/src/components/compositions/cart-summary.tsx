@@ -132,7 +132,7 @@ export function CartSummary({ total, onCheckout, locale = "en" }: CartSummaryPro
         <Separator className="my-2" />
 
         {/* Trust badges */}
-        <TrustBadges variant="compact" />
+        <TrustBadges variant="compact" locale={locale} />
       </CardFooter>
     </Card>
   );
