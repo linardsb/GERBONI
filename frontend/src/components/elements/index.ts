@@ -2,6 +2,7 @@
 export * from "./avatar";
 export * from "./badge";
 export * from "./button";
+export * from "./button-3d";
 export * from "./card";
 export * from "./dialog";
 export * from "./dropdown-menu";

@@ -13,6 +13,7 @@ import {
   IconLoader2,
 } from "@tabler/icons-react";
 import { Button } from "@/components/elements/button";
+import { Button3D } from "@/components/elements/button-3d";
 import { SizeGuideModal } from "@/components/compositions/size-guide-modal";
 import { Card, CardContent } from "@/components/elements/card";
 import { Skeleton } from "@/components/elements/skeleton";
@@ -293,24 +294,14 @@ export default function ProductPage() {
           {/* Add to Cart - Sticky on mobile */}
           <div className="sticky bottom-4 z-10 lg:static lg:z-auto bg-background/95 backdrop-blur-sm py-4 -mx-4 px-4 lg:mx-0 lg:px-0 lg:py-0 lg:bg-transparent lg:backdrop-blur-none">
             <Stack gap="group">
-              <Button
-                size="lg"
-                className="w-full h-14"
+              <Button3D
+                size="2xl"
+                className="w-full"
                 onClick={handleAddToCart}
                 disabled={adding || !selectedVariant || selectedVariant.stock < 1}
               >
-                {adding ? (
-                  <>
-                    <IconLoader2 className="size-5 animate-spin mr-2" aria-hidden="true" />
-                    {tCommon("loading")}
-                  </>
-                ) : (
-                  <>
-                    <IconShoppingCart className="size-5 mr-2" aria-hidden="true" />
-                    {t("addToCart")}
-                  </>
-                )}
-              </Button>
+                {adding ? tCommon("loading") : t("addToCart")}
+              </Button3D>
 
               {selectedVariant && selectedVariant.stock > 0 && selectedVariant.stock <= 3 && (
                 <Text variant="error" align="center" className="font-medium">

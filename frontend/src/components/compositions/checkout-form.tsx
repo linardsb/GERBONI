@@ -2,6 +2,7 @@
 
 import { IconMail, IconTruck, IconCreditCard, IconLoader2, IconArrowLeft } from "@tabler/icons-react";
 import { Button } from "@/components/elements/button";
+import { Button3D } from "@/components/elements/button-3d";
 import { Input } from "@/components/elements/input";
 import { Label } from "@/components/elements/label";
 import { Separator } from "@/components/elements/separator";
@@ -199,24 +200,14 @@ export function CheckoutForm({
                     </Text>
                   </Row>
 
-                  <Button
+                  <Button3D
                     type="submit"
-                    size="lg"
-                    className="w-full h-14"
+                    size="2xl"
+                    className="w-full"
                     disabled={processing}
                   >
-                    {processing ? (
-                      <>
-                        <IconLoader2 className="size-5 animate-spin mr-2" aria-hidden="true" />
-                        {t.processing}
-                      </>
-                    ) : (
-                      <>
-                        <IconCreditCard className="size-5 mr-2" aria-hidden="true" />
-                        {t.pay} €{total.toFixed(2)}
-                      </>
-                    )}
-                  </Button>
+                    {processing ? t.processing : `${t.pay} €${total.toFixed(2)}`}
+                  </Button3D>
 
                   <Text variant="muted-sm" align="center" className="flex items-center justify-center gap-element">
                     <span className="size-4">🔒</span>

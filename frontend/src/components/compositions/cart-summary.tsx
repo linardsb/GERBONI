@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { IconLock, IconTruck } from "@tabler/icons-react";
 import { Button } from "@/components/elements/button";
+import { Button3D } from "@/components/elements/button-3d";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/elements/card";
 import { Input } from "@/components/elements/input";
 import { Separator } from "@/components/elements/separator";
@@ -121,10 +122,9 @@ export function CartSummary({ total, onCheckout, locale = "en" }: CartSummaryPro
         </Row>
 
         {/* Checkout button */}
-        <Button size="lg" className="w-full" onClick={onCheckout}>
-          <IconLock className="size-4 mr-2" aria-hidden="true" />
+        <Button3D size="lg" className="w-full" onClick={onCheckout}>
           {t.proceedToCheckout}
-        </Button>
+        </Button3D>
 
         {/* Payment methods */}
         <PaymentMethodBadges className="mt-2" />

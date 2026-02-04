@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { IconX, IconMail, IconGift } from "@tabler/icons-react";
-import { Button } from "@/components/elements/button";
+import { Button3D } from "@/components/elements/button-3d";
 import { Input } from "@/components/elements/input";
 import { Text } from "@/components/elements/text";
 import { Stack } from "@/components/elements/stack";
@@ -125,9 +125,9 @@ export function NewsletterPopup() {
                     required
                     autoFocus
                   />
-                  <Button type="submit" size="lg" className="w-full" disabled={loading}>
+                  <Button3D type="submit" size="lg" className="w-full" disabled={loading}>
                     {loading ? "Subscribing..." : "Get My 10% Off"}
-                  </Button>
+                  </Button3D>
                 </Stack>
               </form>
 

@@ -1,7 +1,6 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useLocale } from "next-intl";
 import {
@@ -12,6 +11,7 @@ import {
   IconFileText,
 } from "@tabler/icons-react";
 import { Button } from "@/components/elements/button";
+import { Button3D } from "@/components/elements/button-3d";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/elements/card";
 import { Separator } from "@/components/elements/separator";
 import { Skeleton } from "@/components/elements/skeleton";
@@ -203,19 +203,13 @@ function SuccessContent() {
 
         {/* Action buttons */}
         <Row gap="group" wrap="wrap" justify="center" className="animate-in fade-in duration-normal animation-delay-600 animation-fill-backwards">
-          <Button asChild>
-            <Link href="/products">
-              <IconShoppingBag className="size-4 mr-2" aria-hidden="true" />
-              {t.continueShopping}
-            </Link>
-          </Button>
+          <Button3D href="/products">
+            {t.continueShopping}
+          </Button3D>
           {token && (
-            <Button variant="outline" asChild>
-              <Link href="/orders">
-                <IconFileText className="size-4 mr-2" aria-hidden="true" />
-                {t.viewOrders}
-              </Link>
-            </Button>
+            <Button3D variant="outline" href="/orders">
+              {t.viewOrders}
+            </Button3D>
           )}
         </Row>
       </Stack>

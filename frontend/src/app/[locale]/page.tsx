@@ -13,6 +13,7 @@ import {
 } from "@tabler/icons-react";
 import { WishlistButton } from "@/components/elements/wishlist-button";
 import { Button } from "@/components/elements/button";
+import { Button3D } from "@/components/elements/button-3d";
 import { Section } from "@/components/elements/section";
 import { Container } from "@/components/elements/container";
 import { Stack } from "@/components/elements/stack";
@@ -257,21 +258,12 @@ export default function HomePage() {
               </Text>
             </div>
 
-            {/* CTA buttons */}
-            <Row gap="group" wrap="wrap" justify="center" className="pt-section">
-              <Button variant="minimal" size="lg" asChild className="group">
-                <Link href="/products">
-                  <span className="text-label">{t("exploreCollection")}</span>
-                  <IconArrowRight
-                    className="size-4 transition-transform duration-300 group-hover:translate-x-1"
-                    aria-hidden="true"
-                  />
-                </Link>
-              </Button>
-              <Button variant="text-underline" size="lg" asChild>
-                <Link href="/about">{locale === "lv" ? "Mūsu stāsts" : "Our Story"}</Link>
-              </Button>
-            </Row>
+            {/* CTA button */}
+            <div className="pt-section">
+              <Button3D variant="minimal" size="lg" href="/products">
+                <span className="text-label">{t("exploreCollection")}</span>
+              </Button3D>
+            </div>
           </Stack>
         </Container>
       </Section>
@@ -399,15 +391,9 @@ export default function HomePage() {
                     </Row>
                   </Stack>
 
-                  <Button variant="minimal" asChild className="w-full group">
-                    <Link href="/products">
-                      <span className="text-label">{tCommon("viewAll")}</span>
-                      <IconArrowUpRight
-                        className="size-4 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"
-                        aria-hidden="true"
-                      />
-                    </Link>
-                  </Button>
+                  <Button3D variant="minimal" href="/products" className="w-full">
+                    <span className="text-label">{tCommon("viewAll")}</span>
+                  </Button3D>
                 </Stack>
               </div>
             </div>
@@ -546,12 +532,9 @@ export default function HomePage() {
                     : "Join thousands of Latvians and Latvia enthusiasts who proudly wear their city's coat of arms."}
                 </Text>
                 <Row gap="group" wrap="wrap" justify="center">
-                  <Button variant="minimal-light" asChild size="lg" className="text-label">
-                    <Link href="/products">
-                      <IconShoppingBag className="size-4" aria-hidden="true" />
-                      {t("shopNow")}
-                    </Link>
-                  </Button>
+                  <Button3D variant="minimal-light" size="lg" href="/products" className="text-label">
+                    {t("shopNow")}
+                  </Button3D>
                 </Row>
               </Stack>
             </div>

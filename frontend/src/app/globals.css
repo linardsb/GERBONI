@@ -398,4 +398,62 @@
   .animation-fill-backwards {
     animation-fill-mode: backwards;
   }
+
+  /* ============================================
+     3D Pushback Button Effect
+     ============================================
+     A 3D flip effect where the button flips backward
+     on hover to reveal a second face.
+
+     Usage: <Button3D> component
+     ============================================ */
+
+  .btn-3d-pushback {
+    --btn-3d-perspective: 500px;
+    perspective: var(--btn-3d-perspective);
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    position: relative;
+  }
+
+  .btn-3d-face {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-element);
+    padding: var(--space-element) var(--space-group);
+    pointer-events: none;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    transition: transform var(--duration-fast) var(--easing-default);
+  }
+
+  /* Front face in normal flow - establishes button size */
+  .btn-3d-front {
+    position: relative;
+    width: 100%;
+    transform: rotateX(0deg) translateZ(0px);
+    transform-origin: 50% 50%;
+  }
+
+  /* Back face positioned on top of front face */
+  .btn-3d-back {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform: rotateX(-179.5deg) translateZ(1px);
+    transform-origin: 50% 50%;
+  }
+
+  .btn-3d-pushback:hover .btn-3d-front,
+  .btn-3d-pushback:focus-visible .btn-3d-front {
+    transform: rotateX(179.5deg);
+  }
+
+  .btn-3d-pushback:hover .btn-3d-back,
+  .btn-3d-pushback:focus-visible .btn-3d-back {
+    transform: rotateX(0deg) rotateY(0deg) translateZ(1px);
+  }
 }

@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Link, usePathname } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
 import { IconX, IconShoppingCart, IconPercentage } from "@tabler/icons-react";
-import { Button } from "@/components/elements/button";
+import { Button3D } from "@/components/elements/button-3d";
 import { Text } from "@/components/elements/text";
 import { Stack } from "@/components/elements/stack";
 import { useExitIntent } from "@/hooks/use-exit-intent";
@@ -15,6 +16,7 @@ const DISCOUNT_CODE = "DONTGO10";
 
 export function ExitIntentOffer() {
   const pathname = usePathname();
+  const t = useTranslations("exitIntent");
   const [isOpen, setIsOpen] = useState(false);
   const [canShow, setCanShow] = useState(false);
 
@@ -85,7 +87,7 @@ export function ExitIntentOffer() {
         <button
           onClick={handleClose}
           className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors"
-          aria-label="Close"
+          aria-label={t("close")}
         >
           <IconX className="h-5 w-5" />
         </button>
@@ -98,10 +100,10 @@ export function ExitIntentOffer() {
 
             <Stack gap="group" align="center">
               <Text as="h2" id="exit-intent-title" variant="heading-lg">
-                Wait! Don&apos;t Leave Yet
+                {t("title")}
               </Text>
               <Text variant="muted">
-                Get 10% off your order with this exclusive discount code:
+                {t("description")}
               </Text>
             </Stack>
 
@@ -115,24 +117,21 @@ export function ExitIntentOffer() {
                   {DISCOUNT_CODE}
                 </Text>
                 <Text variant="muted-sm" className="mt-1 group-hover:text-foreground transition-colors">
-                  Click to copy
+                  {t("clickToCopy")}
                 </Text>
               </button>
             </div>
 
             {/* CTA Buttons */}
             <Stack gap="group" className="w-full">
-              <Button size="lg" className="w-full" asChild>
-                <Link href="/products" onClick={handleClose}>
-                  <IconShoppingCart className="mr-2 size-5" aria-hidden="true" />
-                  Continue Shopping
-                </Link>
-              </Button>
+              <Button3D size="lg" className="w-full" href="/products" onClick={handleClose}>
+                {t("continueShopping")}
+              </Button3D>
               <button
                 onClick={handleClose}
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
-                No thanks, I&apos;ll pay full price
+                {t("noThanks")}
               </button>
             </Stack>
           </Stack>

@@ -2,7 +2,7 @@
 
 import { useLocale } from "next-intl";
 import { usePathname, useRouter } from "@/i18n/routing";
-import { useTransition } from "react";
+import { useTransition, useState, useEffect } from "react";
 import { Button } from "@/components/elements/button";
 import {
   DropdownMenu,
@@ -23,13 +23,25 @@ export function LanguageSwitcher() {
   const router = useRouter();
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
+  const [mounted, setMounted] = useState(false);
 
-  const currentLanguage = languages.find((lang) => lang.code === locale);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-  function switchLocale(nextLocale: "en" | "lv") {
+  const switchLocale = (nextLocale: "en" | "lv") => {
     startTransition(() => {
       router.replace(pathname, { locale: nextLocale });
     });
+  }
+
+  // Render placeholder on server to avoid Radix ID hydration mismatch
+  if (!mounted) {
+    return (
+      <Button variant="ghost" size="icon" aria-label="Change language">
+        <IconLanguage className="size-5" aria-hidden="true" />
+      </Button>
+    );
   }
 
   return (
