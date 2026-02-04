@@ -1,3 +1,124 @@
+# Backend CLAUDE.md
+
+## Quick Reference
+
+### Commands
+```bash
+source venv/bin/activate              # Activate virtualenv
+uvicorn app.main:app --reload         # Dev server on :8000
+python -m app.seed                    # Seed database
+alembic revision --autogenerate -m "description"  # Create migration
+alembic upgrade head                  # Apply migrations
+pytest                                # Run tests
+```
+
+### MANDATORY: Before ANY Backend Changes
+Read the backend skill first:
+```
+.claude/skills/gerboni-backend/SKILL.md
+```
+
+---
+
+## Architecture Patterns
+
+### Async SQLAlchemy 2.0
+```python
+# Always use async session
+async with get_async_session() as session:
+    result = await session.execute(select(Model).where(...))
+    items = result.scalars().all()
+```
+
+### Dependency Injection
+```python
+# Use FastAPI deps from app/api/deps.py
+async def endpoint(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+```
+
+### Dual Auth System
+- JWT for registered users: `Authorization: Bearer <token>`
+- Session tokens for guests: `X-Guest-Session: <token>`
+- Check both in endpoints that support guest access
+
+---
+
+## Key Files
+
+| Purpose | Path |
+|---------|------|
+| FastAPI app entry | `app/main.py` |
+| Config/Settings | `app/config.py` |
+| Database setup | `app/database.py` |
+| Exception handlers | `app/exceptions.py` |
+| API dependencies | `app/api/deps.py` |
+| AI support agent | `app/agent/support_agent.py` |
+
+### Models (`app/models/`)
+- `user.py` - User + GuestSession
+- `product.py` - Product + TShirtVariant
+- `order.py` - Order + OrderItem
+- `cart.py` - CartItem
+
+### API Routes (`app/api/`)
+- `auth.py` - Login, register, guest sessions
+- `products.py` - Product catalog
+- `cart.py` - Cart CRUD
+- `orders.py` - Order management
+- `payments.py` - Stripe integration
+- `agent.py` - WebSocket chat
+
+---
+
+## Database
+
+### Migrations (Alembic)
+```bash
+# After model changes:
+alembic revision --autogenerate -m "Add field to model"
+alembic upgrade head
+```
+
+### Schema
+- 10 cities × 6 colors × 6 sizes = 360 SKUs
+- Order status flow: `pending → paid → processing → shipped → delivered`
+
+---
+
+## AI Agent (Pydantic AI)
+
+Location: `app/agent/support_agent.py`
+
+### Tools Available
+1. `get_order_details` - Fetch specific order
+2. `get_user_orders` - List user's orders
+3. `search_products` - Search catalog
+4. `get_product_details` - Product info
+5. `request_refund` - Process refund request
+
+### Context Pattern
+```python
+@agent.tool
+async def tool_name(ctx: RunContext[AgentDependencies], ...):
+    user_id = ctx.deps.user_id  # or guest_email
+```
+
+---
+
+## Environment Variables
+
+Required in `.env`:
+```
+DATABASE_URL=postgresql+asyncpg://...
+SECRET_KEY=...
+STRIPE_SECRET_KEY=sk_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+ANTHROPIC_API_KEY=sk-ant-...
+```
+
 <claude-mem-context>
 # Recent Activity
 

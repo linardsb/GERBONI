@@ -1,3 +1,79 @@
+# Frontend CLAUDE.md
+
+## Quick Reference
+
+### Commands
+```bash
+npm run dev      # Dev server on :3000
+npm run build    # Production build (always verify before committing)
+npm run lint     # ESLint check
+```
+
+### MANDATORY: Before ANY Component Changes
+Read the design system skill first:
+```
+.claude/skills/gerboni-frontend-design/SKILL.md
+```
+
+---
+
+## Design System Rules
+
+### ✅ DO
+- Use semantic color tokens: `text-foreground`, `bg-primary`, `text-overlay-foreground`
+- Use spacing tokens: `gap-element`, `gap-group`, `gap-section`, `gap-page`
+- Use `cn()` for className merging
+- Add `data-slot="component-name"` to root elements
+- Use CVA for component variants
+
+### ❌ DON'T
+- Inline styles (`style={{}}`) - except for dynamic data like product colors
+- Arbitrary Tailwind values (`gap-[24px]`, `text-[14px]`)
+- Hardcoded colors (`text-white`, `bg-green-500`, `#ffffff`)
+- Missing accessibility attributes
+
+### Color Token Quick Reference
+```
+text-foreground              # Primary text
+text-muted-foreground        # Secondary text
+text-overlay-foreground      # White text on dark/images
+text-success                 # Success states (not text-green-500)
+text-destructive             # Error states
+bg-background                # Page background
+bg-surface-muted             # Subtle section backgrounds
+bg-primary                   # Brand cyan
+```
+
+---
+
+## Key Files
+
+| Purpose | Path |
+|---------|------|
+| Design tokens (CSS) | `src/app/globals.css` |
+| Design tokens (TS) | `src/lib/design-tokens.ts` |
+| API client | `src/lib/api.ts` |
+| Zustand stores | `src/lib/store.ts` |
+| WebSocket | `src/lib/websocket.ts` |
+| Product colors | `src/lib/product-colors.ts` |
+
+## Component Structure
+
+```
+src/components/
+├── elements/      # Atomic components (Button, Input, Text, Card)
+├── components/    # Domain components (ProductCard, ChatMessage)
+├── compositions/  # Complex compositions (CartSummary, NewsletterPopup)
+└── index.ts       # Re-exports
+```
+
+## Internationalization
+
+- Locales: `en`, `lv` (Latvian)
+- Translation files: `src/messages/en.json`, `src/messages/lv.json`
+- Use `useTranslations()` hook from `next-intl`
+- Routing: `@/i18n/routing` for `<Link>` component
+
 <claude-mem-context>
 # Recent Activity
 
