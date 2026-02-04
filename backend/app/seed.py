@@ -5,9 +5,17 @@ Run with: python -m app.seed
 import asyncio
 from decimal import Decimal
 from sqlalchemy import select
+from passlib.context import CryptContext
 
 from .database import async_session_maker, init_db
-from .models import Product, TShirtVariant
+from .models import Product, TShirtVariant, User, UserRole
+
+# Password hashing
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+# Permanent admin account
+ADMIN_EMAIL = "linardsberzins@gmail.com"
+ADMIN_PASSWORD = "admin123"  # Change this after first login!
 
 # Latvian cities with their coats of arms
 CITIES = [
@@ -98,17 +106,48 @@ SIZE_PRICES = {
 }
 
 
+async def seed_admin():
+    """Ensure the permanent admin account exists."""
+    async with async_session_maker() as db:
+        result = await db.execute(select(User).where(User.email == ADMIN_EMAIL))
+        user = result.scalar_one_or_none()
+
+        if user:
+            # Ensure they have super_admin role
+            if user.role != UserRole.SUPER_ADMIN.value:
+                user.role = UserRole.SUPER_ADMIN.value
+                await db.commit()
+                print(f"Updated {ADMIN_EMAIL} to super_admin role")
+            else:
+                print(f"Admin {ADMIN_EMAIL} already exists with super_admin role")
+        else:
+            # Create new admin user
+            admin = User(
+                email=ADMIN_EMAIL,
+                password_hash=pwd_context.hash(ADMIN_PASSWORD),
+                role=UserRole.SUPER_ADMIN.value,
+                is_active=True,
+            )
+            db.add(admin)
+            await db.commit()
+            print(f"Created super_admin: {ADMIN_EMAIL} (password: {ADMIN_PASSWORD})")
+            print("⚠️  IMPORTANT: Change this password after first login!")
+
+
 async def seed_database():
     await init_db()
 
+    # Always ensure admin exists
+    await seed_admin()
+
     async with async_session_maker() as db:
-        # Check if already seeded
+        # Check if products already seeded
         result = await db.execute(select(Product).limit(1))
         if result.scalar_one_or_none():
-            print("Database already seeded. Skipping...")
+            print("Products already seeded. Skipping...")
             return
 
-        print("Seeding database...")
+        print("Seeding products...")
 
         for city_data in CITIES:
             # Create product
