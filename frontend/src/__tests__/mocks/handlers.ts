@@ -243,4 +243,73 @@ export const handlers = [
   http.get(`${API_URL}/recommendations/popular`, () => {
     return HttpResponse.json(mockProducts)
   }),
+
+  // Payments - Stripe checkout
+  http.post(`${API_URL}/payments/create-checkout`, async ({ request }) => {
+    const authHeader = request.headers.get('Authorization')
+    if (!authHeader) {
+      return new HttpResponse(null, { status: 401 })
+    }
+    const url = new URL(request.url)
+    const orderId = url.searchParams.get('order_id')
+    if (!orderId) {
+      return new HttpResponse(
+        JSON.stringify({ detail: 'Order ID required' }),
+        { status: 400 }
+      )
+    }
+    return HttpResponse.json({
+      checkout_url: `https://checkout.stripe.com/pay/cs_test_${orderId}`,
+    })
+  }),
+
+  http.get(`${API_URL}/payments/session/:sessionId`, ({ params }) => {
+    return HttpResponse.json({
+      status: 'complete',
+      payment_status: 'paid',
+      order_id: '1',
+    })
+  }),
+
+  // Product variants
+  http.get(`${API_URL}/products/:id/variants`, ({ params }) => {
+    const productId = Number(params.id)
+    const product = mockProducts.find(p => p.id === productId)
+    if (!product) {
+      return new HttpResponse(null, { status: 404 })
+    }
+    return HttpResponse.json([
+      { id: 1, color: 'Black', size: 'S', price: 24.99, stock: 100, sku: `${product.city_name.toUpperCase().slice(0, 3)}-BLA-S` },
+      { id: 2, color: 'Black', size: 'M', price: 24.99, stock: 100, sku: `${product.city_name.toUpperCase().slice(0, 3)}-BLA-M` },
+      { id: 3, color: 'Black', size: 'L', price: 24.99, stock: 50, sku: `${product.city_name.toUpperCase().slice(0, 3)}-BLA-L` },
+      { id: 4, color: 'White', size: 'M', price: 24.99, stock: 75, sku: `${product.city_name.toUpperCase().slice(0, 3)}-WHI-M` },
+      { id: 5, color: 'Navy', size: 'M', price: 24.99, stock: 25, sku: `${product.city_name.toUpperCase().slice(0, 3)}-NAV-M` },
+    ])
+  }),
+
+  // Cart update/delete
+  http.put(`${API_URL}/cart/:id`, async ({ params, request }) => {
+    const body = await request.json() as { quantity: number }
+    return HttpResponse.json({
+      id: Number(params.id),
+      quantity: body.quantity,
+      variant_id: 1,
+      variant: {
+        id: 1,
+        color: 'Black',
+        size: 'M',
+        price: 24.99,
+        stock: 100,
+      },
+    })
+  }),
+
+  http.delete(`${API_URL}/cart/:id`, () => {
+    return new HttpResponse(null, { status: 204 })
+  }),
+
+  // Order cancel
+  http.delete(`${API_URL}/orders/:id`, ({ params }) => {
+    return HttpResponse.json({ status: 'cancelled' })
+  }),
 ]

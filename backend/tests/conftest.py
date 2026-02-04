@@ -5,7 +5,7 @@ Shared test fixtures for the GERBONI backend test suite.
 import asyncio
 from typing import AsyncGenerator, Generator
 from decimal import Decimal
-from unittest.mock import patch, AsyncMock
+from unittest.mock import patch, AsyncMock, MagicMock
 
 import pytest
 from fastapi import FastAPI
@@ -179,3 +179,229 @@ async def test_variant(test_product, db_session: AsyncSession):
         select(TShirtVariant).where(TShirtVariant.product_id == test_product.id).limit(1)
     )
     return result.scalar_one()
+
+
+# =============================================================================
+# Stripe Mocks
+# =============================================================================
+
+
+class MockStripeSession:
+    """Mock Stripe checkout session."""
+
+    def __init__(
+        self,
+        id: str = "cs_test_123",
+        url: str = "https://checkout.stripe.com/pay/cs_test_123",
+        status: str = "open",
+        payment_status: str = "unpaid",
+        metadata: dict | None = None,
+    ):
+        self.id = id
+        self.url = url
+        self.status = status
+        self.payment_status = payment_status
+        self.metadata = metadata or {}
+
+
+@pytest.fixture
+def mock_stripe_checkout_session():
+    """Mock for Stripe checkout session creation."""
+    return MockStripeSession()
+
+
+@pytest.fixture
+def mock_stripe_service(mock_stripe_checkout_session):
+    """Fixture that patches StripeService methods for testing."""
+    with patch("app.services.StripeService") as mock_stripe:
+        # Create checkout session mock
+        mock_stripe.create_checkout_session = AsyncMock(
+            return_value=mock_stripe_checkout_session
+        )
+
+        # Retrieve session mock
+        mock_stripe.retrieve_session = AsyncMock(
+            return_value=mock_stripe_checkout_session
+        )
+
+        # Construct webhook event mock
+        mock_stripe.construct_webhook_event = MagicMock(
+            return_value={
+                "type": "checkout.session.completed",
+                "data": {
+                    "object": {
+                        "id": "cs_test_123",
+                        "payment_intent": "pi_test_123",
+                        "metadata": {"order_id": "1"},
+                    }
+                },
+            }
+        )
+
+        yield mock_stripe
+
+
+@pytest.fixture
+def stripe_checkout_completed_event():
+    """Sample Stripe checkout.session.completed webhook event."""
+    return {
+        "type": "checkout.session.completed",
+        "data": {
+            "object": {
+                "id": "cs_test_completed",
+                "payment_intent": "pi_test_123",
+                "payment_status": "paid",
+                "metadata": {"order_id": "1"},
+                "amount_total": 2499,
+                "currency": "eur",
+            }
+        },
+    }
+
+
+@pytest.fixture
+def stripe_checkout_expired_event():
+    """Sample Stripe checkout.session.expired webhook event."""
+    return {
+        "type": "checkout.session.expired",
+        "data": {
+            "object": {
+                "id": "cs_test_expired",
+                "metadata": {"order_id": "1"},
+            }
+        },
+    }
+
+
+# =============================================================================
+# Pydantic AI / Anthropic Mocks
+# =============================================================================
+
+
+class MockAgentResult:
+    """Mock result from Pydantic AI agent."""
+
+    def __init__(self, data: str):
+        self.data = data
+
+
+@pytest.fixture
+def mock_anthropic_agent():
+    """Mock the Pydantic AI agent for testing without API calls."""
+    with patch("app.agent.support_agent.get_support_agent") as mock_get_agent:
+        mock_agent = MagicMock()
+        mock_agent.run = AsyncMock(
+            return_value=MockAgentResult(
+                data="I'm here to help! How can I assist you today?"
+            )
+        )
+        mock_get_agent.return_value = mock_agent
+        yield mock_agent
+
+
+@pytest.fixture
+def mock_agent_order_lookup():
+    """Mock agent that returns order information."""
+    with patch("app.agent.support_agent.get_support_agent") as mock_get_agent:
+        mock_agent = MagicMock()
+        mock_agent.run = AsyncMock(
+            return_value=MockAgentResult(
+                data="Order #1: Status pending | €24.99 | Placed 2026-01-15"
+            )
+        )
+        mock_get_agent.return_value = mock_agent
+        yield mock_agent
+
+
+@pytest.fixture
+def mock_agent_product_search():
+    """Mock agent that returns product search results."""
+    with patch("app.agent.support_agent.get_support_agent") as mock_get_agent:
+        mock_agent = MagicMock()
+        mock_agent.run = AsyncMock(
+            return_value=MockAgentResult(
+                data="Available products:\n  • Rīga (Rīga): from €24.99 | Colors: Black, White, Navy"
+            )
+        )
+        mock_get_agent.return_value = mock_agent
+        yield mock_agent
+
+
+@pytest.fixture
+def mock_agent_refund():
+    """Mock agent that processes refund requests."""
+    with patch("app.agent.support_agent.get_support_agent") as mock_get_agent:
+        mock_agent = MagicMock()
+        mock_agent.run = AsyncMock(
+            return_value=MockAgentResult(
+                data="✅ Refund approved for Order #1\nAmount: €24.99\nExpected completion: 5-10 business days"
+            )
+        )
+        mock_get_agent.return_value = mock_agent
+        yield mock_agent
+
+
+# =============================================================================
+# Order Test Fixtures
+# =============================================================================
+
+
+@pytest.fixture
+async def test_order(db_session: AsyncSession, test_user, test_variant):
+    """Create a test order with items."""
+    from app.models import Order, OrderItem, OrderStatus
+
+    order = Order(
+        user_id=test_user.id,
+        status=OrderStatus.PENDING.value,
+        total=Decimal("24.99"),
+        shipping_name="Test User",
+        shipping_address="123 Test Street",
+        shipping_city="Riga",
+        shipping_postal_code="LV-1001",
+        shipping_country="Latvia",
+    )
+    db_session.add(order)
+    await db_session.flush()
+
+    order_item = OrderItem(
+        order_id=order.id,
+        variant_id=test_variant.id,
+        quantity=1,
+        price=Decimal("24.99"),
+    )
+    db_session.add(order_item)
+    await db_session.commit()
+    await db_session.refresh(order)
+    return order
+
+
+@pytest.fixture
+async def test_paid_order(db_session: AsyncSession, test_user, test_variant):
+    """Create a paid test order."""
+    from app.models import Order, OrderItem, OrderStatus
+
+    order = Order(
+        user_id=test_user.id,
+        status=OrderStatus.PAID.value,
+        total=Decimal("24.99"),
+        shipping_name="Test User",
+        shipping_address="123 Test Street",
+        shipping_city="Riga",
+        shipping_postal_code="LV-1001",
+        shipping_country="Latvia",
+        stripe_payment_id="pi_test_123",
+    )
+    db_session.add(order)
+    await db_session.flush()
+
+    order_item = OrderItem(
+        order_id=order.id,
+        variant_id=test_variant.id,
+        quantity=1,
+        price=Decimal("24.99"),
+    )
+    db_session.add(order_item)
+    await db_session.commit()
+    await db_session.refresh(order)
+    return order

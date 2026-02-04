@@ -106,10 +106,10 @@ describe('Card', () => {
       expect(element).toHaveClass(expectedClass)
     })
 
-    it('applies default radius (xl)', () => {
+    it('applies default radius (card)', () => {
       render(<Card data-testid="card">Content</Card>)
       const element = screen.getByTestId('card')
-      expect(element).toHaveClass('rounded-xl')
+      expect(element).toHaveClass('rounded-card')
     })
   })
 

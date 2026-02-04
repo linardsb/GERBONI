@@ -31,7 +31,7 @@ describe('Button', () => {
       ['ghost', 'hover:bg-accent'],
       ['link', 'text-primary'],
       ['minimal', 'bg-transparent'],
-      ['minimal-light', 'text-white'],
+      ['minimal-light', 'text-overlay-foreground'],
       ['text-underline', 'underline'],
     ] as const)('applies variant=%s', (variant, expectedClass) => {
       render(<Button variant={variant}>Click me</Button>)
