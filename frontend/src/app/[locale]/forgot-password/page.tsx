@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { IconArrowLeft, IconMail, IconCheck } from "@tabler/icons-react";
 import { Container } from "@/components/elements/container";
 import { Section } from "@/components/elements/section";

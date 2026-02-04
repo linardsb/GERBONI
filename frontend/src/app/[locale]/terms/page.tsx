@@ -5,7 +5,7 @@ import { Text } from "@/components/elements/text";
 import { Card, CardContent } from "@/components/elements/card";
 import { PageHeader } from "@/components/compositions/page-header";
 import { Separator } from "@/components/elements/separator";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 
 export const metadata = {
   title: "Terms of Service - GERBONI",
