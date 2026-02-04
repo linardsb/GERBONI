@@ -658,10 +658,12 @@
     "alreadySubscribed": "You're already subscribed!"
   },
   "exitIntent": {
-    "title": "Wait! Don't Leave Empty-Handed",
-    "description": "Get 15% off your first order when you sign up for our newsletter",
-    "cta": "Claim My Discount",
-    "noThanks": "No thanks, I'll pay full price"
+    "title": "Wait! Don't Leave Yet",
+    "description": "Get 10% off your order with this exclusive discount code:",
+    "clickToCopy": "Click to copy",
+    "continueShopping": "Continue Shopping",
+    "noThanks": "No thanks, I'll pay full price",
+    "close": "Close"
   },
   "chat": {
     "title": "Chat with us",

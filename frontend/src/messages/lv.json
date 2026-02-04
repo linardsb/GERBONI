@@ -658,10 +658,12 @@
     "alreadySubscribed": "Jūs jau esat abonējuši!"
   },
   "exitIntent": {
-    "title": "Pagaidiet! Neejiet prom ar tukšām rokām",
-    "description": "Saņemiet 15% atlaidi pirmajam pasūtījumam, piesakoties mūsu jaunumu vēstulei",
-    "cta": "Saņemt atlaidi",
-    "noThanks": "Nē, paldies, es maksāšu pilnu cenu"
+    "title": "Pagaidiet! Neejiet prom!",
+    "description": "Saņemiet 10% atlaidi savam pasūtījumam ar šo ekskluzīvo atlaides kodu:",
+    "clickToCopy": "Noklikšķiniet, lai kopētu",
+    "continueShopping": "Turpināt iepirkties",
+    "noThanks": "Nē, paldies, maksāšu pilnu cenu",
+    "close": "Aizvērt"
   },
   "chat": {
     "title": "Tērzēt ar mums",

@@ -60,7 +60,7 @@ Middleware matcher pattern was too broad and didn't exclude static asset paths.
 **Fix:**
 Updated `frontend/middleware.ts` matcher config to exclude `/fonts/:path*` and `/bg_images/:path*` patterns.
 
-**Commit:** (pending)
+**Commit:** 2d1a283
 
 ---
 
@@ -80,7 +80,7 @@ App router required root-level `layout.tsx` and `page.tsx` alongside the locale-
 **Fix:**
 Created `frontend/src/app/layout.tsx` and `frontend/src/app/page.tsx` with redirect to default locale.
 
-**Commit:** (pending)
+**Commit:** bc02768
 
 ---
 
