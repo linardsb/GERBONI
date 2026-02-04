@@ -23,6 +23,12 @@
   --color-brand-mastercard-orange: var(--brand-mastercard-orange);
   --color-brand-klarna: var(--brand-klarna);
   --color-tshirt-stroke: var(--tshirt-stroke);
+  /* Semantic UI colors */
+  --color-rating-fill: var(--rating-fill);
+  --color-success-bg: var(--success-bg);
+  /* Container size tokens */
+  --container-max-3xl: 90rem;
+  --container-padding-full: 1.5%;
   /* Spacing tokens - semantic scale for gap, padding, margin */
   --spacing-page: var(--space-page);
   --spacing-section: var(--space-section);
@@ -72,6 +78,7 @@
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
@@ -122,6 +129,9 @@
   --brand-klarna: oklch(0.80 0.12 0);
   /* T-shirt mockup stroke color */
   --tshirt-stroke: oklch(0.92 0.004 286);
+  /* UI semantic colors */
+  --rating-fill: oklch(0.795 0.16 84); /* amber/gold for star ratings */
+  --success-bg: oklch(0.95 0.05 142); /* light success background */
   /* Spacing scale */
   --space-page: 3rem;
   --space-section: 2rem;
@@ -158,6 +168,7 @@
   --accent: oklch(0.967 0.001 286.375);
   --accent-foreground: oklch(0.21 0.006 285.885);
   --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.98 0 0);
   --border: oklch(0.92 0.004 286.32);
   --input: oklch(0.92 0.004 286.32);
   --ring: oklch(0.715 0.143 215.221);
@@ -197,6 +208,7 @@
   --accent: oklch(0.274 0.006 286.033);
   --accent-foreground: oklch(0.985 0.002 247.839);
   --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.98 0 0);
   --border: oklch(0.274 0.006 286.033);
   --input: oklch(0.274 0.006 286.033);
   --ring: oklch(0.715 0.143 215.221);
@@ -277,6 +289,29 @@
   /* Card/hero radius - 15px for featured elements */
   .rounded-card {
     border-radius: var(--radius-card);
+  }
+  /* Container size utilities */
+  .max-w-container-3xl {
+    max-width: var(--container-max-3xl);
+  }
+  .px-container-full {
+    padding-left: var(--container-padding-full);
+    padding-right: var(--container-padding-full);
+  }
+  /* Chat message max-width utility */
+  .max-w-chat-message {
+    max-width: 80%;
+  }
+  /* Dynamic width via CSS custom property */
+  .w-progress {
+    width: var(--progress, 0%);
+  }
+  /* Hero typography utilities */
+  .text-hero {
+    font-size: clamp(6rem, 12vw, 12rem);
+  }
+  .leading-hero {
+    line-height: 0.85;
   }
   /* Hover underline effect */
   .hover-underline {

@@ -52,7 +52,7 @@ export function RecentlyViewed({
                   <div className="relative h-full w-full">
                     <svg
                       viewBox="0 0 100 100"
-                      className="h-full w-full text-white drop-shadow-sm transition-transform duration-300 group-hover:scale-105"
+                      className="h-full w-full text-overlay-foreground drop-shadow-sm transition-transform duration-300 group-hover:scale-105"
                     >
                       <path
                         d="M20 25 L35 20 L40 30 L60 30 L65 20 L80 25 L85 40 L75 45 L75 85 L25 85 L25 45 L15 40 Z"

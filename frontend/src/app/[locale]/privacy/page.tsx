@@ -133,19 +133,19 @@ export default function PrivacyPage() {
                 </Text>
                 <ul className="mt-2 space-y-1">
                   <li className="flex items-center gap-2">
-                    <span className="text-green-500">✓</span>
+                    <span className="text-success">✓</span>
                     <Text variant="muted-sm">We never sell your data to third parties</Text>
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-green-500">✓</span>
+                    <span className="text-success">✓</span>
                     <Text variant="muted-sm">We never store your payment card details</Text>
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-green-500">✓</span>
+                    <span className="text-success">✓</span>
                     <Text variant="muted-sm">Guest checkout always available — no account required</Text>
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-green-500">✓</span>
+                    <span className="text-success">✓</span>
                     <Text variant="muted-sm">You can delete your account at any time</Text>
                   </li>
                 </ul>

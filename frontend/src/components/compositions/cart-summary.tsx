@@ -70,8 +70,8 @@ export function CartSummary({ total, onCheckout, locale = "en" }: CartSummaryPro
             <div className="mt-2">
               <div className="relative h-2 w-full overflow-hidden rounded-full bg-muted">
                 <div
-                  className="h-full bg-primary transition-all duration-slow"
-                  style={{ width: `${shippingProgress}%` }}
+                  className="h-full bg-primary transition-all duration-slow w-progress"
+                  style={{ "--progress": `${shippingProgress}%` } as React.CSSProperties}
                   role="progressbar"
                   aria-valuenow={shippingProgress}
                   aria-valuemin={0}

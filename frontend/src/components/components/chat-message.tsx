@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
 import { Text } from "@/components/elements/text"
 
 const chatMessageVariants = cva(
-  "max-w-[80%] px-4 py-2 transition-colors duration-fast",
+  "max-w-chat-message px-4 py-2 transition-colors duration-fast",
   {
     variants: {
       role: {

@@ -48,8 +48,8 @@ const faceVariants = {
     back: "bg-foreground text-background border border-foreground",
   },
   "minimal-light": {
-    front: "bg-surface-dark/90 text-white border border-white",
-    back: "bg-white text-surface-dark border border-white",
+    front: "bg-surface-dark/90 text-overlay-foreground border border-overlay-foreground",
+    back: "bg-overlay-foreground text-surface-dark border border-overlay-foreground",
   },
 }
 

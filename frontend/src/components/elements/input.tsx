@@ -13,7 +13,7 @@ const inputVariants = cva(
         minimal:
           "h-12 border-0 border-b border-border-subtle bg-transparent px-0 py-2 placeholder:text-muted-foreground/60 focus-visible:outline-none focus-visible:border-foreground transition-colors",
         "minimal-dark":
-          "h-12 border-0 border-b border-white/30 bg-transparent px-0 py-2 text-white placeholder:text-white/50 focus-visible:outline-none focus-visible:border-white transition-colors",
+          "h-12 border-0 border-b border-overlay-foreground-subtle bg-transparent px-0 py-2 text-overlay-foreground placeholder:text-overlay-foreground-muted focus-visible:outline-none focus-visible:border-overlay-foreground transition-colors",
       },
     },
     defaultVariants: {

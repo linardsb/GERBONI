@@ -65,7 +65,7 @@ export function ProductCard({ product }: ProductCardProps) {
             <div className="relative h-full w-full">
               <svg
                 viewBox="0 0 100 100"
-                className="h-full w-full text-white drop-shadow-md transition-transform duration-normal group-hover:scale-105"
+                className="h-full w-full text-overlay-foreground drop-shadow-md transition-transform duration-normal group-hover:scale-105"
                 aria-hidden="true"
               >
                 <path

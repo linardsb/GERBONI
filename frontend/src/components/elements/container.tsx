@@ -11,8 +11,8 @@ const containerVariants = cva("mx-auto w-full", {
       lg: "max-w-5xl px-4 sm:px-6 lg:px-8",
       xl: "max-w-6xl px-4 sm:px-6 lg:px-8",
       "2xl": "max-w-7xl px-4 sm:px-6 lg:px-8",
-      "3xl": "max-w-[90rem] px-4 sm:px-6 lg:px-8",
-      full: "px-[1.5%]",
+      "3xl": "max-w-container-3xl px-4 sm:px-6 lg:px-8",
+      full: "px-container-full",
     },
     padding: {
       none: "py-0",

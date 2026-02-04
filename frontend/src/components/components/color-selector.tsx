@@ -97,7 +97,7 @@ function ColorSelector({
                     aria-hidden="true"
                     className={cn(
                       "absolute inset-0 m-auto size-5",
-                      colorConfig.darkText ? "text-foreground" : "text-white"
+                      colorConfig.darkText ? "text-foreground" : "text-overlay-foreground"
                     )}
                   />
                 )}

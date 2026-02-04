@@ -123,7 +123,7 @@ function ProductCard({
             <div className="relative h-full w-full flex items-center justify-center p-8">
               <svg
                 viewBox="0 0 100 100"
-                className="h-full w-full text-white drop-shadow-md transition-transform duration-500 group-hover:scale-110"
+                className="h-full w-full text-overlay-foreground drop-shadow-md transition-transform duration-500 group-hover:scale-110"
                 aria-hidden="true"
               >
                 <path
@@ -244,7 +244,7 @@ export default function HomePage() {
             </div>
 
             {/* Massive title - uses Latvian font for authentic typography */}
-            <h1 className="font-latvian text-[12vw] lg:text-[10rem] xl:text-[12rem] leading-[0.85] tracking-tight">
+            <h1 className="font-latvian text-hero leading-hero tracking-tight">
               {locale === "lv" ? "Mantojums" : "Heritage"}
             </h1>
 

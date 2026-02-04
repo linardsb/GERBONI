@@ -51,19 +51,19 @@ export default function ReturnsPage() {
                   </Row>
                   <ul className="flex flex-col gap-group">
                     <li className="flex items-start gap-element">
-                      <IconCheck className="size-5 text-green-500 flex-shrink-0" aria-hidden="true" />
+                      <IconCheck className="size-5 text-success flex-shrink-0" aria-hidden="true" />
                       <Text variant="body-md">{t("policy.condition1")}</Text>
                     </li>
                     <li className="flex items-start gap-element">
-                      <IconCheck className="size-5 text-green-500 flex-shrink-0" aria-hidden="true" />
+                      <IconCheck className="size-5 text-success flex-shrink-0" aria-hidden="true" />
                       <Text variant="body-md">{t("policy.condition2")}</Text>
                     </li>
                     <li className="flex items-start gap-element">
-                      <IconCheck className="size-5 text-green-500 flex-shrink-0" aria-hidden="true" />
+                      <IconCheck className="size-5 text-success flex-shrink-0" aria-hidden="true" />
                       <Text variant="body-md">{t("policy.condition3")}</Text>
                     </li>
                     <li className="flex items-start gap-element">
-                      <IconCheck className="size-5 text-green-500 flex-shrink-0" aria-hidden="true" />
+                      <IconCheck className="size-5 text-success flex-shrink-0" aria-hidden="true" />
                       <Text variant="body-md">{t("policy.condition4")}</Text>
                     </li>
                   </ul>
@@ -89,15 +89,15 @@ export default function ReturnsPage() {
                       <Text variant="body-md">{t("damaged.item1")}</Text>
                     </li>
                     <li className="flex items-start gap-element">
-                      <IconCheck className="size-5 text-green-500 flex-shrink-0" aria-hidden="true" />
+                      <IconCheck className="size-5 text-success flex-shrink-0" aria-hidden="true" />
                       <Text variant="body-md">{t("damaged.item2")}</Text>
                     </li>
                     <li className="flex items-start gap-element">
-                      <IconCheck className="size-5 text-green-500 flex-shrink-0" aria-hidden="true" />
+                      <IconCheck className="size-5 text-success flex-shrink-0" aria-hidden="true" />
                       <Text variant="body-md">{t("damaged.item3")}</Text>
                     </li>
                     <li className="flex items-start gap-element">
-                      <IconCheck className="size-5 text-green-500 flex-shrink-0" aria-hidden="true" />
+                      <IconCheck className="size-5 text-success flex-shrink-0" aria-hidden="true" />
                       <Text variant="body-md">{t("damaged.item4")}</Text>
                     </li>
                   </ul>

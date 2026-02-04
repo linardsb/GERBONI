@@ -14,7 +14,7 @@ const sectionVariants = cva("w-full", {
     background: {
       default: "bg-background",
       muted: "bg-surface-muted",
-      dark: "bg-surface-dark text-white",
+      dark: "bg-surface-dark text-overlay-foreground",
       accent: "bg-muted/40",
     },
   },

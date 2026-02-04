@@ -95,8 +95,8 @@ export function NewsletterPopup() {
         <div className="p-6 sm:p-8">
           {subscribed ? (
             <Stack gap="md" className="items-center text-center py-4">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
-                <IconGift className="h-8 w-8 text-green-600" />
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-success-bg">
+                <IconGift className="h-8 w-8 text-success" />
               </div>
               <Text as="h2" variant="heading-md">You&apos;re In!</Text>
               <Text variant="muted">

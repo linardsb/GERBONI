@@ -51,8 +51,8 @@ export function ReviewSummary({ summary }: ReviewSummaryProps) {
               </Text>
               <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-amber-400 rounded-full transition-all duration-300"
-                  style={{ width: `${percentage}%` }}
+                  className="h-full bg-rating-fill rounded-full transition-all duration-300 w-progress"
+                  style={{ "--progress": `${percentage}%` } as React.CSSProperties}
                 />
               </div>
               <Text variant="muted-sm" className="w-8 text-right">
