@@ -76,6 +76,11 @@ async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
 
     app.dependency_overrides[get_db] = override_get_db
 
+    # Disable rate limiting in tests
+    from app.middleware import limiter
+    original_enabled = limiter.enabled
+    limiter.enabled = False
+
     # Patch init_db before the app starts
     with patch("app.main.init_db", mock_init_db):
         transport = ASGITransport(app=app)
@@ -83,6 +88,7 @@ async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
         async with AsyncClient(transport=transport, base_url="http://localhost") as ac:
             yield ac
 
+    limiter.enabled = original_enabled
     app.dependency_overrides.clear()
 
 
@@ -179,6 +185,91 @@ async def test_variant(test_product, db_session: AsyncSession):
         select(TShirtVariant).where(TShirtVariant.product_id == test_product.id).limit(1)
     )
     return result.scalar_one()
+
+
+# =============================================================================
+# Admin User Fixtures
+# =============================================================================
+
+
+@pytest.fixture
+async def test_admin_user(db_session: AsyncSession):
+    """Create an admin user."""
+    from app.models import User, UserRole
+    from app.services import AuthService
+
+    user = User(
+        email="admin@example.com",
+        password_hash=AuthService.get_password_hash("AdminPass123"),
+        is_guest=False,
+        is_active=True,
+        role=UserRole.ADMIN.value,
+    )
+    db_session.add(user)
+    await db_session.commit()
+    await db_session.refresh(user)
+    return user
+
+
+@pytest.fixture
+async def test_admin_token(test_admin_user) -> str:
+    """Create an access token for the admin user."""
+    from app.services import AuthService
+
+    return AuthService.create_access_token(data={"sub": str(test_admin_user.id)})
+
+
+@pytest.fixture
+async def admin_client(client: AsyncClient, test_admin_token: str) -> AsyncClient:
+    """Create an admin-authenticated client."""
+    client.headers["Authorization"] = f"Bearer {test_admin_token}"
+    return client
+
+
+@pytest.fixture
+async def test_super_admin_user(db_session: AsyncSession):
+    """Create a super_admin user."""
+    from app.models import User, UserRole
+    from app.services import AuthService
+
+    user = User(
+        email="superadmin@example.com",
+        password_hash=AuthService.get_password_hash("SuperPass123"),
+        is_guest=False,
+        is_active=True,
+        role=UserRole.SUPER_ADMIN.value,
+    )
+    db_session.add(user)
+    await db_session.commit()
+    await db_session.refresh(user)
+    return user
+
+
+@pytest.fixture
+async def test_super_admin_token(test_super_admin_user) -> str:
+    """Create an access token for the super_admin user."""
+    from app.services import AuthService
+
+    return AuthService.create_access_token(data={"sub": str(test_super_admin_user.id)})
+
+
+@pytest.fixture
+async def super_admin_client(client: AsyncClient, test_super_admin_token: str) -> AsyncClient:
+    """Create a super_admin-authenticated client."""
+    client.headers["Authorization"] = f"Bearer {test_super_admin_token}"
+    return client
+
+
+@pytest.fixture
+async def test_reset_token(db_session: AsyncSession, test_user):
+    """Create a password reset token for the test user."""
+    from app.models import PasswordResetToken
+
+    token = PasswordResetToken(user_id=test_user.id)
+    db_session.add(token)
+    await db_session.commit()
+    await db_session.refresh(token)
+    return token
 
 
 # =============================================================================

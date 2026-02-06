@@ -249,3 +249,113 @@ class TestCheckWishlist:
         assert response.status_code == 200
         data = response.json()
         assert data["in_wishlist"] is False
+
+
+class TestMoveToCart:
+    """Tests for POST /api/wishlist/move-to-cart/{product_id}"""
+
+    async def test_move_to_cart_requires_auth_or_session(
+        self, client: AsyncClient
+    ):
+        """Moving to cart requires authentication or guest session."""
+        response = await client.post(
+            "/api/wishlist/move-to-cart/1",
+            json={"variant_id": 1, "quantity": 1},
+        )
+        assert response.status_code in (401, 422)
+
+    async def test_move_to_cart_authenticated(
+        self,
+        auth_client: AsyncClient,
+        db_session: AsyncSession,
+        test_user,
+        test_product: Product,
+        test_variant,
+    ):
+        """Move wishlist item to cart as authenticated user."""
+        # Add to wishlist first
+        wishlist_item = WishlistItem(
+            user_id=test_user.id,
+            product_id=test_product.id,
+        )
+        db_session.add(wishlist_item)
+        await db_session.commit()
+
+        response = await auth_client.post(
+            f"/api/wishlist/move-to-cart/{test_product.id}",
+            json={"variant_id": test_variant.id, "quantity": 1},
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["status"] == "moved_to_cart"
+
+        # Verify removed from wishlist
+        check_response = await auth_client.get(
+            f"/api/wishlist/check/{test_product.id}"
+        )
+        assert check_response.json()["in_wishlist"] is False
+
+    async def test_move_to_cart_guest(
+        self,
+        client: AsyncClient,
+        db_session: AsyncSession,
+        test_guest_session,
+        test_product: Product,
+        test_variant,
+    ):
+        """Move wishlist item to cart as guest."""
+        wishlist_item = WishlistItem(
+            session_id=test_guest_session.id,
+            product_id=test_product.id,
+        )
+        db_session.add(wishlist_item)
+        await db_session.commit()
+
+        response = await client.post(
+            f"/api/wishlist/move-to-cart/{test_product.id}",
+            json={"variant_id": test_variant.id, "quantity": 1},
+            headers={"X-Guest-Session": test_guest_session.session_token},
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["status"] == "moved_to_cart"
+
+    async def test_move_to_cart_product_not_in_wishlist(
+        self,
+        auth_client: AsyncClient,
+        test_variant,
+    ):
+        """Moving a product not in wishlist returns error."""
+        response = await auth_client.post(
+            "/api/wishlist/move-to-cart/99999",
+            json={"variant_id": test_variant.id, "quantity": 1},
+        )
+        assert response.status_code in (400, 404)
+
+    async def test_move_to_cart_verifies_cart_addition(
+        self,
+        auth_client: AsyncClient,
+        db_session: AsyncSession,
+        test_user,
+        test_product: Product,
+        test_variant,
+    ):
+        """After move-to-cart, item appears in cart."""
+        wishlist_item = WishlistItem(
+            user_id=test_user.id,
+            product_id=test_product.id,
+        )
+        db_session.add(wishlist_item)
+        await db_session.commit()
+
+        await auth_client.post(
+            f"/api/wishlist/move-to-cart/{test_product.id}",
+            json={"variant_id": test_variant.id, "quantity": 1},
+        )
+
+        # Check cart has the item
+        cart_response = await auth_client.get("/api/cart")
+        assert cart_response.status_code == 200
+        cart_data = cart_response.json()
+        variant_ids = [item["variant_id"] for item in cart_data.get("items", [])]
+        assert test_variant.id in variant_ids

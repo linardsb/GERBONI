@@ -123,9 +123,23 @@ EOF
 
 Update the `tasks/bugs.md` entry with the GitHub Issue URL.
 
-### Step 4: Suggest Regression Test
+### Step 4: Write Regression Test (MANDATORY)
 
-Based on the bug's root cause, suggest a specific test:
+**A bug CANNOT be marked CLOSED without a regression test.** This is non-negotiable.
+
+The regression test must:
+1. Reproduce the exact condition that caused the bug
+2. Fail on the buggy code (verify by reasoning about the old code path)
+3. Pass on the fixed code
+4. Be committed alongside the fix
+
+**Step 4A: Verify the test exists**
+```bash
+# Check if a regression test was already written for this bug
+grep -r "BUG-XXX\|bug.xxx\|bug_xxx" backend/tests/ frontend/src/__tests__/ 2>/dev/null
+```
+
+If no test exists, write one immediately:
 
 **For backend bugs:**
 ```python
@@ -163,6 +177,17 @@ it("should [correct behavior] when [condition] (BUG-XXX)", () => {
 })
 ```
 
+**Step 4B: Run the test**
+```bash
+# Backend
+cd backend && pytest tests/test_[module].py::test_bug_xxx -v
+
+# Frontend
+cd frontend && npm run test -- [test-file]
+```
+
+If the test does not pass, the bug is NOT fixed. Go back and fix the code.
+
 ### Step 5: Check Known Fragile Areas
 
 Review `CLAUDE.md` "Known Fragile Areas" section. If this bug reveals a new fragile area or pattern not already documented:
@@ -181,6 +206,37 @@ Criteria for creating a new skill:
 
 If yes, suggest creating a skill via the continuous-learning framework.
 
+### Step 7: Create Bug Fix Documentation
+
+Create a detailed writeup at `docs/bug-fixes/BUG-XXX-[slug].md` with:
+
+```markdown
+# BUG-XXX: [Short Description]
+
+**Status:** CLOSED
+**Severity:** [level]
+**Component:** [area]
+**Fixed:** [date]
+**Regression Test:** `[test file]` → `[test name]`
+
+## What Broke
+[User-visible symptoms]
+
+## Root Cause
+[Technical explanation with code references]
+
+## Fix
+[What was changed and why, with file paths and line numbers]
+
+## Prevention
+[What would have caught this earlier — tests, linting rules, runbooks]
+
+## Related
+- [links to related bugs, runbooks, fragile areas]
+```
+
+Update `docs/bug-fixes/README.md` to include the new entry in the index.
+
 ## Output Format
 
 After completing the workflow, output a summary:
@@ -196,7 +252,8 @@ After completing the workflow, output a summary:
 ### Actions Taken
 - [x] Bug documented in tasks/bugs.md
 - [x] GitHub Issue created
-- [ ] Regression test written (suggested: [file] → [test name])
+- [x] Regression test written and passing: `[file]` → `[test name]`
+- [x] Bug fix writeup created: `docs/bug-fixes/BUG-XXX-[slug].md`
 - [x/n/a] Known Fragile Areas updated
 
 ### Prevention

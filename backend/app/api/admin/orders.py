@@ -145,24 +145,21 @@ async def update_order_status(
 
     try:
         if new_status == OrderStatus.PAID:
-            await OrderService.mark_paid(db, order, payment_id="admin_manual")
+            await OrderService.mark_paid(db, order.id, stripe_payment_id="admin_manual")
         elif new_status == OrderStatus.PROCESSING:
-            await OrderService.mark_processing(db, order)
+            await OrderService.transition_status(db, order.id, OrderStatus.PROCESSING)
         elif new_status == OrderStatus.SHIPPED:
-            await OrderService.mark_shipped(db, order)
+            await OrderService.ship_order(db, order.id)
         elif new_status == OrderStatus.DELIVERED:
-            await OrderService.mark_delivered(db, order)
+            await OrderService.mark_delivered(db, order.id)
         elif new_status == OrderStatus.CANCELLED:
-            await OrderService.cancel_order(db, order, restore_stock=True)
+            await OrderService.cancel(db, order.id, restore_stock=True)
         elif new_status == OrderStatus.REFUNDED:
-            await OrderService.mark_refunded(db, order)
-        else:
-            # Direct status update for other cases
-            order.status = new_status.value
-            await db.commit()
+            await OrderService.process_refund(db, order.id)
     except DomainException as e:
         raise domain_to_http(e)
 
+    await db.commit()
     await db.refresh(order)
     return {"id": order.id, "status": order.status}
 
@@ -185,10 +182,11 @@ async def ship_order(
         )
 
     try:
-        await OrderService.mark_shipped(db, order, tracking_number=data.tracking_number)
+        await OrderService.ship_order(db, order.id, tracking_number=data.tracking_number)
     except DomainException as e:
         raise domain_to_http(e)
 
+    await db.commit()
     await db.refresh(order)
     return {
         "id": order.id,
