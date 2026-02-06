@@ -57,7 +57,8 @@
   /* Component sizing tokens */
   --size-chat-widget-width: 24rem;
   --size-chat-widget-height: 31.25rem;
-  --font-sans: var(--font-figtree);
+  --font-sans: var(--font-forum), var(--font-figtree);
+  --font-heading: var(--font-capsuula), var(--font-figtree);
   --font-mono: var(--font-geist-mono);
   --font-serif: var(--font-playfair);
   --font-latvian: var(--font-liva);
@@ -137,6 +138,9 @@
   --space-section: 2rem;
   --space-group: 1rem;
   --space-element: 0.5rem;
+  /* Button-specific tokens */
+  --btn-3d-padding-y: 0.875rem;
+  --btn-3d-padding-x: 2rem;
   /* Animation tokens */
   --duration-instant: 50ms;
   --duration-fast: 150ms;
@@ -235,6 +239,9 @@
   body {
     @apply bg-background text-foreground;
   }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-capsuula), var(--font-figtree), sans-serif;
+  }
   .container {
     @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
   }
@@ -245,6 +252,10 @@
   /* Latvian display font (Liva) - authentic Latvian typography */
   .font-latvian {
     font-family: var(--font-latvian), var(--font-serif), serif;
+  }
+  /* Heading font (Capsuula) - for titles */
+  .font-heading {
+    font-family: var(--font-capsuula), var(--font-figtree), sans-serif;
   }
   /* Display headings - serif italic for elegant headers */
   .text-display {
@@ -456,7 +467,8 @@
     align-items: center;
     justify-content: center;
     gap: var(--space-element);
-    padding: var(--space-element) var(--space-group);
+    padding: var(--btn-3d-padding-y) var(--btn-3d-padding-x);
+    border-radius: 9999px;
     pointer-events: none;
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
@@ -491,4 +503,10 @@
   .btn-3d-pushback:focus-visible .btn-3d-back {
     transform: rotateX(0deg) rotateY(0deg) translateZ(1px);
   }
+}
+
+/* Button 3D overrides - outside layer for higher specificity */
+.btn-3d-face {
+  padding: var(--btn-3d-padding-y) var(--btn-3d-padding-x);
+  border-radius: 9999px;
 }

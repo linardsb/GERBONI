@@ -26,6 +26,30 @@ const liva = localFont({
   display: "swap",
 });
 
+const gputeks = localFont({
+  src: "../../public/fonts/Gputeks-Regular.ttf",
+  variable: "--font-gputeks",
+  display: "swap",
+});
+
+const benne = localFont({
+  src: "../../public/fonts/Benne-Regular-COPY.woff2",
+  variable: "--font-benne",
+  display: "swap",
+});
+
+const forum = localFont({
+  src: "../../public/fonts/Forum-COPY.woff2",
+  variable: "--font-forum",
+  display: "swap",
+});
+
+const capsuula = localFont({
+  src: "../../public/fonts/Capsuula-TITLE.woff2",
+  variable: "--font-capsuula",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "GERBONI - Latvian City Coat of Arms T-Shirts",
   description:
@@ -40,7 +64,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${figtree.variable} ${geistMono.variable} ${playfairDisplay.variable} ${liva.variable} font-sans antialiased min-h-screen flex flex-col`}
+        className={`${capsuula.variable} ${gputeks.variable} ${benne.variable} ${forum.variable} ${figtree.variable} ${geistMono.variable} ${playfairDisplay.variable} ${liva.variable} font-sans antialiased min-h-screen flex flex-col`}
         suppressHydrationWarning
       >
         {children}
