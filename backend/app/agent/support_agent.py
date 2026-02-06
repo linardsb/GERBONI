@@ -40,7 +40,7 @@ def get_support_agent() -> Agent:
         _support_agent = Agent(
             "anthropic:claude-sonnet-4-20250514",
             deps_type=AgentDependencies,
-            result_type=str,
+            output_type=str,
             system_prompt="""You are a friendly customer support agent for GERBONI,
 a Latvian t-shirt store selling city coat of arms designs.
 
@@ -313,7 +313,7 @@ Shipping to:
             return "Cannot list orders: Customer is not authenticated. Ask them to log in or provide the email used for their order."
 
         if status_filter:
-            stmt = stmt.where(Order.status == status_filter.upper())
+            stmt = stmt.where(Order.status == status_filter.lower())
 
         result = await db.execute(stmt)
         orders = result.scalars().all()
@@ -589,4 +589,4 @@ async def run_agent_conversation(
     )
 
     result = await agent.run(message, deps=deps)
-    return result.data
+    return result.output

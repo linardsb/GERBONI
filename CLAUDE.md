@@ -185,12 +185,78 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_...
 
 ## Testing
 
-No test suite is currently configured. Backend uses pytest-compatible structure. Frontend has ESLint only.
+### Backend (pytest)
+```bash
+cd backend
+pytest --cov=app --cov-report=term-missing -v    # Full suite with coverage
+pytest tests/test_auth.py -v                      # Single module
+pytest -k "test_login" -v                         # Single test by name
+```
+- **66 test cases** across 5 modules: auth, cart, orders, payments, products
+- Uses in-memory SQLite via `conftest.py` fixtures (`db_session`, `client`, `auth_client`)
+- Stripe/Anthropic mocked via `mock_stripe_service`, `mock_anthropic_agent` fixtures
 
-Manual testing:
+### Frontend Unit Tests (Vitest)
+```bash
+cd frontend
+npm run test                  # Watch mode
+npm run test:coverage         # Single run with coverage (80% threshold)
+```
+- **12 test files** with `@testing-library/react` + MSW for API mocking
+- Coverage thresholds: 80% branches, functions, lines, statements
+- Config: `frontend/vitest.config.ts`
+
+### Frontend E2E Tests (Playwright)
+```bash
+cd frontend
+npm run e2e                   # All browsers
+npm run e2e:chromium          # Chromium only (fastest)
+npm run e2e:headed            # With browser UI
+npm run e2e:debug             # Step-through debugger
+```
+- **4 spec files**: home, auth, products, navigation
+- Configured for: Chromium, Firefox, WebKit, Mobile Chrome, Mobile Safari
+- Config: `frontend/playwright.config.ts`
+
+### CI Pipeline (GitHub Actions)
+5 parallel jobs in `.github/workflows/ci.yml`:
+1. `backend-tests` — pytest with PostgreSQL service container
+2. `frontend-tests` — Vitest + ESLint
+3. `frontend-build` — Production build check
+4. `e2e-tests` — Playwright (depends on jobs 1-3)
+5. `security-scan` — Bandit, safety, npm audit
+
+### Manual Testing
 - Stripe test mode with `sk_test_...` keys
 - Anthropic sandbox with test API keys
 - Guest checkout flow: no account needed
+
+---
+
+## Known Fragile Areas
+
+Areas that have broken before or are high-risk. Pay extra attention when modifying:
+
+1. **Dual Auth System** — Endpoints must support both JWT (`Authorization: Bearer`) and guest session (`X-Guest-Session`). Cart, orders, wishlist, and AI chat all need both paths. Missing one causes silent auth failures.
+
+2. **Middleware & Static Assets** — Next.js middleware matcher pattern must exclude new asset paths. Adding new `/public/` directories without updating `middleware.ts` causes 404s (see BUG-002).
+
+3. **Order State Machine** — Strict `pending → paid → processing → shipped → delivered` flow with `cancelled` and `refunded` branches. The `request_refund` agent tool enforces a 14-day window. Changing status logic risks payment/refund inconsistencies.
+
+4. **AI Agent WebSocket** — Completely untested, most complex feature, 0% coverage. The `support_agent.py` has 5 tools with database access scoped by user identity. WebSocket auth flow (`auth` → `auth_success` → `message`) is fragile.
+
+5. **i18n Translations** — New UI text MUST go in both `en.json` AND `lv.json`. Hard-coded strings cause locale-dependent rendering bugs (see BUG-001). All 18 routes are locale-prefixed.
+
+---
+
+## Post-Fix Verification Workflow
+
+**Mandatory after ANY bug fix:**
+
+1. **Regression Test** — Write a test that fails on the buggy code and passes on the fix
+2. **Run `/bug-fix-retrospective`** — Captures root cause, creates GitHub Issue, suggests prevention
+3. **Update Fragile Areas** — If a new pattern is discovered, add it to "Known Fragile Areas" above
+4. **Verify CI Passes** — Push and confirm all 5 CI jobs are green
 
 <claude-mem-context>
 # Recent Activity

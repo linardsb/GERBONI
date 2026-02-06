@@ -60,14 +60,14 @@ jobs:
           STRIPE_WEBHOOK_SECRET: whsec_test_fake
           ANTHROPIC_API_KEY: sk-ant-test-fake
         run: |
-          pytest --cov=app --cov-report=xml --cov-report=term-missing -v
+          pytest --cov=app --cov-report=xml --cov-report=term-missing --cov-fail-under=60 -v
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
           file: backend/coverage.xml
           flags: backend
-          fail_ci_if_error: false
+          fail_ci_if_error: true
 
   # =============================================================================
   # Frontend Unit Tests
@@ -96,6 +96,9 @@ jobs:
       - name: Run linter
         run: npm run lint
 
+      - name: TypeScript type check
+        run: npx tsc --noEmit
+
       - name: Run unit tests with coverage
         run: npm run test:coverage
 
@@ -104,7 +107,7 @@ jobs:
         with:
           file: frontend/coverage/lcov.info
           flags: frontend
-          fail_ci_if_error: false
+          fail_ci_if_error: true
 
   # =============================================================================
   # Frontend Build
@@ -256,7 +259,6 @@ jobs:
       - name: Run Bandit (Python security linter)
         working-directory: backend
         run: bandit -r app/ -ll --skip B101
-        continue-on-error: true
 
       - name: Check Python dependencies for vulnerabilities
         working-directory: backend
@@ -271,4 +273,3 @@ jobs:
       - name: Check npm dependencies for vulnerabilities
         working-directory: frontend
         run: npm audit --audit-level=high
-        continue-on-error: true

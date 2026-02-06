@@ -1022,6 +1022,93 @@ VSCode snippets are available at `.vscode/gerboni.code-snippets`.
 
 ---
 
+## Testing Patterns
+
+### Component Test Template (Vitest + Testing Library)
+
+```tsx
+import { describe, it, expect, vi } from "vitest"
+import { render, screen, fireEvent } from "@testing-library/react"
+import { MyComponent } from "@/components/elements/my-component"
+
+describe("MyComponent", () => {
+  it("should render default variant", () => {
+    render(<MyComponent>Content</MyComponent>)
+    expect(screen.getByText("Content")).toBeInTheDocument()
+  })
+
+  it("should apply variant classes", () => {
+    render(<MyComponent variant="secondary">Content</MyComponent>)
+    const el = screen.getByText("Content")
+    expect(el).toHaveAttribute("data-variant", "secondary")
+  })
+
+  it("should merge custom className via cn()", () => {
+    render(<MyComponent className="custom-class">Content</MyComponent>)
+    expect(screen.getByText("Content")).toHaveClass("custom-class")
+  })
+
+  it("should be accessible", () => {
+    render(<MyComponent aria-label="test label">Content</MyComponent>)
+    expect(screen.getByLabelText("test label")).toBeInTheDocument()
+  })
+})
+```
+
+### Component Test with API Mocking (MSW)
+
+```tsx
+import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest"
+import { render, screen, waitFor } from "@testing-library/react"
+import { setupServer } from "msw/node"
+import { http, HttpResponse } from "msw"
+
+const server = setupServer(
+  http.get("http://localhost:8000/api/products", () =>
+    HttpResponse.json([{ id: 1, city_name: "Riga" }])
+  )
+)
+
+beforeAll(() => server.listen())
+afterEach(() => server.resetHandlers())
+afterAll(() => server.close())
+
+describe("ProductList", () => {
+  it("should display products after loading", async () => {
+    render(<ProductList />)
+    await waitFor(() => {
+      expect(screen.getByText("Riga")).toBeInTheDocument()
+    })
+  })
+})
+```
+
+### E2E Test Template (Playwright)
+
+```ts
+import { test, expect } from "@playwright/test"
+
+test.describe("Feature Name", () => {
+  test("should [expected behavior] when [condition]", async ({ page }) => {
+    await page.goto("/en/products")
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible()
+    await page.getByRole("link", { name: /riga/i }).click()
+    await expect(page).toHaveURL(/\/products\/\d+/)
+  })
+})
+```
+
+### Testing Conventions
+
+- **File location**: `frontend/src/__tests__/` mirrors `src/` structure
+- **Naming**: `should [expected behavior] when [condition]`
+- **Coverage**: 80% threshold on branches, functions, lines, statements
+- **MSW handlers**: Shared handlers in `src/__tests__/mocks/handlers.ts`
+- **Test data**: Shared fixtures in `e2e/test-data.ts`
+- **Run related**: `vitest related --run` for pre-commit hook
+
+---
+
 ## References
 
 - [Tailwind CSS Documentation](https://tailwindcss.com/docs)

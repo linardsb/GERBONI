@@ -1,0 +1,82 @@
+name: Bug Report
+description: Report a bug in GERBONI
+title: "[BUG] "
+labels: ["bug"]
+body:
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - Critical (site down, data loss, payment issues)
+        - High (major feature broken, no workaround)
+        - Medium (feature degraded, workaround exists)
+        - Low (cosmetic, minor inconvenience)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      options:
+        - Frontend / UI
+        - Frontend / i18n
+        - Backend / API
+        - Backend / AI Agent
+        - Backend / Payments
+        - Backend / Auth
+        - Infrastructure / CI
+        - Infrastructure / Docker
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Clear description of the bug
+      placeholder: What happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: Step-by-step instructions to reproduce
+      placeholder: |
+        1. Go to ...
+        2. Click on ...
+        3. See error ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      placeholder: What should happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      placeholder: What actually happens?
+    validations:
+      required: true
+
+  - type: input
+    id: local-bug-id
+    attributes:
+      label: Local Bug ID
+      description: "Reference to tasks/bugs.md (e.g., BUG-004)"
+      placeholder: "BUG-XXX"
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Screenshots, error messages, browser info, etc.

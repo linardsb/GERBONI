@@ -10,6 +10,7 @@ from .newsletter import router as newsletter_router
 from .wishlist import router as wishlist_router
 from .recommendations import router as recommendations_router
 from .reviews import router as reviews_router
+from .errors import router as errors_router
 from .admin import admin_router
 
 
@@ -32,6 +33,7 @@ def create_api_router() -> APIRouter:
     router.include_router(wishlist_router, prefix="/wishlist", tags=["wishlist"])
     router.include_router(recommendations_router, prefix="/recommendations", tags=["recommendations"])
     router.include_router(reviews_router, tags=["reviews"])
+    router.include_router(errors_router, prefix="/errors", tags=["errors"])
     router.include_router(admin_router, prefix="/admin", tags=["admin"])
     return router
 

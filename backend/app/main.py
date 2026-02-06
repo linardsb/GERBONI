@@ -10,6 +10,7 @@ from slowapi.errors import RateLimitExceeded
 from .config import get_settings
 from .database import init_db
 from .api import api_router, api_v1_router
+from .error_tracker import error_tracker
 from .middleware import (
     SecurityHeadersMiddleware,
     RequestSizeLimitMiddleware,
@@ -121,6 +122,28 @@ app.add_middleware(
     # Expose request ID to frontend for error reporting
     expose_headers=["X-Request-ID"],
 )
+
+# =============================================================================
+# ERROR TRACKING MIDDLEWARE
+# Catches unhandled exceptions and tracks them for debugging
+# =============================================================================
+
+@app.middleware("http")
+async def error_tracking_middleware(request, call_next):
+    try:
+        response = await call_next(request)
+        return response
+    except Exception as exc:
+        request_id = request.headers.get("x-request-id")
+        error_tracker.track(
+            error=exc,
+            request_method=request.method,
+            request_path=str(request.url.path),
+            request_id=request_id,
+            status_code=500,
+        )
+        raise
+
 
 # Include API routes
 # Legacy route (backward compatible)

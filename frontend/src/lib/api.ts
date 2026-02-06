@@ -5,6 +5,20 @@ interface FetchOptions extends RequestInit {
   guestSession?: string | null;
 }
 
+export class ApiError extends Error {
+  status: number;
+  detail: string;
+  requestId: string | null;
+
+  constructor(status: number, detail: string, requestId: string | null = null) {
+    super(detail);
+    this.name = "ApiError";
+    this.status = status;
+    this.detail = detail;
+    this.requestId = requestId;
+  }
+}
+
 async function fetchApi<T>(
   endpoint: string,
   options: FetchOptions = {}
@@ -24,14 +38,29 @@ async function fetchApi<T>(
     headers["X-Guest-Session"] = guestSession;
   }
 
-  const response = await fetch(`${API_URL}${endpoint}`, {
-    ...fetchOptions,
-    headers,
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${API_URL}${endpoint}`, {
+      ...fetchOptions,
+      headers,
+    });
+  } catch (networkError) {
+    console.error(`[API] Network error on ${endpoint}:`, networkError);
+    throw new ApiError(0, "Network error. Please check your connection.");
+  }
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.detail || "An error occurred");
+    const requestId = response.headers.get("x-request-id");
+    const errorBody = await response.json().catch(() => ({}));
+    const detail = errorBody.detail || `Request failed (${response.status})`;
+
+    console.error(
+      `[API] ${response.status} ${endpoint}`,
+      requestId ? `(request_id: ${requestId})` : "",
+      detail
+    );
+
+    throw new ApiError(response.status, detail, requestId);
   }
 
   return response.json();

@@ -80,6 +80,7 @@ async def create_review(
         await db.commit()
 
         # Reload with relationships
+        await db.refresh(review)
         await db.refresh(review, ["user"])
         return _format_review(review)
     except DomainException as e:
@@ -105,6 +106,7 @@ async def update_review(
             content=data.content,
         )
         await db.commit()
+        await db.refresh(review)
         await db.refresh(review, ["user"])
         return _format_review(review)
     except DomainException as e:
