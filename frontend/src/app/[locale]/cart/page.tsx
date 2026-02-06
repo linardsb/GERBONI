@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Link, useRouter } from "@/i18n/routing";
-import { IconShoppingCart } from "@tabler/icons-react";
+import { IconShoppingCart } from "@/components/icons";
 import { Button } from "@/components/elements/button";
 import { Skeleton } from "@/components/elements/skeleton";
 import { Container } from "@/components/elements/container";

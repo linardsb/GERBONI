@@ -1,12 +1,12 @@
 import * as React from "react"
-import type { Icon } from "@tabler/icons-react"
+import type { IconComponent } from "@/components/icons"
 
 import { cn } from "@/lib/utils"
 import { Stack } from "@/components/elements/stack"
 import { Text } from "@/components/elements/text"
 
 interface EmptyStateProps {
-  icon?: Icon
+  icon?: IconComponent
   title: string
   description?: string
   children?: React.ReactNode
@@ -21,7 +21,7 @@ function EmptyState({
   className,
 }: EmptyStateProps) {
   return (
-    <Stack gap="lg" align="center" className={cn("text-center", className)}>
+    <Stack gap="lg" align="center" className={cn("py-section text-center", className)}>
       {IconComponent && (
         <div className="flex size-16 items-center justify-center text-muted-foreground">
           <IconComponent className="size-16" />

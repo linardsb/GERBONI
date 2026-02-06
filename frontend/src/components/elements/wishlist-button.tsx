@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { IconHeart, IconHeartFilled } from "@tabler/icons-react";
+import { IconHeart, IconHeartFilled } from "@/components/icons";
 import { Button } from "@/components/elements/button";
 import { cn } from "@/lib/utils";
 import {

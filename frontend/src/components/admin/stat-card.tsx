@@ -1,4 +1,4 @@
-import type { Icon } from "@tabler/icons-react";
+import type { IconComponent } from "@/components/icons";
 import { Card, CardContent } from "@/components/elements/card";
 import { Stack } from "@/components/elements/stack";
 import { Row } from "@/components/elements/row";
@@ -8,7 +8,7 @@ interface StatCardProps {
   title: string;
   value: string | number;
   subtitle?: string;
-  icon: Icon;
+  icon: IconComponent;
   trend?: {
     value: number;
     direction: "up" | "down";

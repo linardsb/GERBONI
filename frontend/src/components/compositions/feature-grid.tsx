@@ -1,11 +1,11 @@
-import type { Icon } from "@tabler/icons-react";
+import type { IconComponent } from "@/components/icons";
 import { Section } from "@/components/elements/section";
 import { Grid } from "@/components/elements/grid";
 import { Stack } from "@/components/elements/stack";
 import { Text } from "@/components/elements/text";
 
 interface Feature {
-  icon: Icon;
+  icon: IconComponent;
   title: string;
   description: string;
 }

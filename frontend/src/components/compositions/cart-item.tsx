@@ -1,6 +1,6 @@
 "use client";
 
-import { IconTrash, IconMinus, IconPlus } from "@tabler/icons-react";
+import { IconTrash, IconMinus, IconPlus } from "@/components/icons";
 import { Button } from "@/components/elements/button";
 import { Card, CardContent } from "@/components/elements/card";
 import { Text } from "@/components/elements/text";

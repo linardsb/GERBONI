@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { IconAlertTriangle } from "@tabler/icons-react";
+import { IconAlertTriangle } from "@/components/icons";
 import { toast } from "sonner";
 import { Button } from "@/components/elements/button";
 import { Badge } from "@/components/elements/badge";

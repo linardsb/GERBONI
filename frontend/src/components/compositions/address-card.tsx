@@ -1,6 +1,6 @@
 "use client";
 
-import { IconMapPin, IconEdit, IconTrash, IconStar, IconStarFilled } from "@tabler/icons-react";
+import { IconMapPin, IconEdit, IconTrash, IconStar, IconStarFilled } from "@/components/icons";
 import { Button } from "@/components/elements/button";
 import { Badge } from "@/components/elements/badge";
 import { Card, CardContent } from "@/components/elements/card";

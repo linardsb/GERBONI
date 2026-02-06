@@ -26,14 +26,14 @@ const textVariants = cva("", {
       // Body text
       "body-lg": "text-lg leading-relaxed",
       "body-md": "text-base leading-relaxed",
-      "body-sm": "text-sm leading-relaxed",
+      "body-sm": "text-base leading-relaxed",
       // Labels - uppercase tracked
       label: "text-label",
       // Fine print
       fine: "text-fine",
       // Muted descriptions
       muted: "text-muted-foreground",
-      "muted-sm": "text-sm text-muted-foreground",
+      "muted-sm": "text-base text-muted-foreground",
       "muted-lg": "text-lg text-muted-foreground",
       // Price
       price: "font-bold text-primary",
@@ -48,7 +48,7 @@ const textVariants = cva("", {
       "overlay-subtle": "text-overlay-foreground-subtle",
       // Special
       emoji: "text-3xl",
-      "nav-link": "text-sm font-medium text-foreground/80 hover:text-foreground transition-colors",
+      "nav-link": "text-base font-medium text-foreground hover:text-foreground transition-colors",
       "link-primary": "font-medium text-primary hover:underline",
     },
     align: {

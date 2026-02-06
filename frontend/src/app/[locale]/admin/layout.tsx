@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "@/i18n/routing";
-import { IconLock } from "@tabler/icons-react";
+import { IconLock } from "@/components/icons";
 import { Skeleton } from "@/components/elements/skeleton";
 import { Container } from "@/components/elements/container";
 import { Stack } from "@/components/elements/stack";

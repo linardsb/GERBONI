@@ -1,4 +1,4 @@
-import { IconShieldCheck, IconLock, IconTruck, IconRefresh } from "@tabler/icons-react";
+import { IconShieldCheck, IconLock, IconTruck, IconRefresh } from "@/components/icons";
 import { Text } from "@/components/elements/text";
 import { cn } from "@/lib/utils";
 

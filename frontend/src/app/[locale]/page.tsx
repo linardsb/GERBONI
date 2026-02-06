@@ -10,7 +10,7 @@ import {
   IconTruck,
   IconMessageCircle,
   IconShoppingBag,
-} from "@tabler/icons-react";
+} from "@/components/icons";
 import { WishlistButton } from "@/components/elements/wishlist-button";
 import { Button } from "@/components/elements/button";
 import { Button3D } from "@/components/elements/button-3d";
@@ -20,7 +20,6 @@ import { Stack } from "@/components/elements/stack";
 import { Row } from "@/components/elements/row";
 import { Text } from "@/components/elements/text";
 import { Grid } from "@/components/elements/grid";
-import { Input } from "@/components/elements/input";
 import { RecentlyViewedSection } from "@/components/compositions/recently-viewed-section";
 
 const featuredProducts = [
@@ -30,8 +29,6 @@ const featuredProducts = [
     nameLv: "Rīga",
     coatOfArms: "riga.svg",
     price: 24.99,
-    rating: 4.8,
-    reviews: 127,
   },
   {
     id: 2,
@@ -39,8 +36,6 @@ const featuredProducts = [
     nameLv: "Daugavpils",
     coatOfArms: "daugavpils.svg",
     price: 24.99,
-    rating: 4.9,
-    reviews: 89,
   },
   {
     id: 3,
@@ -48,8 +43,6 @@ const featuredProducts = [
     nameLv: "Liepāja",
     coatOfArms: "liepaja.svg",
     price: 24.99,
-    rating: 4.7,
-    reviews: 64,
   },
   {
     id: 4,
@@ -57,8 +50,6 @@ const featuredProducts = [
     nameLv: "Jelgava",
     coatOfArms: "jelgava.svg",
     price: 24.99,
-    rating: 4.6,
-    reviews: 52,
   },
   {
     id: 5,
@@ -66,8 +57,6 @@ const featuredProducts = [
     nameLv: "Jūrmala",
     coatOfArms: "jurmala.svg",
     price: 24.99,
-    rating: 4.9,
-    reviews: 98,
   },
   {
     id: 6,
@@ -75,34 +64,9 @@ const featuredProducts = [
     nameLv: "Ventspils",
     coatOfArms: "ventspils.svg",
     price: 24.99,
-    rating: 4.8,
-    reviews: 71,
   },
 ];
 
-function StarRating({ rating, reviews }: { rating: number; reviews: number }) {
-  return (
-    <Row gap="xs" align="center">
-      <Row gap="none">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <svg
-            key={star}
-            className={`size-4 ${
-              star <= Math.round(rating)
-                ? "fill-foreground text-foreground"
-                : "text-muted-foreground/30"
-            }`}
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-          >
-            <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" />
-          </svg>
-        ))}
-      </Row>
-      <Text variant="muted-sm">({reviews})</Text>
-    </Row>
-  );
-}
 
 function ProductCard({
   product,
@@ -186,7 +150,6 @@ function ProductCard({
           <Text variant="muted-sm" className="mb-2">
             {locale === "lv" ? product.name : product.nameLv}
           </Text>
-          <StarRating rating={product.rating} reviews={product.reviews} />
           <Row justify="between" align="center" className="mt-3">
             <Text variant="muted-sm">XS - XXL</Text>
             <Text variant="price">€{product.price.toFixed(2)}</Text>
@@ -223,12 +186,6 @@ export default function HomePage() {
     },
   ];
 
-  const stats = [
-    { value: "10", label: locale === "lv" ? "Latvijas pilsētas" : "Latvian Cities" },
-    { value: "360", label: locale === "lv" ? "Unikāli varianti" : "Unique Variants" },
-    { value: "5★", label: locale === "lv" ? "Klientu vērtējums" : "Customer Rating" },
-  ];
-
   return (
     <div data-slot="home-page">
       {/* Hero Section - Aurova-inspired with gradient and massive typography */}
@@ -238,11 +195,6 @@ export default function HomePage() {
 
         <Container className="relative">
           <Stack gap="section" align="center" className="text-center">
-            {/* Badge */}
-            <div className="inline-block px-4 py-2 bg-background/60 backdrop-blur-sm border border-border-subtle">
-              <Text variant="label">{locale === "lv" ? "Jaunā kolekcija 2026" : "New Collection 2026"}</Text>
-            </div>
-
             {/* Massive title - uses Latvian font for authentic typography */}
             <h1 className="font-latvian text-hero leading-hero tracking-tight">
               {locale === "lv" ? "Mantojums" : "Heritage"}
@@ -250,10 +202,10 @@ export default function HomePage() {
 
             {/* Two-column description */}
             <div className="max-w-2xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-group text-lg leading-relaxed">
-              <Text variant="muted" className="opacity-80">
+              <Text variant="muted">
                 {t("heroSubtitle")}
               </Text>
-              <Text variant="muted" className="opacity-80">
+              <Text variant="muted">
                 {t("heroDescription")}
               </Text>
             </div>
@@ -315,30 +267,6 @@ export default function HomePage() {
         </Container>
       </Section>
 
-      {/* Stats Section */}
-      <Section spacing="large">
-        <Container>
-          <Grid cols={3} gap="xl">
-            {stats.map((stat, index) => (
-              <Stack key={index} gap="element" align="center" className="group">
-                <Text
-                  variant="display-lg"
-                  className="transition-transform duration-300 group-hover:scale-105"
-                >
-                  {stat.value}
-                </Text>
-                <Text
-                  variant="label"
-                  className="text-muted-foreground opacity-60"
-                >
-                  {stat.label}
-                </Text>
-              </Stack>
-            ))}
-          </Grid>
-        </Container>
-      </Section>
-
       {/* Product Showcase Section - Aurova-inspired with sticky sidebar */}
       <Section spacing="large">
         <Container>
@@ -350,7 +278,7 @@ export default function HomePage() {
                   <Stack gap="element">
                     <Text
                       variant="label"
-                      className="text-muted-foreground opacity-60"
+                      className="text-muted-foreground"
                     >
                       /01 {t("featuredProducts")}
                     </Text>
@@ -427,7 +355,7 @@ export default function HomePage() {
               const IconComponent = feature.icon;
               return (
                 <Stack key={index} gap="group" align="center" className="text-center">
-                  <div className="size-14 border border-border-subtle flex items-center justify-center">
+                  <div className="size-14 flex items-center justify-center">
                     <IconComponent
                       className="size-6 text-foreground"
                       aria-hidden="true"
@@ -437,7 +365,7 @@ export default function HomePage() {
                     <Text as="h3" variant="label">
                       {feature.title}
                     </Text>
-                    <Text variant="fine" className="leading-relaxed">
+                    <Text variant="muted" className="leading-relaxed">
                       {feature.description}
                     </Text>
                   </Stack>
@@ -445,62 +373,6 @@ export default function HomePage() {
               );
             })}
           </Grid>
-        </Container>
-      </Section>
-
-      {/* Newsletter Section - Aurova-inspired with background image */}
-      <Section spacing="large">
-        <Container size="full">
-          <div className="relative overflow-hidden text-foreground rounded-card">
-            {/* Background image */}
-            <Image
-              src="/bg_images/pexels-miami302-19405212.jpg"
-              alt=""
-              fill
-              className="object-cover"
-              aria-hidden="true"
-            />
-            {/* White overlay for text readability */}
-            <div className="absolute inset-0 bg-background/70" />
-            {/* Subtle gradient pattern */}
-            <div className="absolute inset-0 opacity-20">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-transparent to-primary/20" />
-            </div>
-
-            <div className="relative text-center py-page px-section">
-              <Stack gap="section" align="center">
-                <Text as="h2" variant="display-md">
-                  {t("newsletterTitle")}
-                </Text>
-                <Text variant="muted" className="max-w-2xl mx-auto">
-                  {t("newsletterDescription")}
-                </Text>
-
-                {/* Email form */}
-                <Row gap="group" wrap="wrap" justify="center" className="w-full max-w-md">
-                  <Input
-                    type="email"
-                    placeholder={t("newsletterPlaceholder")}
-                    variant="minimal"
-                    className="flex-1 min-w-52"
-                    aria-label={locale === "lv" ? "E-pasta adrese" : "Email address"}
-                  />
-                  <Button
-                    variant="minimal"
-                    className="text-label whitespace-nowrap"
-                  >
-                    {t("newsletterButton")}
-                  </Button>
-                </Row>
-
-                <Text variant="muted-sm">
-                  {locale === "lv"
-                    ? "Nav spama, tikai izvēlēts saturs un ekskluzīva piekļuve."
-                    : "No spam, just curated content and exclusive access."}
-                </Text>
-              </Stack>
-            </div>
-          </div>
         </Container>
       </Section>
 
@@ -532,7 +404,7 @@ export default function HomePage() {
                     : "Join thousands of Latvians and Latvia enthusiasts who proudly wear their city's coat of arms."}
                 </Text>
                 <Row gap="group" wrap="wrap" justify="center">
-                  <Button3D variant="minimal-light" size="lg" href="/products" className="text-label">
+                  <Button3D variant="minimal-light-ghost" size="lg" href="/products" className="text-label">
                     {t("shopNow")}
                   </Button3D>
                 </Row>

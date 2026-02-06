@@ -12,7 +12,7 @@ import {
   IconPlus,
   IconTruck,
   IconAlertCircle,
-} from "@tabler/icons-react";
+} from "@/components/icons";
 import { toast } from "sonner";
 import { Button } from "@/components/elements/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/elements/card";

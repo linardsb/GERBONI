@@ -12,7 +12,7 @@ import { PageHeader } from "@/components/compositions/page-header";
 import { FAQAccordion } from "@/components/compositions/faq-accordion";
 import { Grid } from "@/components/elements/grid";
 import { Link } from "@/i18n/routing";
-import { IconPackage, IconTruck, IconRefresh, IconCreditCard, IconShirt, IconHelp } from "@tabler/icons-react";
+import { IconPackage, IconTruck, IconRefresh, IconCreditCard, IconShirt, IconHelp } from "@/components/icons";
 
 export default function FAQPage() {
   const t = useTranslations("faq");

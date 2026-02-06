@@ -283,7 +283,7 @@ export const handlers = [
       { id: 2, color: 'Black', size: 'M', price: 24.99, stock: 100, sku: `${product.city_name.toUpperCase().slice(0, 3)}-BLA-M` },
       { id: 3, color: 'Black', size: 'L', price: 24.99, stock: 50, sku: `${product.city_name.toUpperCase().slice(0, 3)}-BLA-L` },
       { id: 4, color: 'White', size: 'M', price: 24.99, stock: 75, sku: `${product.city_name.toUpperCase().slice(0, 3)}-WHI-M` },
-      { id: 5, color: 'Navy', size: 'M', price: 24.99, stock: 25, sku: `${product.city_name.toUpperCase().slice(0, 3)}-NAV-M` },
+      { id: 5, color: 'Red', size: 'M', price: 24.99, stock: 25, sku: `${product.city_name.toUpperCase().slice(0, 3)}-RED-M` },
     ])
   }),
 

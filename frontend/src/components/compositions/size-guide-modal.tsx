@@ -13,7 +13,7 @@ import { Button } from "@/components/elements/button";
 import { Text } from "@/components/elements/text";
 import { Stack } from "@/components/elements/stack";
 import { Badge } from "@/components/elements/badge";
-import { IconRuler } from "@tabler/icons-react";
+import { IconRuler } from "@/components/icons";
 
 const sizeData = [
   { size: "XS", chest: 86, length: 66, fitKey: "slim" },

@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { cva } from "class-variance-authority"
-import { IconCheck, IconShoppingCart, IconTruck, IconCreditCard, IconCircleCheck } from "@tabler/icons-react"
+import { IconCheck, IconShoppingCart, IconTruck, IconCreditCard, IconCircleCheck } from "@/components/icons"
 
 import { cn } from "@/lib/utils"
 import { Text } from "@/components/elements/text"

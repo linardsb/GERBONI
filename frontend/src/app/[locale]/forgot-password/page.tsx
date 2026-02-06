@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Link } from "@/i18n/routing";
-import { IconArrowLeft, IconMail, IconCheck } from "@tabler/icons-react";
+import { IconArrowLeft, IconMail, IconCheck } from "@/components/icons";
 import { Container } from "@/components/elements/container";
 import { Section } from "@/components/elements/section";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/elements/card";

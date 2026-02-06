@@ -5,7 +5,7 @@ import { Link } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 
 const button3DVariants = cva(
-  "btn-3d-pushback inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] cursor-pointer [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0",
+  "btn-3d-pushback inline-flex items-center justify-center whitespace-nowrap text-sm font-bold transition-all disabled:pointer-events-none disabled:opacity-50 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] cursor-pointer [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
@@ -14,6 +14,7 @@ const button3DVariants = cva(
         outline: "",
         minimal: "",
         "minimal-light": "",
+        "minimal-light-ghost": "",
       },
       size: {
         default: "",
@@ -49,6 +50,10 @@ const faceVariants = {
   },
   "minimal-light": {
     front: "bg-surface-dark/90 text-overlay-foreground border border-overlay-foreground",
+    back: "bg-overlay-foreground text-surface-dark border border-overlay-foreground",
+  },
+  "minimal-light-ghost": {
+    front: "bg-transparent text-overlay-foreground border border-overlay-foreground",
     back: "bg-overlay-foreground text-surface-dark border border-overlay-foreground",
   },
 }

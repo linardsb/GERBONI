@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "@/i18n/routing";
 import Image from "next/image";
-import { IconHeart, IconShoppingCart, IconArrowRight } from "@tabler/icons-react";
+import { IconHeart, IconShoppingCart, IconArrowRight } from "@/components/icons";
 import { Container } from "@/components/elements/container";
 import { Stack } from "@/components/elements/stack";
 import { Row } from "@/components/elements/row";

@@ -92,7 +92,7 @@ CITIES = [
 ]
 
 # T-shirt options
-COLORS = ["Black", "White", "Navy", "Gray", "Red", "Green"]
+COLORS = ["Black", "White", "Red"]
 SIZES = ["XS", "S", "M", "L", "XL", "XXL"]
 
 # Base price - varies slightly by size

@@ -149,7 +149,7 @@ async def test_product(db_session: AsyncSession):
     await db_session.refresh(product)
 
     # Add variants
-    colors = ["Black", "White", "Navy"]
+    colors = ["Black", "White", "Red"]
     sizes = ["S", "M", "L"]
 
     for color in colors:
@@ -320,7 +320,7 @@ def mock_agent_product_search():
         mock_agent = MagicMock()
         mock_agent.run = AsyncMock(
             return_value=MockAgentResult(
-                data="Available products:\n  • Rīga (Rīga): from €24.99 | Colors: Black, White, Navy"
+                data="Available products:\n  • Rīga (Rīga): from €24.99 | Colors: Black, White, Red"
             )
         )
         mock_get_agent.return_value = mock_agent

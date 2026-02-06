@@ -2,7 +2,7 @@
 
 import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/routing";
-import { IconBrandInstagram, IconBrandFacebook, IconMail, IconHeart } from "@tabler/icons-react";
+import { IconBrandInstagram, IconBrandFacebook, IconMail, IconHeart } from "@/components/icons";
 import { Separator } from "@/components/elements/separator";
 import { Stack } from "@/components/elements/stack";
 import { Row } from "@/components/elements/row";

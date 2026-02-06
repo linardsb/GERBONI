@@ -9,7 +9,7 @@ import {
   IconAlertTriangle,
   IconClock,
   IconTrendingUp,
-} from "@tabler/icons-react";
+} from "@/components/icons";
 import { toast } from "sonner";
 import { Button } from "@/components/elements/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/elements/card";

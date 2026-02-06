@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { IconArrowRight } from "@tabler/icons-react";
+import { IconArrowRight } from "@/components/icons";
 import { Button } from "@/components/elements/button";
 import { Section } from "@/components/elements/section";
 import { Container } from "@/components/elements/container";

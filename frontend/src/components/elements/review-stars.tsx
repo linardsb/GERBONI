@@ -1,6 +1,6 @@
 "use client";
 
-import { IconStar, IconStarFilled, IconStarHalfFilled } from "@tabler/icons-react";
+import { IconStar, IconStarFilled, IconStarHalfFilled } from "@/components/icons";
 import { cn } from "@/lib/utils";
 
 interface ReviewStarsProps {

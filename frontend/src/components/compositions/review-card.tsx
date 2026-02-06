@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { IconThumbUp, IconCheck } from "@tabler/icons-react";
+import { IconThumbUp, IconCheck } from "@/components/icons";
 import { Card, CardContent } from "@/components/elements/card";
 import { Text } from "@/components/elements/text";
 import { Stack } from "@/components/elements/stack";

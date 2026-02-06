@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
-import { IconPackage, IconTruck } from "@tabler/icons-react";
+import { IconPackage, IconTruck } from "@/components/icons";
 import { Button } from "@/components/elements/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/elements/card";
 import { Badge } from "@/components/elements/badge";

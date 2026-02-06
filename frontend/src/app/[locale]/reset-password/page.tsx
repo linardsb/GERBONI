@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Link, useRouter } from "@/i18n/routing";
-import { IconLock, IconCheck, IconX, IconEye, IconEyeOff } from "@tabler/icons-react";
+import { IconLock, IconCheck, IconX, IconEye, IconEyeOff } from "@/components/icons";
 import { Container } from "@/components/elements/container";
 import { Section } from "@/components/elements/section";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/elements/card";

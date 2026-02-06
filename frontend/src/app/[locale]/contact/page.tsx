@@ -14,7 +14,7 @@ import { Input } from "@/components/elements/input";
 import { Textarea } from "@/components/elements/textarea";
 import { Button } from "@/components/elements/button";
 import { Label } from "@/components/elements/label";
-import { IconMail, IconPhone, IconMessageCircle, IconClock, IconSend } from "@tabler/icons-react";
+import { IconMail, IconPhone, IconMessageCircle, IconClock, IconSend } from "@/components/icons";
 import { toast } from "sonner";
 
 export default function ContactPage() {

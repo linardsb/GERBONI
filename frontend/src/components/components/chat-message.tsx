@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
-import { IconRobot } from "@tabler/icons-react"
+import { IconRobot } from "@/components/icons"
 
 import { cn } from "@/lib/utils"
 import { Text } from "@/components/elements/text"

@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
-import { IconCheck } from "@tabler/icons-react"
+import { IconCheck } from "@/components/icons"
 
 import { cn } from "@/lib/utils"
 import {

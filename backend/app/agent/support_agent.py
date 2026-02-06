@@ -16,7 +16,7 @@ _support_agent: Agent | None = None
 
 # Available cities for reference in tool descriptions
 LATVIAN_CITIES = ["Rīga", "Daugavpils", "Jelgava", "Jēkabpils", "Jūrmala", "Liepāja", "Ogre", "Rēzekne", "Valmiera", "Ventspils"]
-AVAILABLE_COLORS = ["Black", "White", "Navy", "Gray", "Red", "Green"]
+AVAILABLE_COLORS = ["Black", "White", "Red"]
 AVAILABLE_SIZES = ["XS", "S", "M", "L", "XL", "XXL"]
 
 
@@ -67,7 +67,7 @@ information about other customers' orders.
 The store sells t-shirts featuring coats of arms from 10 major Latvian cities:
 Rīga, Daugavpils, Jelgava, Jēkabpils, Jūrmala, Liepāja, Ogre, Rēzekne, Valmiera, and Ventspils.
 
-Available colors: Black, White, Navy, Gray, Red, Green
+Available colors: Black, White, Red
 Available sizes: XS, S, M, L, XL, XXL
 
 SIZING GUIDE:
@@ -355,7 +355,7 @@ Shipping to:
                       Partial matches work: "Rig" finds "Rīga".
                       Available cities: Rīga, Daugavpils, Jelgava, Jēkabpils, Jūrmala,
                       Liepāja, Ogre, Rēzekne, Valmiera, Ventspils.
-            color: Filter by t-shirt color. Available: Black, White, Navy, Gray, Red, Green.
+            color: Filter by t-shirt color. Available: Black, White, Red.
                    Case-insensitive.
 
         Returns a concise list showing city name, starting price, and available colors.

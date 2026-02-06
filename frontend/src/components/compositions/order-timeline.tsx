@@ -1,6 +1,6 @@
 "use client";
 
-import { IconCheck, IconClock, IconPackage, IconTruck, IconHome, IconX, IconRefresh } from "@tabler/icons-react";
+import { IconCheck, IconClock, IconPackage, IconTruck, IconHome, IconX, IconRefresh } from "@/components/icons";
 import { Text } from "@/components/elements/text";
 import { cn } from "@/lib/utils";
 

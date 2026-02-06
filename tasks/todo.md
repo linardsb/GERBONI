@@ -12,10 +12,10 @@ Track current work items and progress. Update status as work progresses.
 ## Current Sprint
 
 ### Frontend
-- [ ] Commit exit intent popup translation updates (en.json/lv.json)
+- [ ] (No active tasks)
 
 ### Backend
-- [ ] Commit new admin CLI tool (`backend/app/cli.py`)
+- [ ] (No active tasks)
 
 ### DevOps
 - [ ] (No active tasks)
@@ -41,6 +41,8 @@ Track current work items and progress. Update status as work progresses.
 - [x] Fix locale preservation in navigation using i18n Link
 - [x] Add permanent admin account to database seed
 - [x] Update exit intent popup translations (clickToCopy, continueShopping, close)
+- [x] Add admin management CLI tool (`backend/app/cli.py`)
+- [x] Refresh task tracking and bug report files
 
 ### 2026-02-03
 - [x] Enforce design system tokens across frontend codebase
@@ -56,18 +58,6 @@ Track current work items and progress. Update status as work progresses.
 - [x] Created root page redirect for locale routing (BUG-003)
 - [x] Created frontend Dockerfile and .dockerignore
 - [x] Full Docker Compose stack running (backend + frontend + db)
-
----
-
-## Uncommitted Changes
-
-| File | Description |
-|------|-------------|
-| `frontend/src/messages/en.json` | Exit intent popup translation updates |
-| `frontend/src/messages/lv.json` | Exit intent popup translation updates |
-| `backend/app/cli.py` | New admin management CLI (untracked) |
-| `backend/app/CLAUDE.md` | Minor updates |
-| `frontend/src/app/[locale]/wishlist/CLAUDE.md` | Minor updates |
 
 ---
 

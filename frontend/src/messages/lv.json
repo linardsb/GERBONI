@@ -326,10 +326,7 @@
   "colors": {
     "Black": "Melns",
     "White": "Balts",
-    "Navy": "Tumši zils",
-    "Gray": "Pelēks",
-    "Burgundy": "Bordo",
-    "Forest": "Meža zaļš"
+    "Burgundy": "Bordo"
   },
   "sizes": {
     "XS": "XS",
@@ -340,15 +337,37 @@
     "XXL": "XXL"
   },
   "about": {
-    "title": "Mūsu stāsts",
-    "subtitle": "Saglabājam Latvijas mantojumu caur modi",
-    "intro": "GERBONI radās no dziļas mīlestības pret Latvijas kultūru un vēlmes dalīties ar tās bagātajām heraldikas tradīcijām visā pasaulē.",
-    "mission": "Mūsu misija",
-    "missionText": "Mēs ticam, ka katrai Latvijas pilsētai ir unikāls stāsts, kas skaisti atspoguļots tās ģerbonī. Mūsu misija ir atdzīvināt šos vietējā lepnuma un vēstures simbolus ar augstas kvalitātes, valkājamu mākslu.",
-    "quality": "Kvalitāte un meistarība",
-    "qualityText": "Katrs GERBONI krekls ir izgatavots no 100% organiskās kokvilnas, ētiski iegūts un apdrukāts, izmantojot videi draudzīgas tehnoloģijas. Mēs sadarbojamies ar vietējiem amatniekiem, lai nodrošinātu, ka katrs dizains atbilst augstākajiem heraldikas precizitātes standartiem.",
-    "heritage": "Svinam mantojumu",
-    "heritageText": "No Rīgas ikoniskajām sakrustotajām atslēgām līdz Liepājas majestātiskajam lauvam, katrs ģerbonis pārstāv gadsimtiem vēstures, kultūras un kopienas lepnuma. Kad jūs velkat GERBONI, jūs ne tikai velkat kreklu – jūs nesat Latvijas mantojuma daļu."
+    "badge": "Mūsu stāsts",
+    "heroTitle": "Velc savu mantojumu ar lepnumu",
+    "heroP1": "GERBONI radās no vienkāršas idejas: kā būtu, ja jūs varētu valkāt savu saikni ar Latvijas skaistajām pilsētām?",
+    "heroP2": "Katrai Latvijas pilsētai ir ģerbonis — simbols, kas bagāts ar vēsturi, nozīmi un vietējo lepnumu. Šie heraldiskie dizaini stāsta par tirdzniecības ceļiem, dabas resursiem un gadsimtiem kultūras. Mēs ticējām, ka šie simboli ir pelnījuši tikt svinēti, ne tikai izstādīti valdības ēkās.",
+    "heroP3": "Tāpēc mēs radījām GERBONI: augstākās kvalitātes kreklus ar autentiskiem ģerboņiem no Latvijas mīļākajām pilsētām. Neatkarīgi no tā, vai esat no Rīgas, pavadījāt vasaras Jūrmalā vai vienkārši iemīlējāt Latvijas kultūru — ir dizains, kas runā uz jūsu stāstu.",
+    "coatsCaption": "Ar autentiskiem 10 Latvijas pilsētu ģerboņiem",
+    "valuesTitle": "Mūsu vērtības",
+    "valuesSubtitle": "Mūsu apņemšanās kvalitātei, mantojumam un ilgtspējai",
+    "valueHeritage": "Mantojums",
+    "valueHeritageDesc": "Katrs dizains svin Latvijas pilsētu bagāto vēsturi un unikālo identitāti caur to autentiskajiem ģerboņiem.",
+    "valueQuality": "Kvalitāte",
+    "valueQualityDesc": "Premium 180 GSM organiskā kokvilna ar DTG apdruku nodrošina, ka jūsu krekls izskatās lieliski pēc katras mazgāšanas.",
+    "valueSustainability": "Ilgtspēja",
+    "valueSustainabilityDesc": "Videi draudzīgas tintes, organiski materiāli un ētiska ES ražošana samazina mūsu ekoloģisko pēdu.",
+    "valueLocalPride": "Vietējais lepnums",
+    "valueLocalPrideDesc": "Dizainēts Rīgā, nosūtīts no Latvijas — atbalstot vietējo uzņēmējdarbību, daloties ar Latvijas kultūru visā pasaulē.",
+    "specsTitle": "Produkta specifikācijas",
+    "specMaterialLabel": "Materiāls",
+    "specMaterialText": "100% organiskā kokvilna, 180 GSM vidēja svara — mīksta, elpošana un izturīga",
+    "specPrintLabel": "Apdruka",
+    "specPrintText": "Tieša drukāšana uz apģērba (DTG) ar videi draudzīgām, mazgāšanai izturīgām tintēm, kas kļūst par auduma daļu",
+    "specOriginLabel": "Izcelsme",
+    "specOriginText": "Dizainēts Rīgā, Latvijā; ētiski ražots ES ar godīgām darba praksēm",
+    "specFitLabel": "Piegriezums",
+    "specFitText": "Iepriekš sarausts audums izmēros XS-XXL ar pieguļošu līdz brīvu piegriezumu",
+    "qualityTitle": "Kvalitāte, ko varat sajust",
+    "qualityP1": "Mēs pievēršam uzmanību katrai detaļai, jo zinām, ka šo kreklu valkāsiet gadiem. 180 GSM organiskā kokvilna rada ideālu līdzsvaru — pietiekami blīva, lai justos premium, pietiekami viegla ikdienas komfortam.",
+    "qualityP2": "Mūsu DTG apdruku process izmanto videi draudzīgas tintes, kas saistās tieši ar kokvilnas šķiedrām. Atšķirībā no sietspiedes, kas atrodas virspusē, mūsu apdrukas ir burtiski krekla daļa. Bez plaisāšanas, bez lobīšanās, bez izbalēšanas — pat pēc desmitiem mazgāšanu.",
+    "qualityP3": "Un tāpēc, ka ilgtspēja ir svarīga, mēs izvēlējāmies organisko kokvilnu un ūdens bāzes tintes. Labs jums, labs planētai.",
+    "ctaTitle": "Atrodi savu pilsētu",
+    "ctaDescription": "Neatkarīgi no tā, vai tā ir jūsu dzimtā pilsēta, vieta, kuru mīlat apmeklēt, vai pilsēta ar īpašām atmiņām — jūsu GERBONI krekls gaida."
   },
   "faq": {
     "title": "Biežāk uzdotie jautājumi",

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { IconLock, IconTruck } from "@tabler/icons-react";
+import { IconLock, IconTruck } from "@/components/icons";
 import { Button } from "@/components/elements/button";
 import { Button3D } from "@/components/elements/button-3d";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/elements/card";

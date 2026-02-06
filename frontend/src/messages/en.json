@@ -326,10 +326,7 @@
   "colors": {
     "Black": "Black",
     "White": "White",
-    "Navy": "Navy",
-    "Gray": "Gray",
-    "Burgundy": "Burgundy",
-    "Forest": "Forest Green"
+    "Burgundy": "Burgundy"
   },
   "sizes": {
     "XS": "XS",
@@ -340,15 +337,37 @@
     "XXL": "XXL"
   },
   "about": {
-    "title": "Our Story",
-    "subtitle": "Preserving Latvian Heritage Through Fashion",
-    "intro": "GERBONI was born from a deep love for Latvian culture and a desire to share its rich heraldic traditions with the world.",
-    "mission": "Our Mission",
-    "missionText": "We believe that every Latvian city has a unique story to tell, beautifully captured in its coat of arms. Our mission is to bring these symbols of local pride and history to life through high-quality, wearable art.",
-    "quality": "Quality & Craftsmanship",
-    "qualityText": "Each GERBONI t-shirt is crafted from 100% organic cotton, ethically sourced and printed using eco-friendly techniques. We partner with local artisans to ensure every design meets the highest standards of heraldic accuracy.",
-    "heritage": "Celebrating Heritage",
-    "heritageText": "From Riga's iconic crossed keys to Liepāja's majestic lion, each coat of arms represents centuries of history, culture, and community pride. When you wear GERBONI, you're not just wearing a t-shirt – you're carrying a piece of Latvian heritage."
+    "badge": "Our Story",
+    "heroTitle": "Wear Your Heritage with Pride",
+    "heroP1": "GERBONI was born from a simple idea: what if you could wear your connection to Latvia's beautiful cities?",
+    "heroP2": "Each Latvian city has a coat of arms—a symbol rich with history, meaning, and local pride. These heraldic designs tell stories of trade routes, natural resources, and centuries of culture. We believed these symbols deserved to be celebrated, not just displayed in government buildings.",
+    "heroP3": "That's why we created GERBONI: premium t-shirts featuring authentic coats of arms from Latvia's most beloved cities. Whether you're from Rīga, spent summers in Jūrmala, or simply fell in love with Latvian culture, there's a design that speaks to your story.",
+    "coatsCaption": "Featuring authentic coats of arms from 10 Latvian cities",
+    "valuesTitle": "What We Stand For",
+    "valuesSubtitle": "Our commitment to quality, heritage, and sustainability",
+    "valueHeritage": "Heritage",
+    "valueHeritageDesc": "Every design celebrates the rich history and unique identity of Latvia's cities through their authentic coats of arms.",
+    "valueQuality": "Quality",
+    "valueQualityDesc": "Premium 180 GSM organic cotton with DTG printing ensures your shirt looks great wash after wash.",
+    "valueSustainability": "Sustainability",
+    "valueSustainabilityDesc": "Eco-friendly inks, organic materials, and ethical EU production minimize our environmental footprint.",
+    "valueLocalPride": "Local Pride",
+    "valueLocalPrideDesc": "Designed in Rīga, shipped from Latvia—supporting local business while sharing Latvian culture worldwide.",
+    "specsTitle": "Product Specifications",
+    "specMaterialLabel": "Material",
+    "specMaterialText": "100% organic cotton, 180 GSM medium weight—soft, breathable, and built to last",
+    "specPrintLabel": "Print",
+    "specPrintText": "Direct-to-garment (DTG) with eco-friendly, wash-resistant inks that become part of the fabric",
+    "specOriginLabel": "Origin",
+    "specOriginText": "Designed in Rīga, Latvia; ethically produced in the EU with fair labor practices",
+    "specFitLabel": "Fit",
+    "specFitText": "Pre-shrunk fabric in sizes XS-XXL with slim to relaxed fits",
+    "qualityTitle": "Quality You Can Feel",
+    "qualityP1": "We obsess over every detail because we know you'll wear this shirt for years. The 180 GSM organic cotton strikes the perfect balance—substantial enough to feel premium, light enough for everyday comfort.",
+    "qualityP2": "Our DTG printing process uses eco-friendly inks that bond directly with the cotton fibers. Unlike screen printing that sits on top, our prints are literally part of the shirt. No cracking, no peeling, no fading—even after dozens of washes.",
+    "qualityP3": "And because sustainability matters, we chose organic cotton and water-based inks. Good for you, good for the planet.",
+    "ctaTitle": "Find Your City",
+    "ctaDescription": "Whether it's your hometown, a place you love to visit, or a city that holds special memories—there's a GERBONI shirt waiting for you."
   },
   "faq": {
     "title": "Frequently Asked Questions",

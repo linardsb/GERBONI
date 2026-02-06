@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/elements/
 import { PageHeader } from "@/components/compositions/page-header";
 import { Grid } from "@/components/elements/grid";
 import { Badge } from "@/components/elements/badge";
-import { IconTruck, IconWorld, IconRocket, IconPackage } from "@tabler/icons-react";
+import { IconTruck, IconWorld, IconRocket, IconPackage } from "@/components/icons";
 
 export default function ShippingPage() {
   const t = useTranslations("shipping");

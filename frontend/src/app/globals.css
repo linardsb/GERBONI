@@ -104,7 +104,7 @@
 }
 
 :root {
-  /* Vega style: zinc base + cyan theme + no radius for buttons */
+  /* Zinc base + brand red theme + no radius for buttons */
   --radius: 0;
   --background: oklch(1 0 0);
   /* Semantic surface colors */
@@ -153,30 +153,33 @@
   --easing-in-out: cubic-bezier(0.4, 0, 0.2, 1);
   --easing-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
   --easing-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  /* Letter-spacing tokens */
+  --tracking-heading: 0.04em;
+  --tracking-body: 0.01em;
   /* Semantic surface colors */
   --surface-muted: oklch(0.985 0.002 286);
   --surface-dark: oklch(0.12 0.004 286);
   --border-subtle: oklch(0.92 0.004 286);
-  --foreground: oklch(0.141 0.005 285.823);
+  --foreground: oklch(0.216 0.001 286);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.141 0.005 285.823);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.141 0.005 285.823);
-  /* Cyan primary */
-  --primary: oklch(0.715 0.143 215.221);
-  --primary-foreground: oklch(0.985 0.002 247.839);
+  /* Brand red primary */
+  --primary: oklch(0.463 0.142 23);
+  --primary-foreground: oklch(0.98 0 0);
   --secondary: oklch(0.967 0.001 286.375);
   --secondary-foreground: oklch(0.21 0.006 285.885);
   --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
+  --muted-foreground: oklch(0.216 0.001 286);
   --accent: oklch(0.967 0.001 286.375);
   --accent-foreground: oklch(0.21 0.006 285.885);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.98 0 0);
   --border: oklch(0.92 0.004 286.32);
   --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.715 0.143 215.221);
-  --chart-1: oklch(0.715 0.143 215.221);
+  --ring: oklch(0.463 0.142 23);
+  --chart-1: oklch(0.463 0.142 23);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
@@ -184,12 +187,12 @@
   /* Sidebar: inverted menu color */
   --sidebar: oklch(0.141 0.005 285.823);
   --sidebar-foreground: oklch(0.985 0.002 247.839);
-  --sidebar-primary: oklch(0.715 0.143 215.221);
-  --sidebar-primary-foreground: oklch(0.985 0.002 247.839);
+  --sidebar-primary: oklch(0.463 0.142 23);
+  --sidebar-primary-foreground: oklch(0.98 0 0);
   --sidebar-accent: oklch(0.21 0.006 285.885);
   --sidebar-accent-foreground: oklch(0.985 0.002 247.839);
   --sidebar-border: oklch(0.274 0.006 286.033);
-  --sidebar-ring: oklch(0.715 0.143 215.221);
+  --sidebar-ring: oklch(0.463 0.142 23);
 }
 
 .dark {
@@ -202,9 +205,9 @@
   --card-foreground: oklch(0.985 0.002 247.839);
   --popover: oklch(0.141 0.005 285.823);
   --popover-foreground: oklch(0.985 0.002 247.839);
-  /* Cyan primary */
-  --primary: oklch(0.715 0.143 215.221);
-  --primary-foreground: oklch(0.21 0.006 285.885);
+  /* Brand red primary - lighter in dark mode for visibility */
+  --primary: oklch(0.55 0.16 23);
+  --primary-foreground: oklch(0.98 0 0);
   --secondary: oklch(0.274 0.006 286.033);
   --secondary-foreground: oklch(0.985 0.002 247.839);
   --muted: oklch(0.274 0.006 286.033);
@@ -215,8 +218,8 @@
   --destructive-foreground: oklch(0.98 0 0);
   --border: oklch(0.274 0.006 286.033);
   --input: oklch(0.274 0.006 286.033);
-  --ring: oklch(0.715 0.143 215.221);
-  --chart-1: oklch(0.715 0.143 215.221);
+  --ring: oklch(0.55 0.16 23);
+  --chart-1: oklch(0.55 0.16 23);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
@@ -224,12 +227,12 @@
   /* Sidebar: inverted */
   --sidebar: oklch(0.21 0.006 285.885);
   --sidebar-foreground: oklch(0.985 0.002 247.839);
-  --sidebar-primary: oklch(0.715 0.143 215.221);
-  --sidebar-primary-foreground: oklch(0.985 0.002 247.839);
+  --sidebar-primary: oklch(0.55 0.16 23);
+  --sidebar-primary-foreground: oklch(0.98 0 0);
   --sidebar-accent: oklch(0.274 0.006 286.033);
   --sidebar-accent-foreground: oklch(0.985 0.002 247.839);
   --sidebar-border: oklch(0.274 0.006 286.033);
-  --sidebar-ring: oklch(0.715 0.143 215.221);
+  --sidebar-ring: oklch(0.55 0.16 23);
 }
 
 @layer base {
@@ -238,9 +241,11 @@
   }
   body {
     @apply bg-background text-foreground;
+    letter-spacing: var(--tracking-body);
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-capsuula), var(--font-figtree), sans-serif;
+    letter-spacing: var(--tracking-heading);
   }
   .container {
     @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
@@ -257,10 +262,9 @@
   .font-heading {
     font-family: var(--font-capsuula), var(--font-figtree), sans-serif;
   }
-  /* Display headings - serif italic for elegant headers */
+  /* Display headings - heading font for elegant headers */
   .text-display {
-    font-family: var(--font-serif);
-    font-style: italic;
+    font-family: var(--font-capsuula), var(--font-figtree), sans-serif;
   }
   /* Latvian display text - for branded Latvian headings */
   .text-latvian {
@@ -269,7 +273,7 @@
   }
   /* Uppercase tracking for labels and CTAs */
   .text-label {
-    @apply uppercase tracking-[0.15em] text-sm font-medium;
+    @apply uppercase tracking-[0.15em] text-sm font-bold;
   }
   /* Fine print with increased tracking */
   .text-fine {
@@ -277,7 +281,7 @@
   }
   /* Navigation link with hover underline */
   .nav-link {
-    @apply text-sm font-medium text-foreground/80 hover:text-foreground transition-colors relative;
+    @apply text-base font-medium text-foreground hover:text-foreground transition-colors relative uppercase;
   }
   .nav-link::after {
     content: '';
@@ -288,11 +292,19 @@
   }
   /* Mobile navigation link */
   .nav-link-mobile {
-    @apply text-lg font-medium;
+    @apply text-lg font-medium uppercase;
   }
   /* Footer link */
   .footer-link {
-    @apply text-sm text-muted-foreground hover:text-foreground transition-colors;
+    @apply text-base text-muted-foreground hover:text-foreground transition-all relative;
+    text-transform: uppercase;
+  }
+  .footer-link::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-0 h-px bg-current transition-all duration-300;
+  }
+  .footer-link:hover::after {
+    @apply w-full;
   }
 }
 

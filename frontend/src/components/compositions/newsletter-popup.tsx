@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { IconX, IconMail, IconGift } from "@tabler/icons-react";
+import { IconX, IconMail, IconGift } from "@/components/icons";
 import { Button3D } from "@/components/elements/button-3d";
 import { Input } from "@/components/elements/input";
 import { Text } from "@/components/elements/text";

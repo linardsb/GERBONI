@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { IconChevronUp, IconChevronDown, IconSelector } from "@tabler/icons-react";
+import { IconChevronUp, IconChevronDown, IconSelector } from "@/components/icons";
 import { Button } from "@/components/elements/button";
 import { Text } from "@/components/elements/text";
 

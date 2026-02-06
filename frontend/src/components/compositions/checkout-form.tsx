@@ -1,6 +1,6 @@
 "use client";
 
-import { IconMail, IconTruck, IconCreditCard, IconLoader2, IconArrowLeft } from "@tabler/icons-react";
+import { IconMail, IconTruck, IconCreditCard, IconLoader2, IconArrowLeft } from "@/components/icons";
 import { Button } from "@/components/elements/button";
 import { Button3D } from "@/components/elements/button-3d";
 import { Input } from "@/components/elements/input";

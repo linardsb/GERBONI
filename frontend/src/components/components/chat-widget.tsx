@@ -10,7 +10,7 @@ import {
   IconPackage,
   IconHelp,
   IconRefresh,
-} from "@tabler/icons-react";
+} from "@/components/icons";
 import { Button } from "@/components/elements/button";
 import { Card } from "@/components/elements/card";
 import { Input } from "@/components/elements/input";

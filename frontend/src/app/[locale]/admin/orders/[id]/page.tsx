@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Link, useRouter } from "@/i18n/routing";
-import { IconChevronLeft, IconTruck } from "@tabler/icons-react";
+import { IconChevronLeft, IconTruck } from "@/components/icons";
 import { toast } from "sonner";
 import { Button } from "@/components/elements/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/elements/card";
