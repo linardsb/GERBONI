@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Link } from "@/i18n/routing";
 import { Button } from "@/components/elements/button";
 import { Input } from "@/components/elements/input";
 import { Text } from "@/components/elements/text";
@@ -74,7 +75,7 @@ export function ReviewForm({
       <Stack gap="group" align="center" className="py-4 border rounded-lg">
         <Text variant="muted">Please log in to leave a review</Text>
         <Button asChild>
-          <a href="/login">Log In</a>
+          <Link href="/login">Log In</Link>
         </Button>
       </Stack>
     );

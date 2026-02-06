@@ -49,6 +49,7 @@ export default function OrderDetailPage() {
 
   useEffect(() => {
     if (!token || isNaN(orderId)) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- early exit when auth unavailable
       setLoading(false);
       return;
     }

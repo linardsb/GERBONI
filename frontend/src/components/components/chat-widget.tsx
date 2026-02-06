@@ -93,7 +93,7 @@ export function ChatWidget() {
         }
       });
       inputRef.current?.focus();
-      // Clear unread count when opening
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- clear unread count when chat opens
       setUnreadCount(0);
     }
   }, [isOpen, token, guestSession]);

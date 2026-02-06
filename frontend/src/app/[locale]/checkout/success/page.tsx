@@ -31,7 +31,7 @@ function SuccessContent() {
   const locale = useLocale() as "en" | "lv";
 
   const [order, setOrder] = useState<Order | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!!orderId);
 
   const t = {
     orderConfirmed: locale === "lv" ? "Pasūtījums apstiprināts!" : "Order Confirmed!",
@@ -67,8 +67,6 @@ function SuccessContent() {
         .then(setOrder)
         .catch(console.error)
         .finally(() => setLoading(false));
-    } else {
-      setLoading(false);
     }
   }, [orderId, token, clearCart]);
 

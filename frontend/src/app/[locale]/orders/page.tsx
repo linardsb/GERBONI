@@ -44,6 +44,7 @@ export default function OrdersPage() {
 
   useEffect(() => {
     if (!token) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- early exit when auth unavailable
       setLoading(false);
       return;
     }

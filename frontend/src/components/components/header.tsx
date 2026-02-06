@@ -32,6 +32,7 @@ export function Header() {
 
   // Wait for client hydration before rendering Radix components to avoid ID mismatch
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- standard hydration pattern
     setMounted(true);
   }, []);
   const { user, logout } = useAuthStore();

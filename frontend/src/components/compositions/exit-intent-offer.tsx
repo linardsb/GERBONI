@@ -20,7 +20,8 @@ export function ExitIntentOffer() {
   const [isOpen, setIsOpen] = useState(false);
   const [canShow, setCanShow] = useState(false);
 
-  // Check if we should show the modal
+  // Check if we should show the modal (requires browser APIs so must be in effect)
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     // Don't show on checkout pages
     if (pathname?.includes("/checkout") || pathname?.includes("/cart")) {
@@ -48,6 +49,7 @@ export function ExitIntentOffer() {
 
     setCanShow(true);
   }, [pathname]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const handleExitIntent = useCallback(() => {
     if (canShow) {

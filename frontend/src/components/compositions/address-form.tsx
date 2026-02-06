@@ -45,6 +45,7 @@ export function AddressForm({
   });
   const [error, setError] = useState<string | null>(null);
 
+  /* eslint-disable react-hooks/set-state-in-effect -- sync form state from address prop */
   useEffect(() => {
     if (address) {
       setFormData({
@@ -73,6 +74,7 @@ export function AddressForm({
     }
     setError(null);
   }, [address, open]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
