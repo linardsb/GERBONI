@@ -1,6 +1,20 @@
 # Testing Strategy
 
-This document outlines the comprehensive testing strategy for the GERBONI e-commerce platform. Testing is enforced at multiple levels with coverage thresholds and CI integration.
+This document outlines the comprehensive testing strategy for the GERBONI e-commerce platform. Testing is enforced at multiple levels with coverage thresholds.
+
+## Quick Start (Makefile)
+
+Run from the project root:
+
+| Command | What it does |
+|---|---|
+| `make test` | Run **all** backend + frontend tests |
+| `make test-backend` | Backend only (pytest, 309 tests) |
+| `make test-frontend` | Frontend only (vitest, 380 tests) |
+| `make test-file FILE=backend/tests/test_auth.py` | Single backend test file |
+| `make test-file FILE=frontend/src/__tests__/components/button.test.tsx` | Single frontend test file |
+| `make test-lint` | Frontend ESLint check |
+| `make test-e2e` | Playwright E2E tests |
 
 ## Testing Pyramid
 
@@ -8,9 +22,9 @@ This document outlines the comprehensive testing strategy for the GERBONI e-comm
         /\
        /E2E\         6 Playwright specs (cross-browser)
       /------\
-     / Unit  \       13 Vitest specs (components, utilities)
+     / Unit  \       16 Vitest specs (components, pages, utilities)
     /----------\
-   /   API     \     11 pytest modules (endpoints, services)
+   /   API     \     20 pytest modules (endpoints, services, admin)
   /--------------\
 ```
 
@@ -18,8 +32,8 @@ This document outlines the comprehensive testing strategy for the GERBONI e-comm
 
 | Suite | Framework | Files | Tests | Coverage Threshold | Runtime |
 |-------|-----------|-------|-------|-------------------|---------|
-| Backend API | pytest | 11 modules | ~120 functions | ≥60% | ~15s |
-| Frontend Unit | Vitest | 13 files | ~80 tests | ≥80% | ~8s |
+| Backend API | pytest | 20 modules | 309 tests | ≥60% | ~60s |
+| Frontend Unit | Vitest | 16 files | 380 tests | ≥80% | ~5s |
 | Frontend E2E | Playwright | 6 specs | ~35 scenarios | N/A | ~2m |
 
 ## Backend Testing (pytest)
@@ -28,18 +42,25 @@ This document outlines the comprehensive testing strategy for the GERBONI e-comm
 
 ```
 backend/tests/
-├── conftest.py              # Fixtures: db_session, client, auth_client
-├── test_auth.py             # Registration, login, guest sessions
-├── test_cart.py             # Cart CRUD, item management
-├── test_orders.py           # Order creation, status transitions
-├── test_products.py         # Product catalog, variants
-├── test_payments.py         # Stripe checkout, webhooks
-├── test_admin_orders.py     # Admin order management (NEW)
-├── test_admin_users.py      # Admin user management (NEW)
-├── test_newsletter.py       # Newsletter subscriptions (NEW)
-├── test_agent.py            # AI agent tools, WebSocket (NEW)
-├── test_error_tracker.py    # Error tracking middleware (NEW)
-└── test_middleware.py       # Request logging, CORS (NEW)
+├── conftest.py                # Fixtures: db_session, client, auth_client, admin_client
+├── test_addresses.py          # User address management
+├── test_admin_dashboard.py    # Admin dashboard stats
+├── test_admin_orders.py       # Admin order management, status transitions
+├── test_admin_products.py     # Admin product/variant management
+├── test_admin_users.py        # Admin user roles, activate/deactivate
+├── test_agent.py              # AI agent tools, WebSocket
+├── test_auth.py               # Registration, login, guest sessions
+├── test_cart.py               # Cart CRUD, item management
+├── test_error_tracking.py     # Error tracking API (admin-only)
+├── test_newsletter.py         # Newsletter subscriptions
+├── test_order_state_machine.py # Order state transitions (valid + invalid)
+├── test_orders.py             # Order creation, listing
+├── test_password_reset.py     # Forgot/reset/change password
+├── test_payments.py           # Stripe checkout, webhooks
+├── test_products.py           # Product catalog, variants, filtering
+├── test_recommendations.py    # Product recommendations
+├── test_reviews.py            # Product reviews, helpfulness
+└── test_wishlist.py           # Wishlist CRUD, move-to-cart
 ```
 
 ### Running Backend Tests
