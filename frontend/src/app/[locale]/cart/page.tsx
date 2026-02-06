@@ -25,7 +25,6 @@ import { toast } from "sonner";
 
 export default function CartPage() {
   const t = useTranslations("cart");
-  const tCommon = useTranslations("common");
   const locale = useLocale();
   const router = useRouter();
   const { token, guestSession } = useAuthStore();

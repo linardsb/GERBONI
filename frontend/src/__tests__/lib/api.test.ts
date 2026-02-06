@@ -2,7 +2,7 @@
  * Tests for the API client.
  */
 
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import {
   getProducts,
   getProduct,

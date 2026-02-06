@@ -98,6 +98,7 @@ export default function AccountPage() {
     if (activeTab === "orders" && orders.length === 0) {
       loadOrders();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, token]);
 
   const loadAddresses = async () => {

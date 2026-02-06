@@ -7,10 +7,7 @@ import {
   IconPackage,
   IconMail,
   IconTruck,
-  IconShoppingBag,
-  IconFileText,
 } from "@/components/icons";
-import { Button } from "@/components/elements/button";
 import { Button3D } from "@/components/elements/button-3d";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/elements/card";
 import { Separator } from "@/components/elements/separator";

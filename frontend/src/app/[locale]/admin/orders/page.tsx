@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Link } from "@/i18n/routing";
 import { toast } from "sonner";
 import { Button } from "@/components/elements/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/elements/card";
+import { Card, CardContent } from "@/components/elements/card";
 import {
   Select,
   SelectContent,

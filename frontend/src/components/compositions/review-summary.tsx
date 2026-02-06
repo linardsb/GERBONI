@@ -13,9 +13,6 @@ interface ReviewSummaryProps {
 export function ReviewSummary({ summary }: ReviewSummaryProps) {
   const { average_rating, total_reviews, rating_distribution } = summary;
 
-  // Calculate percentages for distribution bars
-  const maxCount = Math.max(...Object.values(rating_distribution), 1);
-
   if (total_reviews === 0) {
     return (
       <Stack gap="element" className="text-center py-4">

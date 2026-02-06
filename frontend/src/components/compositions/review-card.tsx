@@ -43,7 +43,7 @@ export function ReviewCard({ review }: ReviewCardProps) {
       );
       setHelpfulCount(result.helpful_count);
       setHasMarkedHelpful(result.user_marked_helpful);
-    } catch (err) {
+    } catch {
       toast.error("Failed to mark review as helpful");
     } finally {
       setIsMarking(false);

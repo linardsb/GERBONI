@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { routes, testProduct, selectors, testGuestEmail } from './fixtures/test-data'
+import { routes, testProduct, selectors } from './fixtures/test-data'
 
 test.describe('Checkout Flow', () => {
   test('should browse products and add to cart', async ({ page }) => {

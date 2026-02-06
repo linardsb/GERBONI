@@ -78,8 +78,6 @@ test.describe('Cart Interactions', () => {
     await page.waitForLoadState('networkidle')
 
     // Look for checkout button (might be disabled if no items)
-    const checkoutButton = page.getByRole('button', { name: /checkout/i })
-
     // Checkout button might be visible
     // This test verifies the cart page loads correctly
   })
@@ -90,8 +88,6 @@ test.describe('Cart Icon', () => {
     await page.goto(routes.home)
 
     // Look for cart icon/link in header
-    const cartLink = page.locator('header').getByRole('link', { name: /cart/i })
-
     // Cart link should be present (might have different label)
     const header = page.locator('header')
     await expect(header).toBeVisible()

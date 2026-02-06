@@ -8,7 +8,6 @@ import {
   IconUsers,
   IconChevronLeft,
 } from "@/components/icons";
-import { Button } from "@/components/elements/button";
 import { Stack } from "@/components/elements/stack";
 import { Text } from "@/components/elements/text";
 import { cn } from "@/lib/utils";

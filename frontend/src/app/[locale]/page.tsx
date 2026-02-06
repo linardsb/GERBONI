@@ -4,12 +4,9 @@ import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/routing";
 import {
-  IconArrowRight,
-  IconArrowUpRight,
   IconSparkles,
   IconTruck,
   IconMessageCircle,
-  IconShoppingBag,
 } from "@/components/icons";
 import { WishlistButton } from "@/components/elements/wishlist-button";
 import { Button } from "@/components/elements/button";

@@ -6,7 +6,6 @@ import { IconLock } from "@/components/icons";
 import { Skeleton } from "@/components/elements/skeleton";
 import { Container } from "@/components/elements/container";
 import { Stack } from "@/components/elements/stack";
-import { Text } from "@/components/elements/text";
 import { EmptyState } from "@/components/compositions/empty-state";
 import { AdminSidebar } from "@/components/admin/sidebar";
 import { getMe } from "@/lib/api";
@@ -17,7 +16,7 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { token, user, setAuth } = useAuthStore();
+  const { token, setAuth } = useAuthStore();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);

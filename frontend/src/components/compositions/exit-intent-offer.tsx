@@ -1,16 +1,15 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Link, usePathname } from "@/i18n/routing";
+import { usePathname } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
-import { IconX, IconShoppingCart, IconPercentage } from "@/components/icons";
+import { IconX, IconPercentage } from "@/components/icons";
 import { Button3D } from "@/components/elements/button-3d";
 import { Text } from "@/components/elements/text";
 import { Stack } from "@/components/elements/stack";
 import { useExitIntent } from "@/hooks/use-exit-intent";
 
 const STORAGE_KEY = "gerboni_exit_intent_dismissed";
-const NEWSLETTER_STORAGE_KEY = "gerboni_newsletter_dismissed";
 const COOLDOWN_HOURS = 24;
 const DISCOUNT_CODE = "DONTGO10";
 

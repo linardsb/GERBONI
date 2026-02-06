@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { testUser, routes } from './fixtures/test-data'
+import { routes } from './fixtures/test-data'
 
 test.describe('Authentication', () => {
   test.describe('Login Page', () => {

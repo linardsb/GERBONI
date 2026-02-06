@@ -10,7 +10,6 @@ import { Text } from "@/components/elements/text";
 import { getProducts, type Product } from "@/lib/api";
 
 export default function ProductsPage() {
-  const t = useTranslations("metadata");
   const tCommon = useTranslations("common");
   const locale = useLocale();
 

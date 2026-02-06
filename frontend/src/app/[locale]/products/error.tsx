@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { useTranslations } from "next-intl";
 import { Stack } from "@/components/elements/stack";
 import { Text } from "@/components/elements/text";
 import { Button } from "@/components/elements/button";
@@ -14,8 +13,6 @@ export default function ProductsError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const t = useTranslations();
-
   useEffect(() => {
     console.error("[ProductsError]", error);
   }, [error]);

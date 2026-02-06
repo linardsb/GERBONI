@@ -6,11 +6,9 @@ import { useTranslations, useLocale } from "next-intl";
 import {
   IconMinus,
   IconPlus,
-  IconShoppingCart,
   IconTruck,
   IconRefresh,
   IconShield,
-  IconLoader2,
 } from "@/components/icons";
 import { Button } from "@/components/elements/button";
 import { Button3D } from "@/components/elements/button-3d";
@@ -45,7 +43,6 @@ import { toast } from "sonner";
 import {
   type ProductColorKey,
   type ProductSize,
-  isValidColorKey,
   getColorName,
 } from "@/lib/product-colors";
 

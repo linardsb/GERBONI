@@ -263,7 +263,7 @@ export const handlers = [
     })
   }),
 
-  http.get(`${API_URL}/payments/session/:sessionId`, ({ params }) => {
+  http.get(`${API_URL}/payments/session/:sessionId`, () => {
     return HttpResponse.json({
       status: 'complete',
       payment_status: 'paid',
@@ -309,7 +309,7 @@ export const handlers = [
   }),
 
   // Order cancel
-  http.delete(`${API_URL}/orders/:id`, ({ params }) => {
+  http.delete(`${API_URL}/orders/:id`, () => {
     return HttpResponse.json({ status: 'cancelled' })
   }),
 ]

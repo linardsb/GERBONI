@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import { IconChevronUp, IconChevronDown, IconSelector } from "@/components/icons";
-import { Button } from "@/components/elements/button";
-import { Text } from "@/components/elements/text";
 
 interface Column<T> {
   key: string;
