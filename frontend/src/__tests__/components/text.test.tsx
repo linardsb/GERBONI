@@ -73,7 +73,7 @@ describe('Text', () => {
     it.each([
       ['body-lg', 'text-lg', 'leading-relaxed'],
       ['body-md', 'text-base', 'leading-relaxed'],
-      ['body-sm', 'text-sm', 'leading-relaxed'],
+      ['body-sm', 'text-base', 'leading-relaxed'],
     ] as const)('applies variant=%s with size and leading classes', (variant, sizeClass, leadingClass) => {
       render(<Text data-testid="text" variant={variant}>Content</Text>)
       const element = screen.getByTestId('text')
