@@ -5,10 +5,11 @@ test.describe('Authentication', () => {
   test.describe('Login Page', () => {
     test('should display login form', async ({ page }) => {
       await page.goto(routes.login)
+      await page.waitForLoadState('networkidle')
 
       // Should have email and password inputs
-      const emailInput = page.locator('input[type="email"], input[name="email"]')
-      const passwordInput = page.locator('input[type="password"], input[name="password"]')
+      const emailInput = page.locator('input[type="email"]')
+      const passwordInput = page.locator('input[type="password"]')
 
       await expect(emailInput.first()).toBeVisible({ timeout: 10000 })
       await expect(passwordInput.first()).toBeVisible({ timeout: 10000 })
@@ -16,6 +17,7 @@ test.describe('Authentication', () => {
 
     test('should have submit button', async ({ page }) => {
       await page.goto(routes.login)
+      await page.waitForLoadState('networkidle')
 
       const submitButton = page.getByRole('button', { name: /log in|sign in|submit/i })
       await expect(submitButton).toBeVisible({ timeout: 10000 })
@@ -23,17 +25,20 @@ test.describe('Authentication', () => {
 
     test('should have link to register page', async ({ page }) => {
       await page.goto(routes.login)
+      await page.waitForLoadState('networkidle')
 
-      const registerLink = page.getByRole('link', { name: /register|sign up|create account/i })
-      await expect(registerLink).toBeVisible({ timeout: 10000 })
+      // The login page uses a text toggle (not a link) to switch to register mode
+      const signUpText = page.getByText(/sign up/i)
+      await expect(signUpText.first()).toBeVisible({ timeout: 10000 })
     })
 
     test('should show error for invalid credentials', async ({ page }) => {
       await page.goto(routes.login)
+      await page.waitForLoadState('networkidle')
 
       // Fill in invalid credentials
-      const emailInput = page.locator('input[type="email"], input[name="email"]').first()
-      const passwordInput = page.locator('input[type="password"], input[name="password"]').first()
+      const emailInput = page.locator('input[type="email"]').first()
+      const passwordInput = page.locator('input[type="password"]').first()
 
       await emailInput.fill('invalid@example.com')
       await passwordInput.fill('wrongpassword')
@@ -42,8 +47,7 @@ test.describe('Authentication', () => {
       const submitButton = page.getByRole('button', { name: /log in|sign in|submit/i })
       await submitButton.click()
 
-      // Should show error message (might be toast or inline)
-      // Wait for potential error state
+      // Should show error message (toast or inline)
       await page.waitForTimeout(2000)
     })
   })
@@ -51,10 +55,11 @@ test.describe('Authentication', () => {
   test.describe('Register Page', () => {
     test('should display registration form', async ({ page }) => {
       await page.goto(routes.register)
+      await page.waitForLoadState('networkidle')
 
       // Should have email and password inputs
-      const emailInput = page.locator('input[type="email"], input[name="email"]')
-      const passwordInput = page.locator('input[type="password"], input[name="password"]')
+      const emailInput = page.locator('input[type="email"]')
+      const passwordInput = page.locator('input[type="password"]')
 
       await expect(emailInput.first()).toBeVisible({ timeout: 10000 })
       await expect(passwordInput.first()).toBeVisible({ timeout: 10000 })
@@ -62,6 +67,7 @@ test.describe('Authentication', () => {
 
     test('should have submit button', async ({ page }) => {
       await page.goto(routes.register)
+      await page.waitForLoadState('networkidle')
 
       const submitButton = page.getByRole('button', { name: /register|sign up|create/i })
       await expect(submitButton).toBeVisible({ timeout: 10000 })
@@ -69,9 +75,11 @@ test.describe('Authentication', () => {
 
     test('should have link to login page', async ({ page }) => {
       await page.goto(routes.register)
+      await page.waitForLoadState('networkidle')
 
-      const loginLink = page.getByRole('link', { name: /log in|sign in|already have/i })
-      await expect(loginLink).toBeVisible({ timeout: 10000 })
+      // The register page uses a text toggle (not a link) to switch to login mode
+      const signInText = page.getByText(/sign in/i)
+      await expect(signInText.first()).toBeVisible({ timeout: 10000 })
     })
   })
 
@@ -99,12 +107,12 @@ test.describe('Guest Checkout Flow', () => {
     await page.waitForLoadState('networkidle')
 
     // Select options if available
-    const colorButton = page.locator('[data-slot="color-button"]').first()
+    const colorButton = page.locator('[data-slot="color-selector"] button').first()
     if (await colorButton.isVisible()) {
       await colorButton.click()
     }
 
-    const sizeButton = page.locator('[data-slot="size-button"]').first()
+    const sizeButton = page.locator('[data-slot="size-selector"] button').first()
     if (await sizeButton.isVisible()) {
       await sizeButton.click()
     }

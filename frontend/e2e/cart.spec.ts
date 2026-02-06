@@ -4,11 +4,9 @@ import { routes } from './fixtures/test-data'
 test.describe('Cart Page', () => {
   test('should display empty cart message', async ({ page }) => {
     await page.goto(routes.cart)
-
-    // Should show empty cart state or cart items
     await page.waitForLoadState('networkidle')
 
-    // Look for cart content
+    // Should show cart page content
     const cartContent = page.locator('main')
     await expect(cartContent).toBeVisible()
   })
@@ -16,18 +14,16 @@ test.describe('Cart Page', () => {
   test('should navigate to cart from product page after adding item', async ({ page }) => {
     // Go to a product
     await page.goto(routes.product(1))
-
-    // Wait for page to load
     await page.waitForLoadState('networkidle')
 
     // Select color if needed
-    const colorButton = page.locator('[data-slot="color-button"]').first()
+    const colorButton = page.locator('[data-slot="color-selector"] button').first()
     if (await colorButton.isVisible()) {
       await colorButton.click()
     }
 
     // Select size if needed
-    const sizeButton = page.locator('[data-slot="size-button"]').first()
+    const sizeButton = page.locator('[data-slot="size-selector"] button').first()
     if (await sizeButton.isVisible()) {
       await sizeButton.click()
     }
@@ -50,19 +46,17 @@ test.describe('Cart Page', () => {
 })
 
 test.describe('Cart Interactions', () => {
-  // These tests assume items are already in cart (might need setup)
-
   test('should display checkout button when cart has items', async ({ page }) => {
     // First add an item to cart
     await page.goto(routes.product(1))
     await page.waitForLoadState('networkidle')
 
-    const colorButton = page.locator('[data-slot="color-button"]').first()
+    const colorButton = page.locator('[data-slot="color-selector"] button').first()
     if (await colorButton.isVisible()) {
       await colorButton.click()
     }
 
-    const sizeButton = page.locator('[data-slot="size-button"]').first()
+    const sizeButton = page.locator('[data-slot="size-selector"] button').first()
     if (await sizeButton.isVisible()) {
       await sizeButton.click()
     }
@@ -76,10 +70,6 @@ test.describe('Cart Interactions', () => {
     // Go to cart
     await page.goto(routes.cart)
     await page.waitForLoadState('networkidle')
-
-    // Look for checkout button (might be disabled if no items)
-    // Checkout button might be visible
-    // This test verifies the cart page loads correctly
   })
 })
 
@@ -88,7 +78,6 @@ test.describe('Cart Icon', () => {
     await page.goto(routes.home)
 
     // Look for cart icon/link in header
-    // Cart link should be present (might have different label)
     const header = page.locator('header')
     await expect(header).toBeVisible()
   })

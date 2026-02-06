@@ -24,17 +24,17 @@ export const testProduct = {
 }
 
 export const routes = {
-  home: '/',
-  products: '/products',
-  product: (id: number) => `/products/${id}`,
-  cart: '/cart',
-  checkout: '/checkout',
-  checkoutSuccess: '/checkout/success',
-  login: '/login',
-  register: '/register',
-  account: '/account',
-  orders: '/account/orders',
-  wishlist: '/wishlist',
+  home: '/en',
+  products: '/en/products',
+  product: (id: number) => `/en/products/${id}`,
+  cart: '/en/cart',
+  checkout: '/en/checkout',
+  checkoutSuccess: '/en/checkout/success',
+  login: '/en/login',
+  register: '/en/register',
+  account: '/en/account',
+  orders: '/en/account/orders',
+  wishlist: '/en/wishlist',
 }
 
 export const selectors = {
@@ -45,9 +45,11 @@ export const selectors = {
 
   // Products
   productCard: '[data-slot="product-card"]',
-  addToCartButton: '[data-testid="add-to-cart"]',
+  addToCartButton: 'button:has-text("Add to cart"), button:has-text("Pievienot grozam")',
   colorSelector: '[data-slot="color-selector"]',
+  colorButton: '[data-slot="color-selector"] button',
   sizeSelector: '[data-slot="size-selector"]',
+  sizeButton: '[data-slot="size-selector"] button',
 
   // Cart
   cartItem: '[data-testid="cart-item"]',

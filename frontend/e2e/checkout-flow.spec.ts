@@ -21,7 +21,7 @@ test.describe('Checkout Flow', () => {
   })
 
   test('should display product details with variant selectors', async ({ page }) => {
-    await page.goto(`/en${routes.product(testProduct.id)}`)
+    await page.goto(routes.product(testProduct.id))
     await page.waitForLoadState('networkidle')
 
     // Should see product name
@@ -31,7 +31,7 @@ test.describe('Checkout Flow', () => {
 
   test('should navigate from products to cart', async ({ page }) => {
     // Go to products page
-    await page.goto('/en/products')
+    await page.goto(routes.products)
 
     // Click first product
     const productCard = page.locator(selectors.productCard).first()
@@ -43,19 +43,18 @@ test.describe('Checkout Flow', () => {
     await page.waitForLoadState('networkidle')
 
     // Look for add to cart button
-    const addButton = page.locator(selectors.addToCartButton).first()
-      .or(page.getByRole('button', { name: /add to cart/i }).first())
+    const addButton = page.getByRole('button', { name: /add to cart/i }).first()
 
     if (await addButton.isVisible({ timeout: 5000 })) {
       await addButton.click()
 
       // Should show success feedback (toast or redirect)
-      const toast = page.locator(selectors.toast).first()
+      const toastEl = page.locator(selectors.toast).first()
       const cartPage = page.url().includes('/cart')
 
       // Either a toast appears or we navigate to cart
       if (!cartPage) {
-        await expect(toast).toBeVisible({ timeout: 5000 }).catch(() => {
+        await expect(toastEl).toBeVisible({ timeout: 5000 }).catch(() => {
           // Toast may not appear, that's ok
         })
       }
@@ -63,7 +62,7 @@ test.describe('Checkout Flow', () => {
   })
 
   test('should show empty cart message when cart is empty', async ({ page }) => {
-    await page.goto('/en/cart')
+    await page.goto(routes.cart)
     await page.waitForLoadState('networkidle')
 
     // Cart page should load without errors
@@ -73,7 +72,7 @@ test.describe('Checkout Flow', () => {
 
 test.describe('Guest Checkout Flow', () => {
   test('should allow browsing without authentication', async ({ page }) => {
-    await page.goto('/en/products')
+    await page.goto(routes.products)
     await page.waitForLoadState('networkidle')
 
     // Products should be visible without login
@@ -82,7 +81,7 @@ test.describe('Guest Checkout Flow', () => {
   })
 
   test('should show checkout page', async ({ page }) => {
-    await page.goto('/en/checkout')
+    await page.goto(routes.checkout)
     await page.waitForLoadState('networkidle')
 
     // Checkout page should load (may redirect to login or show guest option)
