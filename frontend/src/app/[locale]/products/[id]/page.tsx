@@ -11,7 +11,7 @@ import {
   IconRefresh,
   IconShield,
   IconLoader2,
-} from "@tabler/icons-react";
+} from "@/components/icons";
 import { Button } from "@/components/elements/button";
 import { Button3D } from "@/components/elements/button-3d";
 import { SizeGuideModal } from "@/components/compositions/size-guide-modal";
@@ -41,7 +41,6 @@ import {
 import { useAuthStore, useCartStore, useRecentlyViewedStore } from "@/lib/store";
 import { RecentlyViewed } from "@/components/compositions/recently-viewed";
 import { ProductRecommendations } from "@/components/compositions/product-recommendations";
-import { ReviewList } from "@/components/compositions/review-list";
 import { toast } from "sonner";
 import {
   type ProductColorKey,
@@ -223,9 +222,16 @@ export default function ProductPage() {
             </Text>
           </Stack>
 
-          <Text variant="price-lg">
-            €{selectedVariant ? Number(selectedVariant.price).toFixed(2) : "24.99"}
-          </Text>
+          <Row gap="element" align="baseline" className="flex-wrap">
+            <Text variant="price-lg">
+              €{selectedVariant ? (Number(selectedVariant.price) * quantity).toFixed(2) : "24.99"}
+            </Text>
+            {quantity > 1 && selectedVariant && (
+              <span className="text-muted-foreground font-bold">
+                (€{Number(selectedVariant.price).toFixed(2)} × {quantity})
+              </span>
+            )}
+          </Row>
 
           <Text variant="muted">{displayDescription}</Text>
 
@@ -411,11 +417,6 @@ export default function ProductPage() {
           </Accordion>
         </Stack>
       </Grid>
-
-      {/* Customer Reviews */}
-      <div className="mt-section">
-        <ReviewList productId={product.id} />
-      </div>
 
       {/* Product Recommendations */}
       <div className="mt-section">

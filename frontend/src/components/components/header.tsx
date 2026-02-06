@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/routing";
-import { IconShoppingCart, IconUser, IconMenu2, IconChevronDown, IconTruck, IconPhone, IconQuestionMark, IconRefresh, IconHeart } from "@tabler/icons-react";
+import { IconShoppingCart, IconUser, IconMenu2, IconChevronDown, IconTruck, IconPhone, IconQuestionMark, IconRefresh, IconHeart } from "@/components/icons";
 import { Button } from "@/components/elements/button";
 import { Badge } from "@/components/elements/badge";
 import { Text } from "@/components/elements/text";
@@ -78,37 +78,32 @@ export function Header() {
             </Link>
           ))}
 
-          {/* Info Dropdown - only render after mount to avoid hydration mismatch */}
-          {mounted ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  className={cn(
-                    "nav-link inline-flex items-center gap-1",
-                    isInfoActive && "text-primary"
-                  )}
-                >
-                  {t("help")}
-                  <IconChevronDown className="size-4" aria-hidden="true" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="center" className="w-48">
-                {infoNavItems.map((item) => (
-                  <DropdownMenuItem key={item.href} asChild>
-                    <Link href={item.href} className="flex items-center gap-group">
-                      <item.icon className="size-4 text-muted-foreground" aria-hidden="true" />
-                      {item.label}
-                    </Link>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <span className={cn("nav-link inline-flex items-center gap-1", isInfoActive && "text-primary")}>
+          {/* Info Dropdown - CSS hover */}
+          <div className="group/help relative">
+            <button
+              className={cn(
+                "nav-link inline-flex items-center gap-1",
+                isInfoActive && "text-primary"
+              )}
+            >
               {t("help")}
               <IconChevronDown className="size-4" aria-hidden="true" />
-            </span>
-          )}
+            </button>
+            <div className="invisible opacity-0 group-hover/help:visible group-hover/help:opacity-100 transition-opacity duration-fast absolute left-1/2 -translate-x-1/2 top-full pt-2">
+              <div className="w-48 rounded-md border border-border bg-popover p-1 shadow-md">
+                {infoNavItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="flex items-center gap-group uppercase rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground transition-colors duration-fast"
+                  >
+                    <item.icon className="size-4 text-muted-foreground" aria-hidden="true" />
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
         </nav>
         </Row>
 
@@ -156,13 +151,13 @@ export function Header() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem asChild>
-                  <Link href="/account">{t("account")}</Link>
+                  <Link href="/account" className="uppercase">{t("account")}</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/orders">{t("orders")}</Link>
+                  <Link href="/orders" className="uppercase">{t("orders")}</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={logout}>
+                <DropdownMenuItem onClick={logout} className="uppercase">
                   {t("logout")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
