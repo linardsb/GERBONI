@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useTranslations, useLocale } from "next-intl"
 import { cva } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
@@ -52,8 +53,6 @@ export interface SizeSelectorProps {
   isSizeInStock?: (size: ProductSize) => boolean
   /** Function to get stock count for a size */
   getStockCount?: (size: ProductSize) => number
-  /** Current locale for translations */
-  locale?: "en" | "lv"
   /** Additional class names */
   className?: string
 }
@@ -63,15 +62,17 @@ function SizeSelector({
   onValueChange,
   isSizeInStock,
   getStockCount,
-  locale = "en",
   className,
 }: SizeSelectorProps) {
+  const t = useTranslations("product")
+  const locale = useLocale() as "en" | "lv"
+
   return (
     <div
       data-slot="size-selector"
       className={cn("flex flex-wrap gap-group", className)}
       role="radiogroup"
-      aria-label={locale === "lv" ? "Izvēlies izmēru" : "Select size"}
+      aria-label={t("selectSize")}
     >
       {PRODUCT_SIZES.map((size) => {
         const isSelected = value === size
@@ -88,7 +89,7 @@ function SizeSelector({
                 disabled={!inStock}
                 role="radio"
                 aria-checked={isSelected}
-                aria-label={`${locale === "lv" ? "Izmērs" : "Size"} ${size}${!inStock ? (locale === "lv" ? " (nav noliktavā)" : " (out of stock)") : ""}`}
+                aria-label={`${t("size")} ${size}${!inStock ? ` (${t("outOfStockLabel")})` : ""}`}
                 className={cn(
                   sizeButtonVariants({
                     selected: isSelected,
@@ -110,16 +111,16 @@ function SizeSelector({
             </TooltipTrigger>
             <TooltipContent>
               <span>
-                {locale === "lv" ? "Izmērs" : "Size"} {size}
+                {t("size")} {size}
               </span>
               {!inStock && (
                 <span className="text-muted-foreground ml-1">
-                  ({locale === "lv" ? "nav noliktavā" : "out of stock"})
+                  ({t("outOfStockLabel")})
                 </span>
               )}
               {isLowStock && inStock && (
                 <span className="text-warning ml-1">
-                  ({locale === "lv" ? `${stockCount} atlicis` : `${stockCount} left`})
+                  ({t("leftInStock", { count: stockCount })})
                 </span>
               )}
             </TooltipContent>

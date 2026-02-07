@@ -67,7 +67,7 @@ export default function ProductPage() {
   useEffect(() => {
     const id = Number(params.id);
     if (isNaN(id)) {
-      setError(locale === "lv" ? "Nederīgs produkta ID" : "Invalid product ID");
+      setError(t("invalidProductId"));
       setLoading(false);
       return;
     }
@@ -156,7 +156,7 @@ export default function ProductPage() {
         description: `${cityName} T-Shirt (${getColorName(selectedColor, locale)}, ${selectedSize})`,
       });
     } catch (err) {
-      toast.error(locale === "lv" ? "Neizdevās pievienot grozam" : "Failed to add to cart", {
+      toast.error(t("addToCartError"), {
         description: err instanceof Error ? err.message : tCommon("tryAgain"),
       });
     } finally {
@@ -183,7 +183,7 @@ export default function ProductPage() {
   if (error || !product) {
     return (
       <Container padding="md">
-        <Text variant="error" align="center">{error || (locale === "lv" ? "Produkts nav atrasts" : "Product not found")}</Text>
+        <Text variant="error" align="center">{error || t("productNotFound")}</Text>
       </Container>
     );
   }
@@ -215,7 +215,7 @@ export default function ProductPage() {
           <Stack gap="element">
             <Text as="h1" variant="heading-xl">{displayName}</Text>
             <Text variant="muted-lg">
-              {secondaryName} {locale === "lv" ? "ģerboņa krekls" : "Coat of Arms T-Shirt"}
+              {secondaryName} {t("coatOfArmsTShirt")}
             </Text>
           </Stack>
 
@@ -242,7 +242,6 @@ export default function ProductPage() {
               onValueChange={handleColorChange}
               isColorInStock={isColorInStock}
               getStockCount={getColorStockCount}
-              locale={locale}
             />
           </Stack>
 
@@ -264,7 +263,6 @@ export default function ProductPage() {
               onValueChange={handleSizeChange}
               isSizeInStock={isSizeInStock}
               getStockCount={getSizeStockCount}
-              locale={locale}
             />
           </Stack>
 
@@ -276,7 +274,7 @@ export default function ProductPage() {
                 variant="outline"
                 size="icon"
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                aria-label={locale === "lv" ? "Samazināt daudzumu" : "Decrease quantity"}
+                aria-label={t("decreaseQuantity")}
               >
                 <IconMinus className="size-4" aria-hidden="true" />
               </Button>
@@ -287,7 +285,7 @@ export default function ProductPage() {
                 variant="outline"
                 size="icon"
                 onClick={() => setQuantity(quantity + 1)}
-                aria-label={locale === "lv" ? "Palielināt daudzumu" : "Increase quantity"}
+                aria-label={t("increaseQuantity")}
               >
                 <IconPlus className="size-4" aria-hidden="true" />
               </Button>
@@ -313,7 +311,7 @@ export default function ProductPage() {
               )}
               {selectedVariant && selectedVariant.stock > 3 && selectedVariant.stock <= 10 && (
                 <Text variant="warning" align="center">
-                  {locale === "lv" ? `Zems krājums - atlikuši ${selectedVariant.stock}` : `Low stock - ${selectedVariant.stock} remaining`}
+                  {t("lowStockRemaining", { count: selectedVariant.stock })}
                 </Text>
               )}
 
@@ -322,13 +320,13 @@ export default function ProductPage() {
                 <Row gap="element" className="text-muted-foreground">
                   <IconTruck className="size-4" aria-hidden="true" />
                   <Text variant="muted-sm">
-                    {locale === "lv" ? "Bezmaksas piegāde €50+" : "Free shipping €50+"}
+                    {t("freeShippingOver")}
                   </Text>
                 </Row>
                 <Row gap="element" className="text-muted-foreground">
                   <IconRefresh className="size-4" aria-hidden="true" />
                   <Text variant="muted-sm">
-                    {locale === "lv" ? "14 dienu atgriešana" : "14-day returns"}
+                    {t("fourteenDayReturns")}
                   </Text>
                 </Row>
               </Row>
@@ -341,32 +339,32 @@ export default function ProductPage() {
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="materials">
               <AccordionTrigger>
-                {locale === "lv" ? "Materiāli un kopšana" : "Materials & Care"}
+                {t("materialsAndCare")}
               </AccordionTrigger>
               <AccordionContent>
                 <Stack gap="sm">
                   <Row gap="element">
                     <Text variant="body-sm" className="font-medium min-w-24">
-                      {locale === "lv" ? "Materiāls" : "Material"}
+                      {t("material")}
                     </Text>
                     <Text variant="muted-sm">
-                      {locale === "lv" ? "100% premium kokvilna" : "100% premium cotton"}
+                      {t("materialDesc")}
                     </Text>
                   </Row>
                   <Row gap="element">
                     <Text variant="body-sm" className="font-medium min-w-24">
-                      {locale === "lv" ? "Apdruka" : "Print"}
+                      {t("print")}
                     </Text>
                     <Text variant="muted-sm">
-                      {locale === "lv" ? "Augstas kvalitātes sietspiede" : "High-quality screen print"}
+                      {t("printDesc")}
                     </Text>
                   </Row>
                   <Row gap="element">
                     <Text variant="body-sm" className="font-medium min-w-24">
-                      {locale === "lv" ? "Kopšana" : "Care"}
+                      {t("care")}
                     </Text>
                     <Text variant="muted-sm">
-                      {locale === "lv" ? "Mazgājams mašīnā līdz 40°C" : "Machine washable up to 40°C"}
+                      {t("careDesc")}
                     </Text>
                   </Row>
                 </Stack>
@@ -375,24 +373,20 @@ export default function ProductPage() {
 
             <AccordionItem value="shipping">
               <AccordionTrigger>
-                {locale === "lv" ? "Piegāde" : "Shipping"}
+                {t("shippingSection")}
               </AccordionTrigger>
               <AccordionContent>
                 <Stack gap="sm">
                   <Row gap="element">
                     <IconTruck className="size-4 text-muted-foreground" aria-hidden="true" />
                     <Text variant="muted-sm">
-                      {locale === "lv"
-                        ? "Bezmaksas piegāde pasūtījumiem virs €50"
-                        : "Free shipping on orders over €50"}
+                      {t("freeShippingOver50")}
                     </Text>
                   </Row>
                   <Row gap="element">
                     <IconShield className="size-4 text-muted-foreground" aria-hidden="true" />
                     <Text variant="muted-sm">
-                      {locale === "lv"
-                        ? "Droša maksāšana ar Stripe"
-                        : "Secure payment with Stripe"}
+                      {t("securePaymentStripe")}
                     </Text>
                   </Row>
                 </Stack>
@@ -401,13 +395,11 @@ export default function ProductPage() {
 
             <AccordionItem value="heritage">
               <AccordionTrigger>
-                {locale === "lv" ? "Latvijas mantojums" : "Latvian Heritage"}
+                {t("latvianHeritage")}
               </AccordionTrigger>
               <AccordionContent>
                 <Text variant="muted-sm">
-                  {locale === "lv"
-                    ? `Šis krekls parāda ${displayName} autentisko ģerboni - simbolu, kas atspoguļo pilsētas bagāto vēsturi un kultūras mantojumu. Katrs ģerbonis ir rūpīgi atveidots, lai saglabātu tā vēsturisko nozīmi.`
-                    : `This t-shirt features the authentic coat of arms of ${displayName} - a symbol representing the city's rich history and cultural heritage. Each coat of arms is carefully reproduced to preserve its historical significance.`}
+                  {t("heritageDescription", { city: displayName })}
                 </Text>
               </AccordionContent>
             </AccordionItem>

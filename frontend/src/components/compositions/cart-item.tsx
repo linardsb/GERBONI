@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations, useLocale } from "next-intl";
 import { IconTrash, IconMinus, IconPlus } from "@/components/icons";
 import { Button } from "@/components/elements/button";
 import { Card, CardContent } from "@/components/elements/card";
@@ -15,10 +16,11 @@ interface CartItemProps {
   item: CartItemType;
   onUpdateQuantity: (itemId: number, quantity: number) => void;
   onRemove: (itemId: number) => void;
-  locale?: "en" | "lv";
 }
 
-export function CartItem({ item, onUpdateQuantity, onRemove, locale = "en" }: CartItemProps) {
+export function CartItem({ item, onUpdateQuantity, onRemove }: CartItemProps) {
+  const t = useTranslations("cart");
+  const locale = useLocale();
   // Get color as ProductColorKey if valid, otherwise default to Black
   const colorKey: ProductColorKey = isValidColorKey(item.variant.color)
     ? item.variant.color
@@ -68,7 +70,7 @@ export function CartItem({ item, onUpdateQuantity, onRemove, locale = "en" }: Ca
               variant="outline"
               size="icon-xs"
               onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
-              aria-label={locale === "lv" ? "Samazināt daudzumu" : "Decrease quantity"}
+              aria-label={t("decreaseQuantity")}
             >
               <IconMinus className="size-3" aria-hidden="true" />
             </Button>
@@ -85,7 +87,7 @@ export function CartItem({ item, onUpdateQuantity, onRemove, locale = "en" }: Ca
               variant="outline"
               size="icon-xs"
               onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
-              aria-label={locale === "lv" ? "Palielināt daudzumu" : "Increase quantity"}
+              aria-label={t("increaseQuantity")}
             >
               <IconPlus className="size-3" aria-hidden="true" />
             </Button>
@@ -102,7 +104,7 @@ export function CartItem({ item, onUpdateQuantity, onRemove, locale = "en" }: Ca
             size="icon"
             onClick={() => onRemove(item.id)}
             className="text-muted-foreground hover:text-destructive transition-colors duration-fast"
-            aria-label={locale === "lv" ? "Noņemt no groza" : "Remove from cart"}
+            aria-label={t("removeFromCart")}
           >
             <IconTrash className="size-4" aria-hidden="true" />
           </Button>

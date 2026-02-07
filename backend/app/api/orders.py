@@ -55,13 +55,20 @@ def _format_order(order: Order) -> dict:
 async def list_orders(
     skip: int = 0,
     limit: int = 20,
-    user: User = Depends(get_current_user),
+    x_guest_session: str | None = Header(default=None),
+    user: User | None = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    if not user:
+    if user:
+        owner = OrderOwner(user_id=user.id, guest_email=None)
+    elif x_guest_session:
+        session = await AuthService.get_guest_session(db, x_guest_session)
+        if session:
+            owner = OrderOwner(user_id=None, guest_email=session.email)
+        else:
+            raise domain_to_http(AuthorizationError("Invalid guest session"))
+    else:
         raise domain_to_http(AuthorizationError("Authentication required"))
-
-    owner = OrderOwner(user_id=user.id, guest_email=None)
 
     try:
         orders = await OrderService.list_orders(db, owner, skip, limit)
@@ -73,13 +80,23 @@ async def list_orders(
 @router.get("/{order_id}", response_model=OrderRead)
 async def get_order(
     order_id: int,
+    x_guest_session: str | None = Header(default=None),
     user: User | None = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    owner = OrderOwner(user_id=user.id if user else None, guest_email=None)
+    if user:
+        owner = OrderOwner(user_id=user.id, guest_email=None)
+    elif x_guest_session:
+        session = await AuthService.get_guest_session(db, x_guest_session)
+        if session:
+            owner = OrderOwner(user_id=None, guest_email=session.email)
+        else:
+            raise domain_to_http(AuthorizationError("Invalid guest session"))
+    else:
+        raise domain_to_http(AuthorizationError("Authentication required"))
 
     try:
-        order = await OrderService.get_order(db, order_id, owner if user else None)
+        order = await OrderService.get_order(db, order_id, owner)
         return _format_order(order)
     except DomainException as e:
         raise domain_to_http(e)

@@ -3,10 +3,11 @@ Tests for order endpoints.
 """
 
 import pytest
+from decimal import Decimal
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import User, Order, OrderItem, TShirtVariant, OrderStatus
+from app.models import User, Order, OrderItem, TShirtVariant, OrderStatus, GuestSession
 
 
 class TestCreateOrder:
@@ -239,3 +240,184 @@ class TestOrderShipping:
         assert data["shipping_name"] == "John Doe"
         assert data["shipping_city"] == "Riga"
         assert data["shipping_country"] == "Latvia"
+
+
+# =============================================================================
+# Guest Session Order Access Tests (BUG-008 regression)
+# =============================================================================
+
+
+class TestGuestListOrders:
+    """Tests for GET /api/orders with guest session."""
+
+    async def test_guest_list_orders(
+        self, client: AsyncClient, db_session: AsyncSession,
+        test_guest_session: GuestSession, test_variant: TShirtVariant,
+    ):
+        """Guest with valid session can list their orders."""
+        order = Order(
+            guest_email=test_guest_session.email,
+            status=OrderStatus.PENDING.value,
+            total=Decimal("24.99"),
+            shipping_name="Guest User",
+            shipping_address="456 Guest St",
+            shipping_city="Riga",
+            shipping_postal_code="LV-1001",
+            shipping_country="Latvia",
+        )
+        db_session.add(order)
+        await db_session.flush()
+        order_item = OrderItem(
+            order_id=order.id,
+            variant_id=test_variant.id,
+            quantity=1,
+            price=Decimal("24.99"),
+        )
+        db_session.add(order_item)
+        await db_session.commit()
+
+        response = await client.get(
+            "/api/orders",
+            headers={"X-Guest-Session": test_guest_session.session_token},
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert len(data) == 1
+        assert data[0]["guest_email"] == test_guest_session.email
+
+    async def test_guest_list_orders_invalid_session(self, client: AsyncClient):
+        """Guest with invalid session token gets 401."""
+        response = await client.get(
+            "/api/orders",
+            headers={"X-Guest-Session": "invalid-token-xyz"},
+        )
+        assert response.status_code == 401
+
+    async def test_guest_list_orders_no_auth(self, client: AsyncClient):
+        """No auth at all gets 401."""
+        response = await client.get("/api/orders")
+        assert response.status_code == 401
+
+    async def test_guest_cannot_see_other_guest_orders(
+        self, client: AsyncClient, db_session: AsyncSession,
+        test_guest_session: GuestSession, test_variant: TShirtVariant,
+    ):
+        """Guest cannot see orders belonging to a different guest email."""
+        order = Order(
+            guest_email="other-guest@example.com",
+            status=OrderStatus.PENDING.value,
+            total=Decimal("24.99"),
+            shipping_name="Other Guest",
+            shipping_address="789 Other St",
+            shipping_city="Riga",
+            shipping_postal_code="LV-1001",
+            shipping_country="Latvia",
+        )
+        db_session.add(order)
+        await db_session.flush()
+        order_item = OrderItem(
+            order_id=order.id,
+            variant_id=test_variant.id,
+            quantity=1,
+            price=Decimal("24.99"),
+        )
+        db_session.add(order_item)
+        await db_session.commit()
+
+        response = await client.get(
+            "/api/orders",
+            headers={"X-Guest-Session": test_guest_session.session_token},
+        )
+        assert response.status_code == 200
+        assert response.json() == []
+
+
+class TestGuestGetOrder:
+    """Tests for GET /api/orders/{id} with guest session."""
+
+    async def test_guest_get_own_order(
+        self, client: AsyncClient, db_session: AsyncSession,
+        test_guest_session: GuestSession, test_variant: TShirtVariant,
+    ):
+        """Guest with valid session can get their own order."""
+        order = Order(
+            guest_email=test_guest_session.email,
+            status=OrderStatus.PENDING.value,
+            total=Decimal("24.99"),
+            shipping_name="Guest User",
+            shipping_address="456 Guest St",
+            shipping_city="Riga",
+            shipping_postal_code="LV-1001",
+            shipping_country="Latvia",
+        )
+        db_session.add(order)
+        await db_session.flush()
+        order_item = OrderItem(
+            order_id=order.id,
+            variant_id=test_variant.id,
+            quantity=1,
+            price=Decimal("24.99"),
+        )
+        db_session.add(order_item)
+        await db_session.commit()
+
+        response = await client.get(
+            f"/api/orders/{order.id}",
+            headers={"X-Guest-Session": test_guest_session.session_token},
+        )
+        assert response.status_code == 200
+        assert response.json()["id"] == order.id
+
+    async def test_guest_get_order_invalid_session(
+        self, client: AsyncClient, db_session: AsyncSession,
+        test_guest_session: GuestSession, test_variant: TShirtVariant,
+    ):
+        """Guest with invalid session token gets 401."""
+        order = Order(
+            guest_email=test_guest_session.email,
+            status=OrderStatus.PENDING.value,
+            total=Decimal("24.99"),
+        )
+        db_session.add(order)
+        await db_session.commit()
+
+        response = await client.get(
+            f"/api/orders/{order.id}",
+            headers={"X-Guest-Session": "invalid-token-xyz"},
+        )
+        assert response.status_code == 401
+
+    async def test_guest_get_order_no_auth(
+        self, client: AsyncClient, db_session: AsyncSession,
+        test_guest_session: GuestSession,
+    ):
+        """No auth at all gets 401 (was security bug — returned any order)."""
+        order = Order(
+            guest_email=test_guest_session.email,
+            status=OrderStatus.PENDING.value,
+            total=Decimal("24.99"),
+        )
+        db_session.add(order)
+        await db_session.commit()
+
+        response = await client.get(f"/api/orders/{order.id}")
+        assert response.status_code == 401
+
+    async def test_guest_cannot_get_other_guest_order(
+        self, client: AsyncClient, db_session: AsyncSession,
+        test_guest_session: GuestSession,
+    ):
+        """Guest cannot access orders belonging to a different guest email."""
+        order = Order(
+            guest_email="other-guest@example.com",
+            status=OrderStatus.PENDING.value,
+            total=Decimal("24.99"),
+        )
+        db_session.add(order)
+        await db_session.commit()
+
+        response = await client.get(
+            f"/api/orders/{order.id}",
+            headers={"X-Guest-Session": test_guest_session.session_token},
+        )
+        assert response.status_code == 404

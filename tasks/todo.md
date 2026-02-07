@@ -11,15 +11,15 @@ Track current work items and progress. Update status as work progresses.
 
 ## Current Sprint
 
-(No items in progress)
+(No items in progress — all P1 items complete)
 
 ---
 
 ## Backlog (from Fragile Area Audit, 2026-02-07)
 
 ### P1 — Broken Guest UX / i18n
-- [ ] Orders list endpoint doesn't support guest sessions (`GET /api/orders` requires JWT, guests can't see their orders)
-- [ ] 130+ hardcoded locale strings in frontend (ternary `locale === 'lv'` checks instead of `useTranslations()` hook)
+- [x] Orders list endpoint doesn't support guest sessions (`GET /api/orders` requires JWT, guests can't see their orders) — **BUG-008 FIXED**
+- [x] 130+ hardcoded locale strings in frontend — **MIGRATED** to `useTranslations()` across 14 files, ~80 new keys in en.json + lv.json, 12 remaining ternaries are dynamic API data (city names, descriptions, date locales)
 
 ### P2 — Prevention / Partial UX
 - [ ] Middleware audit test (automated test that verifies new `/public/` dirs don't break middleware matcher)
@@ -35,6 +35,16 @@ Track current work items and progress. Update status as work progresses.
 ## Completed (Recent)
 
 ### 2026-02-07
+- [x] Migrate 130+ hardcoded locale ternaries to `useTranslations()` across 14 frontend files
+  - Added ~80 translation keys to en.json + lv.json (7 namespaces: product, cart, checkout, footer, chat, order, home)
+  - Removed `locale` prop from 6 components (cart-item, cart-summary, checkout-form, size-selector, color-selector, checkout-progress)
+  - Fixed parent components still passing removed `locale` props (ColorSelector, SizeSelector in products/[id])
+  - Updated test mocks for new translation keys (product-card.test.tsx)
+  - 12 remaining ternaries are all dynamic API data (city names, descriptions, date locales)
+  - Build passes, 380/380 frontend tests passing
+- [x] Fix BUG-008: Orders list/get endpoints missing guest session support + get_order security hole (no ownership filter when unauthenticated)
+- [x] Add 8 guest order access regression tests (list/get with valid session, invalid session, no auth, cross-guest prevention)
+- [x] Backend test count: 350 → 358 tests (all passing)
 - [x] Fix BUG-007: Refund window uses `created_at` not delivery date — now checks `updated_at` for DELIVERED orders only
 - [x] Add 3 refund window regression tests (delivered within/expired window, shipped no time limit)
 - [x] Fix BUG-005: Agent refund bypasses OrderService (skipped stock restoration + transition validation)

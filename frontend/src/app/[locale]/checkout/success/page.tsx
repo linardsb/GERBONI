@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import {
   IconPackage,
   IconMail,
@@ -25,36 +25,10 @@ function SuccessContent() {
   const orderId = searchParams.get("order_id");
   const { token } = useAuthStore();
   const { clearCart } = useCartStore();
-  const locale = useLocale() as "en" | "lv";
+  const t = useTranslations("order");
 
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(!!orderId);
-
-  const t = {
-    orderConfirmed: locale === "lv" ? "Pasūtījums apstiprināts!" : "Order Confirmed!",
-    thankYou: locale === "lv"
-      ? "Paldies par pasūtījumu. Mēs drīzumā nosūtīsim apstiprinājuma e-pastu."
-      : "Thank you for your order. We'll send you a confirmation email shortly.",
-    order: locale === "lv" ? "Pasūtījums" : "Order",
-    status: locale === "lv" ? "Statuss" : "Status",
-    total: locale === "lv" ? "Kopā" : "Total",
-    shippingTo: locale === "lv" ? "Piegāde uz" : "Shipping to",
-    whatsNext: locale === "lv" ? "Kas notiks tālāk?" : "What's Next?",
-    step1Title: locale === "lv" ? "E-pasta apstiprinājums" : "Email Confirmation",
-    step1Desc: locale === "lv"
-      ? "Saņemsi pasūtījuma apstiprinājumu savā e-pastā"
-      : "You'll receive an order confirmation in your inbox",
-    step2Title: locale === "lv" ? "Sagatavošana nosūtīšanai" : "Preparing for Shipment",
-    step2Desc: locale === "lv"
-      ? "Mēs rūpīgi iepakosim tavus kreklus"
-      : "We'll carefully package your t-shirts",
-    step3Title: locale === "lv" ? "Piegāde" : "Delivery",
-    step3Desc: locale === "lv"
-      ? "Tavs pasūtījums tiks piegādāts 3-5 darba dienu laikā"
-      : "Your order will arrive within 3-5 business days",
-    continueShopping: locale === "lv" ? "Turpināt iepirkšanos" : "Continue Shopping",
-    viewOrders: locale === "lv" ? "Skatīt pasūtījumus" : "View Orders",
-  };
 
   useEffect(() => {
     clearCart();
@@ -83,10 +57,10 @@ function SuccessContent() {
         <Stack gap="group" align="center" className="animate-in zoom-in-50 duration-slow">
           <StatusIcon variant="success" size="lg" />
           <Text as="h1" variant="heading-lg" align="center">
-            {t.orderConfirmed}
+            {t("orderConfirmed")}
           </Text>
           <Text variant="muted" align="center">
-            {t.thankYou}
+            {t("confirmationThankYou")}
           </Text>
         </Stack>
 
@@ -97,14 +71,14 @@ function SuccessContent() {
               <CardTitle>
                 <Row gap="element">
                   <IconPackage className="size-5" aria-hidden="true" />
-                  {t.order} #{order.id}
+                  {t("title")} #{order.id}
                 </Row>
               </CardTitle>
             </CardHeader>
             <CardContent>
               <Stack gap="group">
                 <Row justify="between">
-                  <Text variant="muted-sm">{t.status}</Text>
+                  <Text variant="muted-sm">{t("status")}</Text>
                   <Text variant="body-sm" className="font-medium capitalize">
                     {order.status}
                   </Text>
@@ -128,7 +102,7 @@ function SuccessContent() {
                 <Separator />
 
                 <Row justify="between">
-                  <Text as="span" variant="body-md" className="font-semibold">{t.total}</Text>
+                  <Text as="span" variant="body-md" className="font-semibold">{t("total")}</Text>
                   <Text as="span" variant="body-md" className="font-semibold tabular-nums">
                     €{Number(order.total).toFixed(2)}
                   </Text>
@@ -138,7 +112,7 @@ function SuccessContent() {
                   <>
                     <Separator />
                     <Stack gap="xs">
-                      <Text as="p" variant="body-sm" className="font-medium">{t.shippingTo}:</Text>
+                      <Text as="p" variant="body-sm" className="font-medium">{t("shippingTo")}:</Text>
                       <Text variant="muted-sm">{order.shipping_name}</Text>
                       <Text variant="muted-sm">{order.shipping_address}</Text>
                       <Text variant="muted-sm">
@@ -156,7 +130,7 @@ function SuccessContent() {
         {/* What's Next card */}
         <Card className="w-full animate-in fade-in slide-in-from-bottom-4 duration-normal animation-delay-400 animation-fill-backwards">
           <CardHeader>
-            <CardTitle>{t.whatsNext}</CardTitle>
+            <CardTitle>{t("whatsNext")}</CardTitle>
           </CardHeader>
           <CardContent>
             <Stack gap="group">
@@ -166,8 +140,8 @@ function SuccessContent() {
                   <IconMail className="size-5" aria-hidden="true" />
                 </div>
                 <Stack gap="none">
-                  <Text variant="body-md" className="font-medium">{t.step1Title}</Text>
-                  <Text variant="muted-sm">{t.step1Desc}</Text>
+                  <Text variant="body-md" className="font-medium">{t("step1Title")}</Text>
+                  <Text variant="muted-sm">{t("step1Desc")}</Text>
                 </Stack>
               </Row>
 
@@ -177,8 +151,8 @@ function SuccessContent() {
                   <IconPackage className="size-5" aria-hidden="true" />
                 </div>
                 <Stack gap="none">
-                  <Text variant="body-md" className="font-medium">{t.step2Title}</Text>
-                  <Text variant="muted-sm">{t.step2Desc}</Text>
+                  <Text variant="body-md" className="font-medium">{t("step2Title")}</Text>
+                  <Text variant="muted-sm">{t("step2Desc")}</Text>
                 </Stack>
               </Row>
 
@@ -188,8 +162,8 @@ function SuccessContent() {
                   <IconTruck className="size-5" aria-hidden="true" />
                 </div>
                 <Stack gap="none">
-                  <Text variant="body-md" className="font-medium">{t.step3Title}</Text>
-                  <Text variant="muted-sm">{t.step3Desc}</Text>
+                  <Text variant="body-md" className="font-medium">{t("step3Title")}</Text>
+                  <Text variant="muted-sm">{t("step3Desc")}</Text>
                 </Stack>
               </Row>
             </Stack>
@@ -199,11 +173,11 @@ function SuccessContent() {
         {/* Action buttons */}
         <Row gap="group" wrap="wrap" justify="center" className="animate-in fade-in duration-normal animation-delay-600 animation-fill-backwards">
           <Button3D href="/products">
-            {t.continueShopping}
+            {t("continueShopping")}
           </Button3D>
           {token && (
             <Button3D variant="outline" href="/orders">
-              {t.viewOrders}
+              {t("viewOrders")}
             </Button3D>
           )}
         </Row>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { IconMail, IconTruck, IconCreditCard, IconArrowLeft } from "@/components/icons";
 import { Button } from "@/components/elements/button";
 import { Button3D } from "@/components/elements/button-3d";
@@ -30,7 +31,6 @@ interface CheckoutFormProps {
   processing: boolean;
   onSubmit: (e: React.FormEvent) => void;
   onBack: () => void;
-  locale?: "en" | "lv";
 }
 
 export function CheckoutForm({
@@ -43,35 +43,19 @@ export function CheckoutForm({
   processing,
   onSubmit,
   onBack,
-  locale = "en",
 }: CheckoutFormProps) {
-  const t = {
-    backToCart: locale === "lv" ? "Atpakaļ uz grozu" : "Back to cart",
-    checkout: locale === "lv" ? "Noformēt pasūtījumu" : "Checkout",
-    contactInfo: locale === "lv" ? "Kontaktinformācija" : "Contact Information",
-    email: locale === "lv" ? "E-pasts" : "Email",
-    emailPlaceholder: "your@email.com",
-    shippingAddress: locale === "lv" ? "Piegādes adrese" : "Shipping Address",
-    fullName: locale === "lv" ? "Pilns vārds" : "Full Name",
-    address: locale === "lv" ? "Adrese" : "Address",
-    city: locale === "lv" ? "Pilsēta" : "City",
-    postalCode: locale === "lv" ? "Pasta indekss" : "Postal Code",
-    country: locale === "lv" ? "Valsts" : "Country",
-    total: locale === "lv" ? "Kopā" : "Total",
-    pay: locale === "lv" ? "Maksāt" : "Pay",
-    processing: locale === "lv" ? "Apstrādā..." : "Processing...",
-    securePayment: locale === "lv" ? "Droša maksāšana ar Stripe" : "Secure payment with Stripe",
-  };
+  const t = useTranslations("checkout");
+  const tCart = useTranslations("cart");
 
   return (
     <Stack gap="section" data-slot="checkout-form">
       {/* Back button */}
       <Button variant="ghost" onClick={onBack} className="self-start">
         <IconArrowLeft className="size-4 mr-2" aria-hidden="true" />
-        {t.backToCart}
+        {t("backToCart")}
       </Button>
 
-      <Text as="h1" variant="heading-lg">{t.checkout}</Text>
+      <Text as="h1" variant="heading-lg">{t("title")}</Text>
 
       <form onSubmit={onSubmit}>
         <Grid cols={1} gap="section" className="lg:grid-cols-[1fr_400px]">
@@ -83,19 +67,19 @@ export function CheckoutForm({
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-element">
                     <IconMail className="size-5" aria-hidden="true" />
-                    {t.contactInfo}
+                    {t("contactInfo")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Stack gap="element">
-                    <Label htmlFor="email">{t.email}</Label>
+                    <Label htmlFor="email">{t("email")}</Label>
                     <Input
                       id="email"
                       type="email"
                       required
                       value={guestEmail}
                       onChange={(e) => onGuestEmailChange(e.target.value)}
-                      placeholder={t.emailPlaceholder}
+                      placeholder="your@email.com"
                     />
                   </Stack>
                 </CardContent>
@@ -107,13 +91,13 @@ export function CheckoutForm({
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center gap-element">
                   <IconTruck className="size-5" aria-hidden="true" />
-                  {t.shippingAddress}
+                  {t("shippingAddress")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <Stack gap="group">
                   <Stack gap="element">
-                    <Label htmlFor="name">{t.fullName}</Label>
+                    <Label htmlFor="name">{t("fullName")}</Label>
                     <Input
                       id="name"
                       required
@@ -123,7 +107,7 @@ export function CheckoutForm({
                   </Stack>
 
                   <Stack gap="element">
-                    <Label htmlFor="address">{t.address}</Label>
+                    <Label htmlFor="address">{t("address")}</Label>
                     <Input
                       id="address"
                       required
@@ -134,7 +118,7 @@ export function CheckoutForm({
 
                   <Grid cols={2} gap="group">
                     <Stack gap="element">
-                      <Label htmlFor="city">{t.city}</Label>
+                      <Label htmlFor="city">{t("city")}</Label>
                       <Input
                         id="city"
                         required
@@ -143,7 +127,7 @@ export function CheckoutForm({
                       />
                     </Stack>
                     <Stack gap="element">
-                      <Label htmlFor="postal">{t.postalCode}</Label>
+                      <Label htmlFor="postal">{t("postalCode")}</Label>
                       <Input
                         id="postal"
                         required
@@ -154,7 +138,7 @@ export function CheckoutForm({
                   </Grid>
 
                   <Stack gap="element">
-                    <Label htmlFor="country">{t.country}</Label>
+                    <Label htmlFor="country">{t("country")}</Label>
                     <Select
                       value={shipping.country}
                       onValueChange={(value) => onShippingChange({ ...shipping, country: value })}
@@ -164,13 +148,13 @@ export function CheckoutForm({
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="Latvia">
-                          {locale === "lv" ? "Latvija" : "Latvia"}
+                          {t("countryLatvia")}
                         </SelectItem>
                         <SelectItem value="Lithuania">
-                          {locale === "lv" ? "Lietuva" : "Lithuania"}
+                          {t("countryLithuania")}
                         </SelectItem>
                         <SelectItem value="Estonia">
-                          {locale === "lv" ? "Igaunija" : "Estonia"}
+                          {t("countryEstonia")}
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -186,7 +170,7 @@ export function CheckoutForm({
               <CardHeader>
                 <CardTitle className="flex items-center gap-element">
                   <IconCreditCard className="size-5" aria-hidden="true" />
-                  {t.total}
+                  {tCart("total")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -194,7 +178,7 @@ export function CheckoutForm({
                   <Separator />
 
                   <Row justify="between" className="pt-2">
-                    <Text as="span" variant="heading-sm">{t.total}</Text>
+                    <Text as="span" variant="heading-sm">{tCart("total")}</Text>
                     <Text as="span" variant="heading-sm" className="tabular-nums">
                       €{total.toFixed(2)}
                     </Text>
@@ -206,12 +190,12 @@ export function CheckoutForm({
                     className="w-full"
                     disabled={processing}
                   >
-                    {processing ? t.processing : `${t.pay} €${total.toFixed(2)}`}
+                    {processing ? t("processing") : `${t("pay")} €${total.toFixed(2)}`}
                   </Button3D>
 
                   <Text variant="muted-sm" align="center" className="flex items-center justify-center gap-element">
                     <span className="size-4">🔒</span>
-                    {t.securePayment}
+                    {t("securePaymentStripe")}
                   </Text>
                 </Stack>
               </CardContent>

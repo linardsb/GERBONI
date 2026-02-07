@@ -161,7 +161,6 @@ export default function HomePage() {
   const t = useTranslations("home");
   const tCommon = useTranslations("common");
   const tProduct = useTranslations("product");
-  const locale = useLocale();
 
   const features = [
     {
@@ -176,10 +175,8 @@ export default function HomePage() {
     },
     {
       icon: IconMessageCircle,
-      title: locale === "lv" ? "AI Atbalsts" : "AI Support",
-      description: locale === "lv"
-        ? "24/7 AI-balstīts klientu atbalsts pasūtījumiem, atgriešanai un jautājumiem."
-        : "24/7 AI-powered customer support for orders, returns, and questions.",
+      title: t("aiSupportTitle"),
+      description: t("aiSupportDescription"),
     },
   ];
 
@@ -194,7 +191,7 @@ export default function HomePage() {
           <Stack gap="section" align="center" className="text-center">
             {/* Massive title - uses Latvian font for authentic typography */}
             <h1 className="font-latvian text-hero leading-hero tracking-tight">
-              {locale === "lv" ? "Mantojums" : "Heritage"}
+              {t("heroWord")}
             </h1>
 
             {/* Two-column description */}
@@ -244,15 +241,15 @@ export default function HomePage() {
                     variant="display-sm"
                     className="text-overlay-foreground"
                   >
-                    {locale === "lv" ? "Latvijas mantojuma kolekcija" : "Latvian Heritage Collection"}
+                    {t("heritageCollection")}
                   </Text>
                   <Text variant="overlay-muted">
-                    {locale === "lv" ? "10 pilsētas • 360 varianti" : "10 Cities • 360 Variants"}
+                    {t("citiesVariants")}
                   </Text>
                 </Stack>
                 <Stack gap="element" align="end" className="hidden md:flex">
                   <Text variant="overlay-muted">
-                    {locale === "lv" ? "Sākot no" : "Starting from"}
+                    {t("startingFrom")}
                   </Text>
                   <Text className="text-lg font-medium text-overlay-foreground">
                     €24.99
@@ -280,19 +277,17 @@ export default function HomePage() {
                       /01 {t("featuredProducts")}
                     </Text>
                     <Text as="h2" variant="display-md">
-                      {locale === "lv" ? "Pilsētu ģerboņi" : "City Crests"}
+                      {t("cityCrests")}
                     </Text>
                     <Text variant="muted" className="leading-relaxed">
-                      {locale === "lv"
-                        ? "Katrs ģerbonis pārstāv gadsimtiem vēstures, meistara darba un kultūras identitātes. Velciet savu mantojumu ar lepnumu."
-                        : "Each coat of arms represents centuries of history, craftsmanship, and cultural identity. Wear your heritage with pride."}
+                      {t("cityCrestsDescription")}
                     </Text>
                   </Stack>
 
                   <Stack gap="group">
                     <Row justify="between">
                       <Text variant="muted-sm">
-                        {locale === "lv" ? "Pieejamie dizaini" : "Available designs"}
+                        {t("availableDesigns")}
                       </Text>
                       <Text variant="body-sm" className="font-medium">
                         10
@@ -300,7 +295,7 @@ export default function HomePage() {
                     </Row>
                     <Row justify="between">
                       <Text variant="muted-sm">
-                        {locale === "lv" ? "Cenu diapazons" : "Price range"}
+                        {t("priceRange")}
                       </Text>
                       <Text variant="body-sm" className="font-medium">
                         €24.99 - €28.99
@@ -308,7 +303,7 @@ export default function HomePage() {
                     </Row>
                     <Row justify="between">
                       <Text variant="muted-sm">
-                        {locale === "lv" ? "Izmēri" : "Sizes"}
+                        {t("sizes")}
                       </Text>
                       <Text variant="body-sm" className="font-medium">
                         XS - XXL
@@ -391,14 +386,10 @@ export default function HomePage() {
             <div className="relative py-page px-section">
               <Stack gap="section" align="center" className="max-w-2xl mx-auto">
                 <Text as="h2" variant="display-md" align="center" className="text-overlay-foreground">
-                  {locale === "lv"
-                    ? "Gatavs velciet savu mantojumu?"
-                    : "Ready to wear your heritage?"}
+                  {t("ctaTitle")}
                 </Text>
                 <Text variant="overlay-muted" align="center">
-                  {locale === "lv"
-                    ? "Pievienojieties tūkstošiem latviešu un Latvijas entuziastu, kuri lepni velk savas pilsētas ģerboni."
-                    : "Join thousands of Latvians and Latvia enthusiasts who proudly wear their city's coat of arms."}
+                  {t("ctaDescription")}
                 </Text>
                 <Row gap="group" wrap="wrap" justify="center">
                   <Button3D variant="minimal-light-ghost" size="lg" href="/products" className="text-label">

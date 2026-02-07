@@ -64,7 +64,7 @@ export default function CartPage() {
       );
       setCart(updatedCart);
     } catch {
-      toast.error(locale === "lv" ? "Neizdevās atjaunināt grozu" : "Failed to update cart");
+      toast.error(t("updateError"));
     }
   };
 
@@ -76,9 +76,9 @@ export default function CartPage() {
         guestSession?.session_token
       );
       setCart(updatedCart);
-      toast.success(locale === "lv" ? "Priekšmets noņemts no groza" : "Item removed from cart");
+      toast.success(t("itemRemoved"));
     } catch {
-      toast.error(locale === "lv" ? "Neizdevās noņemt priekšmetu" : "Failed to remove item");
+      toast.error(t("removeError"));
     }
   };
 
@@ -95,7 +95,7 @@ export default function CartPage() {
       );
       router.push(`/checkout/success?order_id=${order.id}`);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : (locale === "lv" ? "Apmaksa neizdevās" : "Checkout failed"));
+      toast.error(err instanceof Error ? err.message : t("checkoutFailed"));
     } finally {
       setProcessing(false);
     }
@@ -149,9 +149,7 @@ export default function CartPage() {
     );
   }
 
-  const itemCountText = locale === "lv"
-    ? `${cart.item_count} ${cart.item_count === 1 ? "priekšmets" : "priekšmeti"} jūsu grozā`
-    : `${cart.item_count} item${cart.item_count !== 1 ? "s" : ""} in your cart`;
+  const itemCountText = t("itemsInCart", { count: cart.item_count });
 
   return (
     <Container padding="md" size="md">
@@ -172,7 +170,7 @@ export default function CartPage() {
           ))}
         </Stack>
 
-        <CartSummary total={Number(cart.total)} onCheckout={() => setShowCheckout(true)} locale={locale as "en" | "lv"} />
+        <CartSummary total={Number(cart.total)} onCheckout={() => setShowCheckout(true)} />
       </Stack>
     </Container>
   );

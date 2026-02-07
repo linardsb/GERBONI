@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useLocale } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import {
   IconMessageCircle,
   IconX,
@@ -29,27 +29,11 @@ export function ChatWidget() {
   const { isOpen, messages, isTyping, toggleChat, addMessage, setTyping } = useChatStore();
   const { token, guestSession } = useAuthStore();
   const locale = useLocale() as "en" | "lv";
+  const t = useTranslations("chat");
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [unreadCount, setUnreadCount] = useState(0);
-
-  const t = {
-    support: locale === "lv" ? "GERBONI Atbalsts" : "GERBONI Support",
-    aiAssistant: locale === "lv" ? "AI Asistents" : "AI Assistant",
-    online: locale === "lv" ? "Tiešsaistē" : "Online",
-    welcomeTitle: locale === "lv" ? "Sveiki! Kā varam palīdzēt?" : "Hi! How can we help?",
-    welcomeSubtitle: locale === "lv"
-      ? "Jautājiet par pasūtījumiem, produktiem vai atmaksām."
-      : "Ask about orders, products, or refunds.",
-    placeholder: locale === "lv" ? "Rakstiet ziņu..." : "Type a message...",
-    orderStatus: locale === "lv" ? "Pasūtījuma statuss" : "Order status",
-    productHelp: locale === "lv" ? "Produktu palīdzība" : "Product help",
-    refunds: locale === "lv" ? "Atmaksas" : "Refunds",
-    openChat: locale === "lv" ? "Atvērt čatu" : "Open chat",
-    closeChat: locale === "lv" ? "Aizvērt čatu" : "Close chat",
-    sendMessage: locale === "lv" ? "Sūtīt ziņu" : "Send message",
-  };
 
   useEffect(() => {
     const handleMessage = (data: WebSocketMessage) => {
@@ -139,7 +123,7 @@ export function ChatWidget() {
         className="fixed bottom-6 right-6 z-50 size-14 rounded-full shadow-lg transition-transform duration-normal hover:scale-105"
         aria-expanded={isOpen}
         aria-controls={CHAT_WIDGET_ID}
-        aria-label={isOpen ? t.closeChat : t.openChat}
+        aria-label={isOpen ? t("close") : t("openChat")}
       >
         <span className="relative">
           {/* Message icon with fade transition */}
@@ -164,7 +148,7 @@ export function ChatWidget() {
         {unreadCount > 0 && !isOpen && (
           <span
             className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-destructive text-xs font-medium text-destructive-foreground"
-            aria-label={`${unreadCount} ${locale === "lv" ? "nelasītas ziņas" : "unread messages"}`}
+            aria-label={t("unreadMessages", { count: unreadCount })}
           >
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
@@ -177,7 +161,7 @@ export function ChatWidget() {
           id={CHAT_WIDGET_ID}
           role="dialog"
           aria-modal="true"
-          aria-label={t.support}
+          aria-label={t("support")}
           data-slot="chat-widget"
           className="fixed bottom-24 right-6 z-50 flex w-[min(var(--size-chat-widget-width),calc(100vw-3rem))] h-[min(var(--size-chat-widget-height),calc(100vh-8rem))] flex-col overflow-hidden shadow-2xl border-2 animate-in fade-in slide-in-from-bottom-4 duration-normal"
         >
@@ -190,11 +174,11 @@ export function ChatWidget() {
               <IconRobot className="size-5" aria-hidden="true" />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold">{t.support}</h3>
+              <h3 className="font-semibold">{t("support")}</h3>
               <Row gap="element" className="items-center">
                 {/* Online indicator */}
                 <span className="size-2 rounded-full bg-green-400 animate-pulse" aria-hidden="true" />
-                <p className="text-xs text-primary-foreground/80">{t.online}</p>
+                <p className="text-xs text-primary-foreground/80">{t("online")}</p>
               </Row>
             </div>
           </div>
@@ -208,8 +192,8 @@ export function ChatWidget() {
                   <IconMessageCircle className="size-10 text-muted-foreground" aria-hidden="true" />
                 </div>
                 <Stack gap="element" align="center">
-                  <Text variant="heading-sm" align="center">{t.welcomeTitle}</Text>
-                  <Text variant="muted-sm" align="center">{t.welcomeSubtitle}</Text>
+                  <Text variant="heading-sm" align="center">{t("welcomeTitle")}</Text>
+                  <Text variant="muted-sm" align="center">{t("welcomeSubtitle")}</Text>
                 </Stack>
 
                 {/* Quick actions */}
@@ -217,26 +201,26 @@ export function ChatWidget() {
                   <Button
                     variant="outline"
                     className="w-full justify-start"
-                    onClick={() => handleQuickAction(locale === "lv" ? "Kāds ir mana pasūtījuma statuss?" : "What's my order status?")}
+                    onClick={() => handleQuickAction(t("quickOrderStatus"))}
                   >
                     <IconPackage className="size-4 mr-2" aria-hidden="true" />
-                    {t.orderStatus}
+                    {t("orderStatus")}
                   </Button>
                   <Button
                     variant="outline"
                     className="w-full justify-start"
-                    onClick={() => handleQuickAction(locale === "lv" ? "Man nepieciešama palīdzība ar produktu" : "I need help with a product")}
+                    onClick={() => handleQuickAction(t("quickProductHelp"))}
                   >
                     <IconHelp className="size-4 mr-2" aria-hidden="true" />
-                    {t.productHelp}
+                    {t("productHelp")}
                   </Button>
                   <Button
                     variant="outline"
                     className="w-full justify-start"
-                    onClick={() => handleQuickAction(locale === "lv" ? "Kā es varu saņemt atmaksu?" : "How can I get a refund?")}
+                    onClick={() => handleQuickAction(t("quickRefund"))}
                   >
                     <IconRefresh className="size-4 mr-2" aria-hidden="true" />
-                    {t.refunds}
+                    {t("refunds")}
                   </Button>
                 </Stack>
               </Stack>
@@ -271,16 +255,16 @@ export function ChatWidget() {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder={t.placeholder}
+                placeholder={t("placeholder")}
                 className="flex-1"
-                aria-label={t.placeholder}
+                aria-label={t("placeholder")}
                 maxLength={500}
               />
               <Button
                 type="submit"
                 size="icon"
                 disabled={!input.trim()}
-                aria-label={t.sendMessage}
+                aria-label={t("sendMessage")}
               >
                 <IconSend className="size-4" aria-hidden="true" />
               </Button>

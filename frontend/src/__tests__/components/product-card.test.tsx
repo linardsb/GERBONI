@@ -9,6 +9,8 @@ vi.mock('next-intl', () => ({
     const translations: Record<string, string> = {
       outOfStock: 'Out of stock',
       lowStock: `Only ${options?.count ?? 0} left`,
+      lowStockBadge: 'Low stock',
+      fromPrice: 'From',
     }
     return translations[key] || key
   },

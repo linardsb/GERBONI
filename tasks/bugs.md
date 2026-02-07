@@ -347,6 +347,51 @@ The refund window check used `order.created_at` instead of considering the order
 
 ---
 
+### BUG-008: Orders API Missing Guest Session Support / Security Hole
+**Status:** CLOSED
+**Severity:** Critical
+**Reported:** 2026-02-07
+**Fixed:** 2026-02-07
+**Component:** Backend / Orders API
+**GitHub Issue:** N/A (found during fragile area audit)
+
+**Description:**
+The `get_orders` (list) endpoint required JWT auth — guest users who created orders couldn't see them. The `get_order` (detail) endpoint accepted optional auth (`User | None`) but had no `X-Guest-Session` handling. When `user` was None, it passed `owner=None` to `OrderService.get_order()`, which returned ANY order regardless of ownership.
+
+**Steps to Reproduce:**
+1. Create an order as a guest user with `X-Guest-Session` header
+2. Try `GET /api/orders` with the same guest session → 401 (no guest support)
+3. Try `GET /api/orders/{id}` with NO auth at all → returns the order (security hole)
+
+**Expected Behavior:**
+Guest users can list/view their own orders via session token. Unauthenticated requests are rejected.
+
+**Actual Behavior:**
+Guests couldn't list orders at all. Any unauthenticated user could view any order by ID.
+
+**Root Cause:**
+`get_orders` used `Depends(get_authenticated_user)` (JWT-only). `get_order` used `Depends(get_current_user)` (optional) but never handled the case where `user` is None — it just passed `owner=None` which `OrderService` treated as "no filter".
+
+**Fix:**
+- Both endpoints now use three-way auth: JWT → guest session (`X-Guest-Session` header + `AuthService.get_guest_session()`) → 401 reject
+- `get_orders` filters by `guest_email` for guest sessions
+- `get_order` passes `guest_email` as owner for guest sessions
+- Consistent with `create_order` and `create_checkout` patterns
+
+**Related Files:**
+- `backend/app/api/orders.py`
+
+**Regression Test:** `backend/tests/test_orders.py` → `test_list_orders_guest_session`, `test_list_orders_invalid_guest_session`, `test_list_orders_no_auth_rejected`, `test_get_order_guest_session`, `test_get_order_invalid_guest_session`, `test_get_order_no_auth_rejected`, `test_get_order_guest_cross_access`, `test_list_orders_guest_cross_access`
+
+**Learning Outcomes:**
+- **Fragile Area?** Yes — Dual Auth System (#1)
+- **Pattern:** Endpoints with `User | None` dependency and no guest session fallback create security holes — `owner=None` means no ownership filter
+- **Prevention Strategy:** All 3 order endpoints (list/get/create) now use consistent three-way auth. Any new endpoint accepting optional auth MUST handle guest sessions or reject.
+
+**Related Bugs:** BUG-006 (same pattern in payments API)
+
+---
+
 ## Bug Template
 
 ```markdown
@@ -395,7 +440,7 @@ The refund window check used `order.created_at` instead of considering the order
 
 | Month | Opened | Closed | Net |
 |-------|--------|--------|-----|
-| Feb 2026 | 7 | 7 | 0 |
+| Feb 2026 | 8 | 8 | 0 |
 
 ---
 
@@ -405,6 +450,7 @@ Tracking coverage improvements to prevent future bugs:
 
 | Date | Component | Before | After | Tests Added |
 |------|-----------|--------|-------|-------------|
+| 2026-02-07 | BUG-008 Orders guest session + security | N/A | N/A | 8 (guest order access) |
 | 2026-02-07 | BUG-007 Refund window policy | N/A | N/A | 3 (delivery date window) |
 | 2026-02-07 | BUG-005 Agent refund bypass | N/A | N/A | 4 (refund via OrderService) |
 | 2026-02-07 | BUG-006 Payments guest checkout | N/A | N/A | 4 (guest checkout security) |
@@ -412,6 +458,6 @@ Tracking coverage improvements to prevent future bugs:
 | 2026-02-06 | E2E Tests | 19 failing | 0 failing | Fixed selectors |
 | 2026-02-06 | BUG-004 Admin Orders API | N/A | N/A | 10 (TestUpdateOrderStatus) |
 
-**Current Backend Test Count:** 350 tests (21 test files)
+**Current Backend Test Count:** 358 tests (21 test files)
 **Current Frontend Unit Test Count:** 380 tests (16 test files)
 **Current Frontend E2E Test Count:** 6 spec files (40 tests)

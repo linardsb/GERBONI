@@ -11,6 +11,7 @@ import { getProducts, type Product } from "@/lib/api";
 
 export default function ProductsPage() {
   const tCommon = useTranslations("common");
+  const t = useTranslations("product");
   const locale = useLocale();
 
   const [products, setProducts] = useState<Product[]>([]);
@@ -43,10 +44,8 @@ export default function ProductsPage() {
         </div>
       ) : (
         <PageHeader
-          title={locale === "lv" ? "Visi produkti" : "All Products"}
-          description={locale === "lv"
-            ? "Izpētiet mūsu Latvijas pilsētu ģerboņu kreklu kolekciju"
-            : "Explore our collection of Latvian city coat of arms t-shirts"}
+          title={t("allProducts")}
+          description={t("allProductsDescription")}
           spacing="lg"
         />
       )}
@@ -54,7 +53,7 @@ export default function ProductsPage() {
       <ProductGrid
         products={products}
         loading={loading}
-        emptyMessage={locale === "lv" ? "Vēl nav pieejamu produktu." : "No products available yet."}
+        emptyMessage={t("noProducts")}
       />
     </Container>
   );

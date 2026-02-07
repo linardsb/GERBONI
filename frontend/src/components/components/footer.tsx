@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { IconBrandInstagram, IconBrandFacebook, IconMail, IconHeart } from "@/components/icons";
 import { Separator } from "@/components/elements/separator";
@@ -37,7 +37,6 @@ function FooterLinkGroup({ title, links }: { title: string; links: { href: strin
 
 export function Footer() {
   const t = useTranslations("footer");
-  const locale = useLocale();
   const currentYear = new Date().getFullYear();
 
   const footerLinks = {
@@ -45,14 +44,14 @@ export function Footer() {
       { href: "/products", label: t("allProducts") },
     ],
     company: [
-      { href: "/about", label: t("shop") === "Veikals" ? "Mūsu stāsts" : "Our Story" },
+      { href: "/about", label: t("ourStory") },
       { href: "/contact", label: t("contact") },
       { href: "/faq", label: t("faq") },
     ],
     support: [
       { href: "/shipping", label: t("shipping") },
       { href: "/returns", label: t("returns") },
-      { href: "/orders", label: t("shop") === "Veikals" ? "Izsekot pasūtījumu" : "Track Order" },
+      { href: "/orders", label: t("trackOrder") },
     ],
     legal: [
       { href: "/privacy", label: t("privacy") },
@@ -96,7 +95,7 @@ export function Footer() {
 
             {/* Navigation Columns */}
             <FooterLinkGroup title={t("shop")} links={footerLinks.shop} />
-            <FooterLinkGroup title={t("shop") === "Veikals" ? "Uzņēmums" : "Company"} links={footerLinks.company} />
+            <FooterLinkGroup title={t("company")} links={footerLinks.company} />
             <FooterLinkGroup title={t("support")} links={footerLinks.support} />
             <FooterLinkGroup title={t("legal")} links={footerLinks.legal} />
           </div>
@@ -110,19 +109,11 @@ export function Footer() {
             </Text>
             <Text variant="muted-sm" className="hidden md:block">•</Text>
             <Text variant="muted-sm" className="inline-flex items-center gap-1">
-              {locale === "lv" ? (
-                <>
-                  <span>Radīts ar</span>
-                  <IconHeart className="size-4 fill-current text-red-brand" aria-hidden="true" />
-                  <span>Rīgā, Latvijā</span>
-                </>
-              ) : (
-                <>
-                  <span>Made with</span>
-                  <IconHeart className="size-4 fill-current text-red-brand" aria-hidden="true" />
-                  <span>in Rīga, Latvia</span>
-                </>
-              )}
+              <>
+                <span>{t("madeWithPrefix")}</span>
+                <IconHeart className="size-4 fill-current text-red-brand" aria-hidden="true" />
+                <span>{t("madeWithSuffix")}</span>
+              </>
             </Text>
             <Text variant="muted-sm" className="hidden md:block">•</Text>
             <Text variant="muted-sm">

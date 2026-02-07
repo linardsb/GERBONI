@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useTranslations, useLocale } from "next-intl"
 import { cva } from "class-variance-authority"
 import { IconCheck } from "@/components/icons"
 
@@ -45,8 +46,6 @@ export interface ColorSelectorProps {
   isColorInStock?: (color: ProductColorKey) => boolean
   /** Function to get stock count for a color */
   getStockCount?: (color: ProductColorKey) => number
-  /** Current locale for translations */
-  locale?: "en" | "lv"
   /** Additional class names */
   className?: string
 }
@@ -56,15 +55,17 @@ function ColorSelector({
   onValueChange,
   isColorInStock,
   getStockCount,
-  locale = "en",
   className,
 }: ColorSelectorProps) {
+  const t = useTranslations("product")
+  const locale = useLocale() as "en" | "lv"
+
   return (
     <div
       data-slot="color-selector"
       className={cn("flex flex-wrap gap-group", className)}
       role="radiogroup"
-      aria-label={locale === "lv" ? "Izvēlies krāsu" : "Select color"}
+      aria-label={t("selectColor")}
     >
       {PRODUCT_COLOR_KEYS.map((color) => {
         const colorConfig = PRODUCT_COLORS[color]
@@ -82,7 +83,7 @@ function ColorSelector({
                 disabled={!inStock}
                 role="radio"
                 aria-checked={isSelected}
-                aria-label={`${colorConfig.name[locale]}${!inStock ? (locale === "lv" ? " (nav noliktavā)" : " (out of stock)") : ""}`}
+                aria-label={`${colorConfig.name[locale]}${!inStock ? ` (${t("outOfStockLabel")})` : ""}`}
                 className={cn(
                   colorButtonVariants({
                     selected: isSelected,
@@ -125,12 +126,12 @@ function ColorSelector({
               <span>{colorConfig.name[locale]}</span>
               {!inStock && (
                 <span className="text-muted-foreground ml-1">
-                  ({locale === "lv" ? "nav noliktavā" : "out of stock"})
+                  ({t("outOfStockLabel")})
                 </span>
               )}
               {isLowStock && inStock && (
                 <span className="text-warning ml-1">
-                  ({locale === "lv" ? `${stockCount} atlicis` : `${stockCount} left`})
+                  ({t("leftInStock", { count: stockCount })})
                 </span>
               )}
             </TooltipContent>

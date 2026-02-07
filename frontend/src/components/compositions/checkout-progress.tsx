@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useTranslations } from "next-intl"
 import { cva } from "class-variance-authority"
 import { IconCheck, IconShoppingCart, IconTruck, IconCreditCard, IconCircleCheck } from "@/components/icons"
 
@@ -43,26 +44,24 @@ type StepStatus = "completed" | "current" | "upcoming"
 
 export type CheckoutStep = "cart" | "shipping" | "payment" | "confirmation"
 
-const STEPS: { key: CheckoutStep; icon: React.ElementType; label: { en: string; lv: string } }[] = [
-  { key: "cart", icon: IconShoppingCart, label: { en: "Cart", lv: "Grozs" } },
-  { key: "shipping", icon: IconTruck, label: { en: "Shipping", lv: "Piegāde" } },
-  { key: "payment", icon: IconCreditCard, label: { en: "Payment", lv: "Maksājums" } },
-  { key: "confirmation", icon: IconCircleCheck, label: { en: "Confirm", lv: "Apstiprināt" } },
+const STEPS: { key: CheckoutStep; icon: React.ElementType; labelKey: string }[] = [
+  { key: "cart", icon: IconShoppingCart, labelKey: "stepCart" },
+  { key: "shipping", icon: IconTruck, labelKey: "stepShipping" },
+  { key: "payment", icon: IconCreditCard, labelKey: "stepPayment" },
+  { key: "confirmation", icon: IconCircleCheck, labelKey: "stepConfirmation" },
 ]
 
 export interface CheckoutProgressProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Current step in the checkout flow */
   currentStep: CheckoutStep
-  /** Current locale for translations */
-  locale?: "en" | "lv"
 }
 
 function CheckoutProgress({
   className,
   currentStep,
-  locale = "en",
   ...props
 }: CheckoutProgressProps) {
+  const t = useTranslations("checkout")
   const currentIndex = STEPS.findIndex((s) => s.key === currentStep)
 
   const getStepStatus = (index: number): StepStatus => {
@@ -74,7 +73,7 @@ function CheckoutProgress({
   return (
     <nav
       data-slot="checkout-progress"
-      aria-label={locale === "lv" ? "Pasūtījuma progress" : "Checkout progress"}
+      aria-label={t("checkoutProgress")}
       className={cn("w-full", className)}
       {...props}
     >
@@ -107,7 +106,7 @@ function CheckoutProgress({
                   variant="body-sm"
                   className={cn(stepLabelVariants({ status }), "hidden sm:block")}
                 >
-                  {step.label[locale]}
+                  {t(step.labelKey)}
                 </Text>
               </div>
 

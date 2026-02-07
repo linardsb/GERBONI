@@ -58,7 +58,7 @@ export function ProductCard({ product }: ProductCardProps) {
             )}
             {isLowStock && (
               <Badge variant="secondary" className="absolute top-3 right-3 z-10 bg-warning/10 text-warning border-warning/20">
-                {locale === "lv" ? "Zems krājums" : "Low stock"}
+                {t("lowStockBadge")}
               </Badge>
             )}
             {/* T-shirt mockup */}
@@ -101,7 +101,7 @@ export function ProductCard({ product }: ProductCardProps) {
             </Text>
             {product.min_price && (
               <Text variant="price" className="mt-2">
-                {locale === "lv" ? "No" : "From"} €{Number(product.min_price).toFixed(2)}
+                {t("fromPrice")} €{Number(product.min_price).toFixed(2)}
               </Text>
             )}
           </div>
