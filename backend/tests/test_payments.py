@@ -6,7 +6,7 @@ import pytest
 from decimal import Decimal
 from unittest.mock import patch, AsyncMock, MagicMock
 
-from app.models import OrderStatus
+from app.models import Order, OrderItem, OrderStatus
 
 
 class TestCreateCheckout:
@@ -263,4 +263,116 @@ class TestGetCheckoutSession:
 
             response = await client.get("/api/payments/session/cs_nonexistent")
 
+        assert response.status_code == 404
+
+
+class TestGuestCheckout:
+    """Tests for guest checkout support in payments API."""
+
+    @pytest.fixture
+    async def guest_order(self, db_session, test_guest_session, test_variant):
+        """Create an order for a guest user."""
+        order = Order(
+            user_id=None,
+            guest_email=test_guest_session.email,
+            status=OrderStatus.PENDING.value,
+            total=Decimal("24.99"),
+            shipping_name="Guest User",
+            shipping_address="789 Guest Ave",
+            shipping_city="Riga",
+            shipping_postal_code="LV-1003",
+            shipping_country="Latvia",
+        )
+        db_session.add(order)
+        await db_session.flush()
+
+        order_item = OrderItem(
+            order_id=order.id,
+            variant_id=test_variant.id,
+            quantity=1,
+            price=Decimal("24.99"),
+        )
+        db_session.add(order_item)
+        await db_session.commit()
+        await db_session.refresh(order)
+        return order
+
+    @pytest.mark.asyncio
+    async def test_create_checkout_guest_session(
+        self, client, test_guest_session, guest_order, mock_stripe_service
+    ):
+        """Guest with valid session can checkout their order."""
+        with patch("app.api.payments.StripeService", mock_stripe_service):
+            response = await client.post(
+                f"/api/payments/create-checkout?order_id={guest_order.id}",
+                headers={"X-Guest-Session": test_guest_session.session_token},
+            )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert "checkout_url" in data
+
+    @pytest.mark.asyncio
+    async def test_create_checkout_no_auth_rejected(
+        self, client, guest_order, mock_stripe_service
+    ):
+        """No user + no session should return 401."""
+        with patch("app.api.payments.StripeService", mock_stripe_service):
+            response = await client.post(
+                f"/api/payments/create-checkout?order_id={guest_order.id}"
+            )
+
+        assert response.status_code == 401
+        assert "authentication required" in response.json()["detail"].lower()
+
+    @pytest.mark.asyncio
+    async def test_create_checkout_invalid_guest_session(
+        self, client, guest_order, mock_stripe_service
+    ):
+        """Invalid session token should return 401."""
+        with patch("app.api.payments.StripeService", mock_stripe_service):
+            response = await client.post(
+                f"/api/payments/create-checkout?order_id={guest_order.id}",
+                headers={"X-Guest-Session": "invalid-token-12345"},
+            )
+
+        assert response.status_code == 401
+        assert "invalid guest session" in response.json()["detail"].lower()
+
+    @pytest.mark.asyncio
+    async def test_create_checkout_guest_wrong_order(
+        self, client, db_session, test_guest_session, test_variant, mock_stripe_service
+    ):
+        """Guest cannot checkout another guest's order."""
+        # Create order for a different guest email
+        other_order = Order(
+            user_id=None,
+            guest_email="other-guest@example.com",
+            status=OrderStatus.PENDING.value,
+            total=Decimal("24.99"),
+            shipping_name="Other Guest",
+            shipping_address="999 Other St",
+            shipping_city="Riga",
+            shipping_postal_code="LV-1004",
+            shipping_country="Latvia",
+        )
+        db_session.add(other_order)
+        await db_session.flush()
+
+        order_item = OrderItem(
+            order_id=other_order.id,
+            variant_id=test_variant.id,
+            quantity=1,
+            price=Decimal("24.99"),
+        )
+        db_session.add(order_item)
+        await db_session.commit()
+
+        with patch("app.api.payments.StripeService", mock_stripe_service):
+            response = await client.post(
+                f"/api/payments/create-checkout?order_id={other_order.id}",
+                headers={"X-Guest-Session": test_guest_session.session_token},
+            )
+
+        # Should be 404 because order belongs to different guest
         assert response.status_code == 404

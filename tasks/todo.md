@@ -11,33 +11,37 @@ Track current work items and progress. Update status as work progresses.
 
 ## Current Sprint
 
-### Frontend
-- [ ] (No active tasks)
-
-### Backend
-- [ ] (No active tasks)
-
-### DevOps
-- [ ] (No active tasks)
+(No items in progress)
 
 ---
 
-## Backlog
+## Backlog (from Fragile Area Audit, 2026-02-07)
 
-### Frontend
-- [ ] (No items)
+### P1 — Broken Guest UX / i18n
+- [ ] Orders list endpoint doesn't support guest sessions (`GET /api/orders` requires JWT, guests can't see their orders)
+- [ ] 130+ hardcoded locale strings in frontend (ternary `locale === 'lv'` checks instead of `useTranslations()` hook)
 
-### Backend
-- [ ] (No items)
+### P2 — Prevention / Partial UX
+- [ ] Middleware audit test (automated test that verifies new `/public/` dirs don't break middleware matcher)
+- [ ] Guest session token silent failure in WebSocket (invalid `session_token` doesn't return error — silently continues unauthenticated)
+- [ ] Toast messages not translated (mix of hardcoded English, hardcoded Latvian, and proper translation keys)
 
-### Documentation
-- [ ] (No items)
+### P3 — Code Quality / Developer Safety
+- [ ] Shared guest auth dependency (extract `X-Guest-Session` handling into reusable FastAPI dependency instead of repeating in each endpoint)
+- [ ] Flush/commit documentation (add inline comments or runbook documenting the service `flush()` / API `commit()` pattern)
 
 ---
 
 ## Completed (Recent)
 
 ### 2026-02-07
+- [x] Fix BUG-007: Refund window uses `created_at` not delivery date — now checks `updated_at` for DELIVERED orders only
+- [x] Add 3 refund window regression tests (delivered within/expired window, shipped no time limit)
+- [x] Fix BUG-005: Agent refund bypasses OrderService (skipped stock restoration + transition validation)
+- [x] Fix BUG-006: Payments API missing guest checkout + security hole (no ownership filter when unauthenticated)
+- [x] Add 4 agent refund regression tests (status update, stock restore, cancelled rejection, PROCESSING eligible)
+- [x] Add 4 guest checkout regression tests (valid session, no-auth reject, invalid session, wrong order)
+- [x] Backend test count: 339 → 350 tests (all passing)
 - [x] Add WebSocket integration tests for AI Agent chat endpoint (30 tests)
 - [x] Achieve 91% coverage on `app/api/agent.py` (was 0%)
 - [x] Create `WebSocketTestClient` wrapper for TrustedHostMiddleware compatibility

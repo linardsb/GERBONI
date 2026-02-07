@@ -209,6 +209,144 @@ Also added `await db.commit()` before `await db.refresh(order)` since services u
 
 ---
 
+### BUG-005: Agent Refund Bypasses OrderService
+**Status:** CLOSED
+**Severity:** High
+**Reported:** 2026-02-07
+**Fixed:** 2026-02-07
+**Component:** Backend / AI Agent
+**GitHub Issue:** N/A (found during fragile area audit)
+
+**Description:**
+The `request_refund` agent tool in `support_agent.py` set `order.status = OrderStatus.REFUNDED.value` directly instead of calling `OrderService.process_refund()`. This bypassed both state machine validation and stock restoration.
+
+**Steps to Reproduce:**
+1. Create a paid order with items
+2. Trigger a refund via the AI chat agent
+3. Check variant stock levels — unchanged (should have increased)
+4. Set an order to CANCELLED, then try refunding via agent — succeeds (should fail)
+
+**Expected Behavior:**
+Refunds go through OrderService, which validates the state transition and restores stock.
+
+**Actual Behavior:**
+Direct status manipulation skipped transition validation (could refund a CANCELLED order) and never restored stock to inventory.
+
+**Root Cause:**
+The `request_refund` tool was written before `OrderService.process_refund()` existed or was not updated when the service layer was introduced. It also had a manual `eligible_statuses` list that excluded PROCESSING (which IS refundable per `VALID_TRANSITIONS`).
+
+**Fix:**
+- Replaced `order.status = OrderStatus.REFUNDED.value; await db.commit()` with `OrderService.process_refund(db, order.id, reason=reason, restore_stock=True); await db.commit()`
+- Removed manual `eligible_statuses` check — OrderService handles transition validation
+- Added `InvalidStateTransitionError` catch for user-friendly error messages
+- PROCESSING orders now correctly eligible for refund
+
+**Related Files:**
+- `backend/app/agent/support_agent.py`
+- `backend/app/services/order_service.py`
+
+**Regression Test:** `backend/tests/test_agent.py` → `test_refund_paid_order_updates_status`, `test_refund_restores_stock`, `test_refund_cancelled_order`, `test_refund_processing_order`
+
+**Learning Outcomes:**
+- **Fragile Area?** Yes — Order State Machine (#3) + AI Agent (#4)
+- **Pattern:** Agent tools duplicating service layer logic instead of delegating
+- **Prevention Strategy:** Agent tools should always call service methods, never manipulate model state directly. Single source of truth for state transitions is `VALID_TRANSITIONS` in `order_service.py`.
+
+**Related Bugs:** BUG-004 (also Order State Machine, wrong service calls)
+
+---
+
+### BUG-006: Payments API Missing Guest Checkout / Security Hole
+**Status:** CLOSED
+**Severity:** Critical
+**Reported:** 2026-02-07
+**Fixed:** 2026-02-07
+**Component:** Backend / Payments API
+**GitHub Issue:** N/A (found during fragile area audit)
+
+**Description:**
+The `create_checkout` endpoint in `payments.py` had no `X-Guest-Session` header support. When `user` was None (no JWT), the order query had NO ownership filter — any unauthenticated request could create a checkout session for ANY order.
+
+**Steps to Reproduce:**
+1. Create an order as a guest user
+2. Try to call `POST /api/payments/create-checkout?order_id=X` with the guest session header — fails (no support)
+3. Call the same endpoint with NO auth at all — succeeds for ANY order (security hole)
+
+**Expected Behavior:**
+Guest users can checkout their own orders. Unauthenticated requests are rejected.
+
+**Actual Behavior:**
+Guest users can't checkout at all. Unauthenticated requests can checkout ANY order.
+
+**Root Cause:**
+The `create_checkout` endpoint only checked `if user:` to add an ownership filter. The `else` branch had no filter at all, meaning the query returned any order matching the ID regardless of ownership. The `X-Guest-Session` header was never implemented despite being present in `orders.py` `create_order`.
+
+**Fix:**
+- Added `x_guest_session: str | None = Header(default=None)` parameter
+- Added `AuthService` import for guest session lookup
+- Three-way auth: JWT user → guest session (validates via `AuthService.get_guest_session()`, filters by `Order.guest_email`) → reject with 401
+- Follows same dual-auth pattern as `create_order` in `orders.py`
+
+**Related Files:**
+- `backend/app/api/payments.py`
+
+**Regression Test:** `backend/tests/test_payments.py` → `test_create_checkout_guest_session`, `test_create_checkout_no_auth_rejected`, `test_create_checkout_invalid_guest_session`, `test_create_checkout_guest_wrong_order`
+
+**Learning Outcomes:**
+- **Fragile Area?** Yes — Dual Auth System (#1) + Payments
+- **Pattern:** Missing guest session support in endpoints that support both auth methods
+- **Prevention Strategy:** Every endpoint that accepts `get_current_user` (optional) MUST also handle `X-Guest-Session`. When `user` is None and no guest session, ALWAYS reject with 401 — never allow unfiltered queries.
+
+**Related Bugs:** BUG-004 (also service layer integration issues)
+
+---
+
+### BUG-007: Refund Window Uses Order Date Instead of Delivery Date
+**Status:** CLOSED
+**Severity:** Medium
+**Reported:** 2026-02-07
+**Fixed:** 2026-02-07
+**Component:** Backend / AI Agent
+**GitHub Issue:** N/A (found during fragile area audit)
+
+**Description:**
+The `request_refund` agent tool measured the 14-day return window from `order.created_at` (order placement date) instead of the delivery date. The store policy states "14-day return window from delivery date."
+
+**Steps to Reproduce:**
+1. Place an order (created_at = day 0)
+2. Order gets delivered on day 12
+3. Customer requests refund on day 13 (1 day after delivery)
+4. Agent rejects: "Order was placed 13 days ago" — only 1 day left in window
+5. But policy says customer has 14 days from delivery = 13 days remaining
+
+**Expected Behavior:**
+14-day window starts from delivery date. Non-delivered orders (PAID, PROCESSING, SHIPPED) have no time restriction since the window hasn't started.
+
+**Actual Behavior:**
+14-day window started from order placement date, unfairly penalizing customers with longer shipping times.
+
+**Root Cause:**
+The refund window check used `order.created_at` instead of considering the order's delivery status. The Order model has no `delivered_at` field, but `updated_at` serves as a reliable proxy since it's set by SQLAlchemy's `onupdate=func.now()` when the status transitions to DELIVERED.
+
+**Fix:**
+- DELIVERED orders: 14-day window measured from `order.updated_at` (delivery date proxy)
+- Non-DELIVERED orders (PAID, PROCESSING, SHIPPED): No time restriction — delivery hasn't happened, so the refund window hasn't started
+- Updated agent tool docstring to reflect corrected policy
+
+**Related Files:**
+- `backend/app/agent/support_agent.py`
+
+**Regression Test:** `backend/tests/test_agent.py` → `test_refund_delivered_within_window`, `test_refund_delivered_expired_window`, `test_refund_shipped_no_time_limit`
+
+**Learning Outcomes:**
+- **Fragile Area?** Yes — Order State Machine (#3) + AI Agent (#4)
+- **Pattern:** Business policy logic in agent tools diverging from stated policy in system prompt
+- **Prevention Strategy:** Agent business rules should reference the system prompt policy text. Time windows should use the semantically correct timestamp, not just `created_at`. Consider adding a `delivered_at` column for explicit tracking.
+
+**Related Bugs:** BUG-005 (also agent tool logic issues)
+
+---
+
 ## Bug Template
 
 ```markdown
@@ -257,7 +395,7 @@ Also added `await db.commit()` before `await db.refresh(order)` since services u
 
 | Month | Opened | Closed | Net |
 |-------|--------|--------|-----|
-| Feb 2026 | 4 | 4 | 0 |
+| Feb 2026 | 7 | 7 | 0 |
 
 ---
 
@@ -267,10 +405,13 @@ Tracking coverage improvements to prevent future bugs:
 
 | Date | Component | Before | After | Tests Added |
 |------|-----------|--------|-------|-------------|
+| 2026-02-07 | BUG-007 Refund window policy | N/A | N/A | 3 (delivery date window) |
+| 2026-02-07 | BUG-005 Agent refund bypass | N/A | N/A | 4 (refund via OrderService) |
+| 2026-02-07 | BUG-006 Payments guest checkout | N/A | N/A | 4 (guest checkout security) |
 | 2026-02-07 | `app/api/agent.py` (WebSocket) | 0% | 91% | 30 |
 | 2026-02-06 | E2E Tests | 19 failing | 0 failing | Fixed selectors |
 | 2026-02-06 | BUG-004 Admin Orders API | N/A | N/A | 10 (TestUpdateOrderStatus) |
 
-**Current Backend Test Count:** 339 tests (21 test files)
+**Current Backend Test Count:** 350 tests (21 test files)
 **Current Frontend Unit Test Count:** 380 tests (16 test files)
 **Current Frontend E2E Test Count:** 6 spec files (40 tests)

@@ -7,6 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from ..models import Order, OrderItem, Product, TShirtVariant, User, OrderStatus
+from ..services import OrderService
+from ..exceptions import InvalidStateTransitionError
 from ..config import get_settings
 
 settings = get_settings()
@@ -419,8 +421,9 @@ Shipping to:
         This action changes the order status and triggers a refund process.
 
         Eligibility requirements:
-        - Order must be PAID, SHIPPED, or DELIVERED status
-        - Order must be within 14 days of placement
+        - Order must be PAID, PROCESSING, SHIPPED, or DELIVERED status
+        - For DELIVERED orders: must be within 14 days of delivery date
+        - For non-DELIVERED orders: refund window has not started (always eligible)
         - Customer must own the order (authenticated or matching guest email)
 
         Args:
@@ -456,26 +459,23 @@ Shipping to:
         if not order:
             return f"Order #{order_id} not found or doesn't belong to this customer. Use get_user_orders to find the correct order ID."
 
-        # Check status eligibility
-        eligible_statuses = [OrderStatus.PAID.value, OrderStatus.SHIPPED.value, OrderStatus.DELIVERED.value]
-        if order.status not in eligible_statuses:
-            status_guidance = {
-                OrderStatus.PENDING.value: "This order hasn't been paid yet. It can be cancelled instead of refunded.",
-                OrderStatus.PROCESSING.value: "This order is being processed. It can be refunded once payment is confirmed.",
-                OrderStatus.CANCELLED.value: "This order was already cancelled. No refund is needed as payment was not completed.",
-                OrderStatus.REFUNDED.value: "This order has already been refunded.",
-            }
-            guidance = status_guidance.get(order.status, f"Current status '{order.status}' is not eligible for refund.")
-            return f"Cannot refund Order #{order_id}. {guidance}"
+        # Check 14-day return window from delivery date (business rule enforced by agent)
+        # Policy: "14-day return window from delivery date"
+        # For DELIVERED orders: use updated_at as proxy for delivery date
+        # For non-DELIVERED orders (PAID, PROCESSING, SHIPPED): window hasn't started yet
+        from datetime import datetime
+        if order.status == OrderStatus.DELIVERED.value:
+            delivery_date = order.updated_at.replace(tzinfo=None)
+            days_since_delivery = (datetime.utcnow() - delivery_date).days
+            if days_since_delivery > 14:
+                return f"Refund window has expired for Order #{order_id}. Order was delivered {days_since_delivery} days ago (14-day limit from delivery). For orders outside the refund window, please direct the customer to contact support@gerboni.lv for special consideration."
 
-        # Check 14-day window
-        from datetime import datetime, timedelta
-        days_since_order = (datetime.utcnow() - order.created_at.replace(tzinfo=None)).days
-        if days_since_order > 14:
-            return f"Refund window has expired for Order #{order_id}. Order was placed {days_since_order} days ago (14-day limit). For orders outside the refund window, please direct the customer to contact support@gerboni.lv for special consideration."
-
-        order.status = OrderStatus.REFUNDED.value
-        await db.commit()
+        # Delegate to OrderService for transition validation and stock restoration
+        try:
+            await OrderService.process_refund(db, order.id, reason=reason, restore_stock=True)
+            await db.commit()
+        except InvalidStateTransitionError:
+            return f"Cannot refund Order #{order_id}: order status '{order.status}' is not eligible for refund."
 
         return f"""✅ Refund approved for Order #{order_id}
 

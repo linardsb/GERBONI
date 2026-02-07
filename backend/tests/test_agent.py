@@ -296,11 +296,108 @@ class TestRequestRefund:
         result = await tool(mock_ctx, test_paid_order.id, reason="Wrong size")
         assert "refund approved" in result.lower() or "✅" in result
 
+    async def test_refund_paid_order_updates_status(self, agent, mock_ctx, test_paid_order, db_session):
+        """Refund should transition order to REFUNDED via OrderService."""
+        tool = get_tool_func(agent, "request_refund")
+        await tool(mock_ctx, test_paid_order.id, reason="Wrong size")
+
+        from sqlalchemy import select
+        result = await db_session.execute(
+            select(Order).where(Order.id == test_paid_order.id)
+        )
+        order = result.scalar_one()
+        assert order.status == OrderStatus.REFUNDED.value
+
+    async def test_refund_restores_stock(self, agent, mock_ctx, test_paid_order, db_session):
+        """Refund should restore variant stock via OrderService."""
+        from sqlalchemy import select
+        from sqlalchemy.orm import selectinload
+        from app.models import TShirtVariant
+
+        # Eagerly load items to avoid lazy load issues
+        result = await db_session.execute(
+            select(Order).options(selectinload(Order.items)).where(Order.id == test_paid_order.id)
+        )
+        order = result.scalar_one()
+        item = order.items[0]
+
+        variant_result = await db_session.execute(
+            select(TShirtVariant).where(TShirtVariant.id == item.variant_id)
+        )
+        variant = variant_result.scalar_one()
+        stock_before = variant.stock
+
+        tool = get_tool_func(agent, "request_refund")
+        await tool(mock_ctx, test_paid_order.id, reason="Wrong size")
+
+        # Check stock increased
+        variant_result = await db_session.execute(
+            select(TShirtVariant).where(TShirtVariant.id == item.variant_id)
+        )
+        variant = variant_result.scalar_one()
+        assert variant.stock == stock_before + item.quantity
+
     async def test_refund_pending_order(self, agent, mock_ctx, test_order):
         """Should reject refund for pending (unpaid) order."""
         tool = get_tool_func(agent, "request_refund")
         result = await tool(mock_ctx, test_order.id, reason="Changed mind")
         assert "cannot" in result.lower()
+
+    async def test_refund_cancelled_order(self, agent, mock_ctx, db_session, test_paid_order):
+        """Should reject refund for cancelled order."""
+        # Manually set to cancelled
+        test_paid_order.status = OrderStatus.CANCELLED.value
+        await db_session.commit()
+
+        tool = get_tool_func(agent, "request_refund")
+        result = await tool(mock_ctx, test_paid_order.id, reason="Want money back")
+        assert "cannot" in result.lower() or "not eligible" in result.lower()
+
+    async def test_refund_processing_order(self, agent, mock_ctx, db_session, test_paid_order):
+        """PROCESSING orders should be eligible for refund."""
+        test_paid_order.status = OrderStatus.PROCESSING.value
+        await db_session.commit()
+
+        tool = get_tool_func(agent, "request_refund")
+        result = await tool(mock_ctx, test_paid_order.id, reason="Changed mind")
+        assert "refund approved" in result.lower() or "✅" in result
+
+    async def test_refund_delivered_within_window(self, agent, mock_ctx, db_session, test_paid_order):
+        """DELIVERED order within 14-day window should be refundable."""
+        from datetime import datetime, timedelta
+
+        test_paid_order.status = OrderStatus.DELIVERED.value
+        test_paid_order.updated_at = datetime.utcnow() - timedelta(days=5)
+        await db_session.commit()
+
+        tool = get_tool_func(agent, "request_refund")
+        result = await tool(mock_ctx, test_paid_order.id, reason="Wrong size")
+        assert "refund approved" in result.lower() or "✅" in result
+
+    async def test_refund_delivered_expired_window(self, agent, mock_ctx, db_session, test_paid_order):
+        """DELIVERED order past 14-day window should be rejected."""
+        from datetime import datetime, timedelta
+
+        test_paid_order.status = OrderStatus.DELIVERED.value
+        test_paid_order.updated_at = datetime.utcnow() - timedelta(days=20)
+        await db_session.commit()
+
+        tool = get_tool_func(agent, "request_refund")
+        result = await tool(mock_ctx, test_paid_order.id, reason="Want refund")
+        assert "expired" in result.lower()
+        assert "delivery" in result.lower() or "delivered" in result.lower()
+
+    async def test_refund_shipped_no_time_limit(self, agent, mock_ctx, db_session, test_paid_order):
+        """SHIPPED order should be refundable regardless of age (delivery hasn't happened)."""
+        from datetime import datetime, timedelta
+
+        test_paid_order.status = OrderStatus.SHIPPED.value
+        test_paid_order.created_at = datetime.utcnow() - timedelta(days=30)
+        await db_session.commit()
+
+        tool = get_tool_func(agent, "request_refund")
+        result = await tool(mock_ctx, test_paid_order.id, reason="Changed mind")
+        assert "refund approved" in result.lower() or "✅" in result
 
     async def test_refund_nonexistent_order(self, agent, mock_ctx):
         """Should return error for nonexistent order."""
