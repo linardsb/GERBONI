@@ -258,3 +258,19 @@ Also added `await db.commit()` before `await db.refresh(order)` since services u
 | Month | Opened | Closed | Net |
 |-------|--------|--------|-----|
 | Feb 2026 | 4 | 4 | 0 |
+
+---
+
+## Test Coverage Progress
+
+Tracking coverage improvements to prevent future bugs:
+
+| Date | Component | Before | After | Tests Added |
+|------|-----------|--------|-------|-------------|
+| 2026-02-07 | `app/api/agent.py` (WebSocket) | 0% | 91% | 30 |
+| 2026-02-06 | E2E Tests | 19 failing | 0 failing | Fixed selectors |
+| 2026-02-06 | BUG-004 Admin Orders API | N/A | N/A | 10 (TestUpdateOrderStatus) |
+
+**Current Backend Test Count:** 339 tests (21 test files)
+**Current Frontend Unit Test Count:** 380 tests (16 test files)
+**Current Frontend E2E Test Count:** 6 spec files (40 tests)

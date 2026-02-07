@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/routing";
-import { IconShoppingCart, IconUser, IconMenu2, IconChevronDown, IconTruck, IconPhone, IconQuestionMark, IconRefresh, IconHeart } from "@/components/icons";
+import { IconShoppingCart, IconUser, IconMenu2, IconChevronDown, IconHeart } from "@/components/icons";
 import { Button } from "@/components/elements/button";
 import { Badge } from "@/components/elements/badge";
 import { Text } from "@/components/elements/text";
@@ -46,10 +46,10 @@ export function Header() {
   ];
 
   const infoNavItems = [
-    { href: "/shipping" as const, label: t("shipping"), icon: IconTruck },
-    { href: "/returns" as const, label: t("returns"), icon: IconRefresh },
-    { href: "/faq" as const, label: t("faq"), icon: IconQuestionMark },
-    { href: "/contact" as const, label: t("contact"), icon: IconPhone },
+    { href: "/shipping" as const, label: t("shipping") },
+    { href: "/returns" as const, label: t("returns") },
+    { href: "/faq" as const, label: t("faq") },
+    { href: "/contact" as const, label: t("contact") },
   ];
 
   const isActive = (href: string) => pathname === href;
@@ -98,7 +98,6 @@ export function Header() {
                     href={item.href}
                     className="flex items-center gap-group uppercase rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground transition-colors duration-fast"
                   >
-                    <item.icon className="size-4 text-muted-foreground" aria-hidden="true" />
                     {item.label}
                   </Link>
                 ))}
@@ -168,7 +167,7 @@ export function Header() {
               <IconUser className="size-5" aria-hidden="true" />
             </Button>
           ) : (
-            <Button variant="minimal" asChild size="sm" className="hidden sm:inline-flex text-label text-xs">
+            <Button variant="minimal" asChild size="sm" className="hidden sm:inline-flex text-label text-xs font-bold">
               <Link href="/login">{t("login")}</Link>
             </Button>
           )}
@@ -206,10 +205,9 @@ export function Header() {
                         <Link
                           key={item.href}
                           href={item.href}
-                          className={cn("nav-link-mobile flex items-center gap-group", isActive(item.href) && "text-primary")}
+                          className={cn("nav-link-mobile", isActive(item.href) && "text-primary")}
                           aria-current={isActive(item.href) ? "page" : undefined}
                         >
-                          <item.icon className="size-4 text-muted-foreground" aria-hidden="true" />
                           {item.label}
                         </Link>
                       ))}

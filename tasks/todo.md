@@ -37,6 +37,21 @@ Track current work items and progress. Update status as work progresses.
 
 ## Completed (Recent)
 
+### 2026-02-07
+- [x] Add WebSocket integration tests for AI Agent chat endpoint (30 tests)
+- [x] Achieve 91% coverage on `app/api/agent.py` (was 0%)
+- [x] Create `WebSocketTestClient` wrapper for TrustedHostMiddleware compatibility
+- [x] Document guest auth fallback behavior (invalid session_token doesn't fall back to email)
+- [x] Update CLAUDE.md and MEMORY.md with test coverage status
+- [x] Backend test count: 309 → 339 tests (all passing)
+- [x] Add guest session email context tests (session.email vs provided email)
+
+### 2026-02-06
+- [x] Fix 19 failing E2E tests (locale prefixes and component selectors)
+- [x] Fix all ESLint warnings across frontend codebase
+- [x] Update E2E test routes with `/en/` locale prefix
+- [x] Fix product variant button selectors in E2E tests
+
 ### 2026-02-04
 - [x] Fix locale preservation in navigation using i18n Link
 - [x] Add permanent admin account to database seed

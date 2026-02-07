@@ -22,7 +22,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
 
     const loadWishlist = async () => {
       // Only load if user is authenticated or has a guest session
-      if (!token && !guestSession) {
+      if (!token && !guestSession?.session_token) {
         clearWishlist();
         return;
       }

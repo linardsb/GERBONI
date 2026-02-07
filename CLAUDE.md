@@ -42,6 +42,13 @@ frontend/src/app/layout.tsx
 
 **DO NOT proceed with any user request until you have read ALL files listed above. Read them in parallel to be efficient.**
 
+### 5. Project Status (MUST READ)
+```
+tasks/CLAUDE.md
+```
+
+This file contains current sprint status, open bugs, and test coverage. Check it to understand project state before starting work.
+
 ---
 
 ## MANDATORY: Development Skills
@@ -182,6 +189,7 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_...
 | **Frontend Skill** | `.claude/skills/gerboni-frontend-design/SKILL.md` |
 | Design tokens (CSS) | `frontend/src/app/globals.css` |
 | Design tokens (TS) | `frontend/src/lib/design-tokens.ts` |
+| **Task Tracking** | `tasks/CLAUDE.md` (summary), `tasks/todo.md`, `tasks/bugs.md` |
 
 ## Testing
 
@@ -192,9 +200,10 @@ pytest --cov=app --cov-report=term-missing -v    # Full suite with coverage
 pytest tests/test_auth.py -v                      # Single module
 pytest -k "test_login" -v                         # Single test by name
 ```
-- **66 test cases** across 5 modules: auth, cart, orders, payments, products
+- **339 test cases** across 21 test files including auth, cart, orders, payments, products, agent, websocket
 - Uses in-memory SQLite via `conftest.py` fixtures (`db_session`, `client`, `auth_client`)
 - Stripe/Anthropic mocked via `mock_stripe_service`, `mock_anthropic_agent` fixtures
+- WebSocket testing uses `WebSocketTestClient` wrapper with explicit host header for TrustedHostMiddleware
 
 ### Frontend Unit Tests (Vitest)
 ```bash
@@ -243,7 +252,7 @@ Areas that have broken before or are high-risk. Pay extra attention when modifyi
 
 3. **Order State Machine** — Strict `pending → paid → processing → shipped → delivered` flow with `cancelled` and `refunded` branches. The `request_refund` agent tool enforces a 14-day window. Changing status logic risks payment/refund inconsistencies.
 
-4. **AI Agent WebSocket** — Completely untested, most complex feature, 0% coverage. The `support_agent.py` has 5 tools with database access scoped by user identity. WebSocket auth flow (`auth` → `auth_success` → `message`) is fragile.
+4. **AI Agent WebSocket** — Now tested with 91% coverage (30 tests in `test_websocket_agent.py`). The `support_agent.py` has 5 tools with database access scoped by user identity. WebSocket auth flow (`auth` → `auth_success` → `message`) is now tested. Note: guest auth with invalid session_token does NOT fall back to email — it silently continues.
 
 5. **i18n Translations** — New UI text MUST go in both `en.json` AND `lv.json`. Hard-coded strings cause locale-dependent rendering bugs (see BUG-001). All 18 routes are locale-prefixed.
 

@@ -123,7 +123,7 @@ function ProductCard({
           <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
             <Button
               variant="secondary"
-              className="w-full"
+              className="w-full uppercase font-bold"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
