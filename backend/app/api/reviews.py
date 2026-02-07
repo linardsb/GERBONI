@@ -1,6 +1,6 @@
 """Product reviews API endpoints."""
 
-from fastapi import APIRouter, Depends, Header, Query
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..database import get_db
@@ -12,9 +12,9 @@ from ..schemas.review import (
     ReviewListResponse,
     ReviewHelpfulResponse,
 )
-from ..services import ReviewService, ReviewOwner, AuthService
+from ..services import ReviewService, ReviewOwner
 from ..exceptions import DomainException, domain_to_http
-from .deps import get_current_user, get_current_user_required
+from .deps import get_auth, get_current_user_required, AuthResult
 
 router = APIRouter()
 
@@ -132,22 +132,16 @@ async def delete_review(
 @router.post("/reviews/{review_id}/helpful", response_model=ReviewHelpfulResponse)
 async def mark_review_helpful(
     review_id: int,
-    user: User | None = Depends(get_current_user),
-    x_guest_session: str | None = Header(None),
+    auth: AuthResult = Depends(get_auth),
     db: AsyncSession = Depends(get_db),
 ):
     """Mark a review as helpful. Works for both users and guests."""
-    # Get guest session if header provided
-    guest_session = None
-    if x_guest_session:
-        guest_session = await AuthService.get_guest_session(db, x_guest_session)
-
     try:
         helpful_count, user_marked = await ReviewService.mark_helpful(
             db,
             review_id=review_id,
-            user_id=user.id if user else None,
-            session_id=guest_session.id if guest_session else None,
+            user_id=auth.user_id,
+            session_id=auth.session_id,
         )
         await db.commit()
         return {

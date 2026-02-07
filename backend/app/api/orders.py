@@ -1,14 +1,12 @@
-from fastapi import APIRouter, Depends, Header
-from sqlalchemy import select
+from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
 
 from ..database import get_db
-from ..models import Order, CartItem, TShirtVariant, User
+from ..models import Order
 from ..schemas import OrderCreate, OrderRead
-from ..services import AuthService, OrderService, OrderOwner, ShippingInfo, CartOwner, CartService
-from ..exceptions import DomainException, AuthorizationError, domain_to_http
-from .deps import get_current_user
+from ..services import OrderService, OrderOwner, ShippingInfo, CartOwner, CartService
+from ..exceptions import DomainException, domain_to_http
+from .deps import require_auth, AuthResult
 
 router = APIRouter()
 
@@ -55,20 +53,10 @@ def _format_order(order: Order) -> dict:
 async def list_orders(
     skip: int = 0,
     limit: int = 20,
-    x_guest_session: str | None = Header(default=None),
-    user: User | None = Depends(get_current_user),
+    auth: AuthResult = Depends(require_auth),
     db: AsyncSession = Depends(get_db),
 ):
-    if user:
-        owner = OrderOwner(user_id=user.id, guest_email=None)
-    elif x_guest_session:
-        session = await AuthService.get_guest_session(db, x_guest_session)
-        if session:
-            owner = OrderOwner(user_id=None, guest_email=session.email)
-        else:
-            raise domain_to_http(AuthorizationError("Invalid guest session"))
-    else:
-        raise domain_to_http(AuthorizationError("Authentication required"))
+    owner = OrderOwner(user_id=auth.user_id, guest_email=auth.guest_email)
 
     try:
         orders = await OrderService.list_orders(db, owner, skip, limit)
@@ -80,20 +68,10 @@ async def list_orders(
 @router.get("/{order_id}", response_model=OrderRead)
 async def get_order(
     order_id: int,
-    x_guest_session: str | None = Header(default=None),
-    user: User | None = Depends(get_current_user),
+    auth: AuthResult = Depends(require_auth),
     db: AsyncSession = Depends(get_db),
 ):
-    if user:
-        owner = OrderOwner(user_id=user.id, guest_email=None)
-    elif x_guest_session:
-        session = await AuthService.get_guest_session(db, x_guest_session)
-        if session:
-            owner = OrderOwner(user_id=None, guest_email=session.email)
-        else:
-            raise domain_to_http(AuthorizationError("Invalid guest session"))
-    else:
-        raise domain_to_http(AuthorizationError("Authentication required"))
+    owner = OrderOwner(user_id=auth.user_id, guest_email=auth.guest_email)
 
     try:
         order = await OrderService.get_order(db, order_id, owner)
@@ -105,29 +83,21 @@ async def get_order(
 @router.post("", response_model=OrderRead)
 async def create_order(
     order_data: OrderCreate,
-    x_guest_session: str | None = Header(default=None),
-    user: User | None = Depends(get_current_user),
+    auth: AuthResult = Depends(require_auth),
     db: AsyncSession = Depends(get_db),
 ):
-    session = None
-    if not user and x_guest_session:
-        session = await AuthService.get_guest_session(db, x_guest_session)
-
-    if not user and not session:
-        raise domain_to_http(AuthorizationError("User or guest session required"))
-
     # Get cart items
     cart_owner = CartOwner(
-        user_id=user.id if user else None,
-        session_id=session.id if session else None,
+        user_id=auth.user_id,
+        session_id=auth.session_id,
     )
     cart_items = await CartService.get_cart_items(db, cart_owner)
 
     # Determine guest email
-    guest_email = order_data.guest_email or (session.email if session else None)
+    guest_email = order_data.guest_email or auth.guest_email
 
     order_owner = OrderOwner(
-        user_id=user.id if user else None,
+        user_id=auth.user_id,
         guest_email=guest_email,
     )
 

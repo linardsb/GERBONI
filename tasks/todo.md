@@ -11,7 +11,7 @@ Track current work items and progress. Update status as work progresses.
 
 ## Current Sprint
 
-(No items in progress — all P1 items complete)
+(All P1, P2, and P3 backlog items complete. No remaining items.)
 
 ---
 
@@ -27,12 +27,22 @@ Track current work items and progress. Update status as work progresses.
 - [x] Toast messages not translated (mix of hardcoded English, hardcoded Latvian, and proper translation keys) — **DONE** Translated 30+ toast strings across 11 files, added ~20 new keys to en.json + lv.json
 
 ### P3 — Code Quality / Developer Safety
-- [ ] Shared guest auth dependency (extract `X-Guest-Session` handling into reusable FastAPI dependency instead of repeating in each endpoint)
-- [ ] Flush/commit documentation (add inline comments or runbook documenting the service `flush()` / API `commit()` pattern)
+- [x] Shared guest auth dependency (extract `X-Guest-Session` handling into reusable FastAPI dependency instead of repeating in each endpoint) — **DONE** Added `AuthResult`, `get_auth()`, `require_auth()` to deps.py; refactored 12 endpoints across 5 files
+- [x] Flush/commit documentation (add inline comments or runbook documenting the service `flush()` / API `commit()` pattern) — **DONE** Created `docs/runbooks/flush-commit-pattern.md`
 
 ---
 
 ## Completed (Recent)
+
+### 2026-02-07 (P3 Code Quality)
+- [x] Extract shared guest auth dependency — `AuthResult`, `get_auth()`, `require_auth()` in `deps.py`
+  - Refactored 12 endpoints across 5 files (orders, cart, payments, wishlist, reviews)
+  - Removed ~90 lines of duplicated 3-way auth boilerplate
+  - `require_auth()` distinguishes "invalid guest session" vs "no auth" for proper client error handling
+  - Backend: 358 tests still passing (zero behavior change)
+- [x] Create flush/commit runbook — `docs/runbooks/flush-commit-pattern.md`
+  - Documents service `flush()` / API `commit()` transaction boundary pattern
+  - Includes common mistakes, verification commands, and quick reference table
 
 ### 2026-02-07 (P2 Fixes)
 - [x] Fix WebSocket guest session silent failure — invalid `session_token` now returns `guest_error` / `INVALID_SESSION`

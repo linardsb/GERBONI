@@ -200,7 +200,7 @@ pytest --cov=app --cov-report=term-missing -v    # Full suite with coverage
 pytest tests/test_auth.py -v                      # Single module
 pytest -k "test_login" -v                         # Single test by name
 ```
-- **339 test cases** across 21 test files including auth, cart, orders, payments, products, agent, websocket
+- **358 test cases** across 21 test files including auth, cart, orders, payments, products, agent, websocket
 - Uses in-memory SQLite via `conftest.py` fixtures (`db_session`, `client`, `auth_client`)
 - Stripe/Anthropic mocked via `mock_stripe_service`, `mock_anthropic_agent` fixtures
 - WebSocket testing uses `WebSocketTestClient` wrapper with explicit host header for TrustedHostMiddleware
@@ -211,7 +211,7 @@ cd frontend
 npm run test                  # Watch mode
 npm run test:coverage         # Single run with coverage (80% threshold)
 ```
-- **12 test files** with `@testing-library/react` + MSW for API mocking
+- **16 test files** with `@testing-library/react` + MSW for API mocking
 - Coverage thresholds: 80% branches, functions, lines, statements
 - Config: `frontend/vitest.config.ts`
 
@@ -223,7 +223,7 @@ npm run e2e:chromium          # Chromium only (fastest)
 npm run e2e:headed            # With browser UI
 npm run e2e:debug             # Step-through debugger
 ```
-- **4 spec files**: home, auth, products, navigation
+- **6 spec files**: home, auth, products, navigation, chat, checkout-flow
 - Configured for: Chromium, Firefox, WebKit, Mobile Chrome, Mobile Safari
 - Config: `frontend/playwright.config.ts`
 
@@ -246,13 +246,13 @@ npm run e2e:debug             # Step-through debugger
 
 Areas that have broken before or are high-risk. Pay extra attention when modifying:
 
-1. **Dual Auth System** — Endpoints must support both JWT (`Authorization: Bearer`) and guest session (`X-Guest-Session`). Cart, orders, wishlist, and AI chat all need both paths. Missing one causes silent auth failures.
+1. **Dual Auth System** — Endpoints must support both JWT (`Authorization: Bearer`) and guest session (`X-Guest-Session`). Cart, orders, wishlist, and AI chat all need both paths. Missing one causes silent auth failures. **Use the shared dependencies in `deps.py`**: `require_auth()` (strict — 401 if neither), `get_auth()` (permissive — allows anonymous). Both return `AuthResult` with `.user_id`, `.guest_email`, `.session_id` properties.
 
-2. **Middleware & Static Assets** — Next.js middleware matcher pattern must exclude new asset paths. Adding new `/public/` directories without updating `middleware.ts` causes 404s (see BUG-002).
+2. **Middleware & Static Assets** — Next.js middleware matcher pattern must exclude new asset paths. Adding new `/public/` directories without updating `middleware.ts` causes 404s (see BUG-002). An automated audit test in `middleware.test.ts` verifies all known public directories are excluded.
 
 3. **Order State Machine** — Strict `pending → paid → processing → shipped → delivered` flow with `cancelled` and `refunded` branches. The `request_refund` agent tool enforces a 14-day window. Changing status logic risks payment/refund inconsistencies.
 
-4. **AI Agent WebSocket** — Now tested with 91% coverage (30 tests in `test_websocket_agent.py`). The `support_agent.py` has 5 tools with database access scoped by user identity. WebSocket auth flow (`auth` → `auth_success` → `message`) is now tested. Note: guest auth with invalid session_token does NOT fall back to email — it silently continues.
+4. **AI Agent WebSocket** — Now tested with 91% coverage (30 tests in `test_websocket_agent.py`). The `support_agent.py` has 5 tools with database access scoped by user identity. WebSocket auth flow (`auth` → `auth_success` → `message`) is now tested. Invalid `session_token` returns `guest_error`/`INVALID_SESSION` (no longer silent). Guest auth does NOT fall back to email — client must retry.
 
 5. **i18n Translations** — New UI text MUST go in both `en.json` AND `lv.json`. Hard-coded strings cause locale-dependent rendering bugs (see BUG-001). All 18 routes are locale-prefixed.
 

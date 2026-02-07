@@ -1,15 +1,14 @@
 import logging
-from fastapi import APIRouter, Depends, HTTPException, status, Request, Header
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from ..database import get_db
 from ..models import Order, OrderItem, TShirtVariant, OrderStatus
-from ..services import StripeService, OrderService, AuthService
+from ..services import StripeService, OrderService
 from ..config import get_settings
-from .deps import get_current_user
-from ..models import User
+from .deps import require_auth, AuthResult
 from ..middleware import limiter
 from ..utils.errors import safe_error_response, ErrorCode
 from ..exceptions import InvalidStateTransitionError
@@ -24,8 +23,7 @@ logger = logging.getLogger(__name__)
 async def create_checkout(
     request: Request,
     order_id: int,
-    x_guest_session: str | None = Header(default=None),
-    user: User | None = Depends(get_current_user),
+    auth: AuthResult = Depends(require_auth),
     db: AsyncSession = Depends(get_db),
 ):
     stmt = (
@@ -34,22 +32,10 @@ async def create_checkout(
         .where(Order.id == order_id)
     )
 
-    if user:
-        stmt = stmt.where(Order.user_id == user.id)
-    elif x_guest_session:
-        session = await AuthService.get_guest_session(db, x_guest_session)
-        if session:
-            stmt = stmt.where(Order.guest_email == session.email)
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid guest session",
-            )
+    if auth.user:
+        stmt = stmt.where(Order.user_id == auth.user.id)
     else:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Authentication required",
-        )
+        stmt = stmt.where(Order.guest_email == auth.guest_email)
 
     result = await db.execute(stmt)
     order = result.scalar_one_or_none()

@@ -12,6 +12,7 @@ This directory contains step-by-step guides for common development tasks in the 
 - [Adding New Static Assets](./adding-new-static-assets.md) - Fonts, images, icons (prevents BUG-002)
 - [Adding New Pages](./adding-new-pages.md) - Locale-based routes, i18n (prevents BUG-001, BUG-003)
 - [Order State Transitions](./order-state-transitions.md) - Managing order lifecycle (prevents BUG-004)
+- [Flush/Commit Pattern](./flush-commit-pattern.md) - Service `flush()` / API `commit()` transaction boundaries (prevents BUG-004, BUG-005)
 
 ### Testing & Debugging
 - **Writing Tests** - Unit, integration, E2E test patterns
