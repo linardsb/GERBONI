@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { IconAlertTriangle } from "@/components/icons";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/elements/button";
 import { Badge } from "@/components/elements/badge";
 import { Card, CardContent } from "@/components/elements/card";
@@ -32,6 +33,7 @@ import {
 import { useAuthStore } from "@/lib/store";
 
 export default function AdminProductsPage() {
+  const t = useTranslations("admin");
   const { token } = useAuthStore();
   const [productData, setProductData] = useState<AdminProductList | null>(null);
   const [loading, setLoading] = useState(true);
@@ -59,7 +61,7 @@ export default function AdminProductsPage() {
         });
         setProductData(data);
       } catch {
-        toast.error("Failed to load products");
+        toast.error(t("failedLoadProducts"));
       } finally {
         setLoading(false);
       }
@@ -78,7 +80,7 @@ export default function AdminProductsPage() {
       const data = await getAdminProductVariants(product.id, token);
       setVariants(data);
     } catch {
-      toast.error("Failed to load variants");
+      toast.error(t("failedLoadVariants"));
     } finally {
       setVariantsLoading(false);
     }
@@ -109,9 +111,9 @@ export default function AdminProductsPage() {
         prev.map((v) => (v.id === updated.id ? updated : v))
       );
       setEditingVariant(null);
-      toast.success("Variant updated");
+      toast.success(t("variantUpdated"));
     } catch {
-      toast.error("Failed to update variant");
+      toast.error(t("failedUpdateVariant"));
     } finally {
       setSaving(false);
     }

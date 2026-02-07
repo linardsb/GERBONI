@@ -317,7 +317,9 @@
     "passwordUpdated": "Password updated successfully",
     "invalidCredentials": "Invalid email or password",
     "emailExists": "An account with this email already exists",
-    "weakPassword": "Password must be at least 8 characters"
+    "weakPassword": "Password must be at least 8 characters",
+    "passwordRequirementsNotMet": "Password requirements not met",
+    "passwordMismatch": "Passwords do not match"
   },
   "account": {
     "title": "My Account",
@@ -801,6 +803,7 @@
     "emptyDescription": "Save items you love by clicking the heart icon",
     "addedToWishlist": "Added to wishlist",
     "removedFromWishlist": "Removed from wishlist",
+    "failedToUpdate": "Failed to update wishlist",
     "moveToCart": "Move to Cart",
     "itemCount": "{count, plural, =0 {No items} =1 {1 item} other {# items}}"
   },
@@ -817,6 +820,10 @@
     "submitReview": "Submit Review",
     "thankYou": "Thank you for your review!",
     "ratingRequired": "Please select a rating",
+    "loginRequired": "Please log in to submit a review",
+    "submitSuccess": "Review submitted successfully",
+    "submitFailed": "Failed to submit review",
+    "failedToMarkHelpful": "Failed to mark review as helpful",
     "stars": "{count, plural, =1 {1 star} other {# stars}}"
   },
   "admin": {
@@ -831,7 +838,24 @@
     "pendingOrders": "Pending Orders",
     "lowStock": "Low Stock Items",
     "recentOrders": "Recent Orders",
-    "viewAll": "View All"
+    "viewAll": "View All",
+    "failedLoadDashboard": "Failed to load dashboard data",
+    "failedLoadOrders": "Failed to load orders",
+    "failedLoadOrder": "Failed to load order",
+    "orderStatusUpdated": "Order status updated",
+    "failedUpdateStatus": "Failed to update status",
+    "orderMarkedShipped": "Order marked as shipped",
+    "failedShipOrder": "Failed to ship order",
+    "failedLoadProducts": "Failed to load products",
+    "failedLoadVariants": "Failed to load variants",
+    "variantUpdated": "Variant updated",
+    "failedUpdateVariant": "Failed to update variant",
+    "failedLoadUsers": "Failed to load users",
+    "userRoleUpdated": "User role updated",
+    "userDeactivated": "User deactivated",
+    "userActivated": "User activated",
+    "failedUpdateUser": "Failed to update user",
+    "failedUpdateRole": "Failed to update role"
   },
   "metadata": {
     "homeTitle": "GERBONI - Latvian City Coat of Arms T-Shirts",

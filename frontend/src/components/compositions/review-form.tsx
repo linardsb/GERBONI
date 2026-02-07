@@ -10,6 +10,7 @@ import { ReviewStars } from "@/components/elements/review-stars";
 import { createReview, type Review } from "@/lib/api";
 import { useAuthStore } from "@/lib/store";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 interface ReviewFormProps {
   productId: number;
@@ -24,6 +25,7 @@ export function ReviewForm({
   onSuccess,
   onCancel,
 }: ReviewFormProps) {
+  const t = useTranslations("reviews");
   const { token, user } = useAuthStore();
   const [rating, setRating] = useState(0);
   const [title, setTitle] = useState("");
@@ -34,12 +36,12 @@ export function ReviewForm({
     e.preventDefault();
 
     if (!token) {
-      toast.error("Please log in to submit a review");
+      toast.error(t("loginRequired"));
       return;
     }
 
     if (rating === 0) {
-      toast.error("Please select a rating");
+      toast.error(t("ratingRequired"));
       return;
     }
 
@@ -55,15 +57,15 @@ export function ReviewForm({
         },
         token
       );
-      toast.success("Review submitted successfully");
+      toast.success(t("submitSuccess"));
       onSuccess(review);
       // Reset form
       setRating(0);
       setTitle("");
       setContent("");
     } catch (err) {
-      toast.error("Failed to submit review", {
-        description: err instanceof Error ? err.message : "Please try again",
+      toast.error(t("submitFailed"), {
+        description: err instanceof Error ? err.message : undefined,
       });
     } finally {
       setIsSubmitting(false);

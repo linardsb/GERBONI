@@ -275,22 +275,23 @@ class TestGuestAuthentication:
             assert response["type"] == "guest_success"
             assert "email" in response["message"].lower()
 
-    def test_guest_with_invalid_session_no_fallback(self, ws_client):
-        """Invalid session token does NOT fall back to email (current behavior)."""
+    def test_guest_with_invalid_session_returns_error(self, ws_client):
+        """Invalid session token should return guest_error with INVALID_SESSION code."""
         with ws_client.websocket_connect("/api/agent/chat") as ws:
             ws.send_json({
                 "type": "guest",
                 "session_token": "invalid-session-token",
                 "email": "fallback@example.com",
             })
-            # Per the code logic: if session_token is provided but not found,
-            # it does NOT fall back to email - the request is silently ignored
-            # (no response sent, connection continues)
+            # Should receive an error response for the invalid session
+            response = ws.receive_json()
+            assert response["type"] == "guest_error"
+            assert response["code"] == "INVALID_SESSION"
+            assert "invalid" in response["message"].lower() or "expired" in response["message"].lower()
 
-            # Send another message to verify connection still works
+            # Client can retry with email-only auth after the error
             ws.send_json({"type": "guest", "email": "retry@example.com"})
             response = ws.receive_json()
-            # Second attempt with just email should succeed
             assert response["type"] == "guest_success"
 
     def test_guest_sets_email_context(self, ws_client, mock_agent_response):

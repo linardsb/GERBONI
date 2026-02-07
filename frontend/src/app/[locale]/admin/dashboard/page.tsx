@@ -11,6 +11,7 @@ import {
   IconTrendingUp,
 } from "@/components/icons";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/elements/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/elements/card";
 import { Skeleton } from "@/components/elements/skeleton";
@@ -32,6 +33,7 @@ import {
 import { useAuthStore } from "@/lib/store";
 
 export default function AdminDashboardPage() {
+  const t = useTranslations("admin");
   const { token } = useAuthStore();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [recentOrders, setRecentOrders] = useState<AdminOrder[]>([]);
@@ -53,7 +55,7 @@ export default function AdminDashboardPage() {
         setRecentOrders(ordersData.orders);
         setLowStockItems(lowStockData);
       } catch {
-        toast.error("Failed to load dashboard data");
+        toast.error(t("failedLoadDashboard"));
       } finally {
         setLoading(false);
       }

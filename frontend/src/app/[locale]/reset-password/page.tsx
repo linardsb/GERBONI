@@ -15,10 +15,13 @@ import { Label } from "@/components/elements/label";
 import { Button } from "@/components/elements/button";
 import { Skeleton } from "@/components/elements/skeleton";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
 
 function ResetPasswordContent() {
+  const tAuth = useTranslations("auth");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
@@ -65,12 +68,12 @@ function ResetPasswordContent() {
     e.preventDefault();
 
     if (!allRequirementsMet) {
-      toast.error("Password requirements not met");
+      toast.error(tAuth("passwordRequirementsNotMet"));
       return;
     }
 
     if (!passwordsMatch) {
-      toast.error("Passwords do not match");
+      toast.error(tAuth("passwordMismatch"));
       return;
     }
 
@@ -93,8 +96,8 @@ function ResetPasswordContent() {
         router.push("/login");
       }, 3000);
     } catch (err) {
-      toast.error("Error", {
-        description: err instanceof Error ? err.message : "Something went wrong",
+      toast.error(tCommon("error"), {
+        description: err instanceof Error ? err.message : undefined,
       });
     } finally {
       setLoading(false);

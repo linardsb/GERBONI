@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { Link, useRouter } from "@/i18n/routing";
 import { IconChevronLeft, IconTruck } from "@/components/icons";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/elements/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/elements/card";
 import { Input } from "@/components/elements/input";
@@ -47,6 +48,7 @@ const ORDER_STATUSES = [
 export default function AdminOrderDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const t = useTranslations("admin");
   const { token } = useAuthStore();
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
@@ -65,7 +67,7 @@ export default function AdminOrderDetailPage() {
         const data = await getAdminOrder(orderId, token);
         setOrder(data);
       } catch {
-        toast.error("Failed to load order");
+        toast.error(t("failedLoadOrder"));
         router.push("/admin/orders");
       } finally {
         setLoading(false);
@@ -82,9 +84,9 @@ export default function AdminOrderDetailPage() {
     try {
       const result = await updateOrderStatus(order.id, newStatus, token);
       setOrder((prev) => prev ? { ...prev, status: result.status } : null);
-      toast.success("Order status updated");
+      toast.success(t("orderStatusUpdated"));
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to update status");
+      toast.error(err instanceof Error ? err.message : t("failedUpdateStatus"));
     } finally {
       setUpdating(false);
     }
@@ -103,9 +105,9 @@ export default function AdminOrderDetailPage() {
       } : null);
       setShipDialogOpen(false);
       setTrackingNumber("");
-      toast.success("Order marked as shipped");
+      toast.success(t("orderMarkedShipped"));
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to ship order");
+      toast.error(err instanceof Error ? err.message : t("failedShipOrder"));
     } finally {
       setUpdating(false);
     }

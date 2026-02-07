@@ -12,10 +12,12 @@ import { Input } from "@/components/elements/input";
 import { Label } from "@/components/elements/label";
 import { Button } from "@/components/elements/button";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
 
 export default function ForgotPasswordPage() {
+  const tCommon = useTranslations("common");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -38,8 +40,8 @@ export default function ForgotPasswordPage() {
 
       setSubmitted(true);
     } catch (err) {
-      toast.error("Error", {
-        description: err instanceof Error ? err.message : "Something went wrong",
+      toast.error(tCommon("error"), {
+        description: err instanceof Error ? err.message : undefined,
       });
     } finally {
       setLoading(false);

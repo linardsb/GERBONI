@@ -123,6 +123,12 @@ async def websocket_chat(
                             "type": "guest_success",
                             "message": "Guest session established",
                         })
+                    else:
+                        await websocket.send_json({
+                            "type": "guest_error",
+                            "code": "INVALID_SESSION",
+                            "message": "Invalid or expired session token",
+                        })
                 elif email:
                     guest_email = email
                     rate_limiter.mark_authenticated()

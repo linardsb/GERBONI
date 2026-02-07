@@ -12,12 +12,14 @@ import { ReviewStars } from "@/components/elements/review-stars";
 import { markReviewHelpful, type Review } from "@/lib/api";
 import { useAuthStore } from "@/lib/store";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 interface ReviewCardProps {
   review: Review;
 }
 
 export function ReviewCard({ review }: ReviewCardProps) {
+  const t = useTranslations("reviews");
   const { token, guestSession } = useAuthStore();
   const [helpfulCount, setHelpfulCount] = useState(review.helpful_count);
   const [hasMarkedHelpful, setHasMarkedHelpful] = useState(false);
@@ -44,7 +46,7 @@ export function ReviewCard({ review }: ReviewCardProps) {
       setHelpfulCount(result.helpful_count);
       setHasMarkedHelpful(result.user_marked_helpful);
     } catch {
-      toast.error("Failed to mark review as helpful");
+      toast.error(t("failedToMarkHelpful"));
     } finally {
       setIsMarking(false);
     }

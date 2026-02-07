@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "@/i18n/routing";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/elements/button";
 import { Card, CardContent } from "@/components/elements/card";
 import {
@@ -34,6 +35,7 @@ const ORDER_STATUSES = [
 ];
 
 export default function AdminOrdersPage() {
+  const t = useTranslations("admin");
   const { token } = useAuthStore();
   const [orderData, setOrderData] = useState<AdminOrderList | null>(null);
   const [loading, setLoading] = useState(true);
@@ -54,7 +56,7 @@ export default function AdminOrdersPage() {
         });
         setOrderData(data);
       } catch {
-        toast.error("Failed to load orders");
+        toast.error(t("failedLoadOrders"));
       } finally {
         setLoading(false);
       }

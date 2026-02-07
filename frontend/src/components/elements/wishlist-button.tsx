@@ -11,6 +11,7 @@ import {
 } from "@/lib/api";
 import { useAuthStore, useWishlistStore } from "@/lib/store";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 interface WishlistButtonProps {
   productId: number;
@@ -27,6 +28,7 @@ export function WishlistButton({
   variant = "ghost",
   className,
 }: WishlistButtonProps) {
+  const t = useTranslations("wishlist");
   const { token, guestSession, setGuestSession } = useAuthStore();
   const { isInWishlist, setWishlist, productIds } = useWishlistStore();
   const [isLoading, setIsLoading] = useState(false);
@@ -57,8 +59,8 @@ export function WishlistButton({
           session?.session_token
         );
         setWishlist(wishlist);
-        toast.success("Removed from wishlist", {
-          description: productName || "Product removed",
+        toast.success(t("removedFromWishlist"), {
+          description: productName,
         });
       } else {
         const wishlist = await addToWishlist(
@@ -67,13 +69,13 @@ export function WishlistButton({
           session?.session_token
         );
         setWishlist(wishlist);
-        toast.success("Added to wishlist", {
-          description: productName || "Product saved",
+        toast.success(t("addedToWishlist"), {
+          description: productName,
         });
       }
     } catch (err) {
-      toast.error("Failed to update wishlist", {
-        description: err instanceof Error ? err.message : "Please try again",
+      toast.error(t("failedToUpdate"), {
+        description: err instanceof Error ? err.message : undefined,
       });
     } finally {
       setIsLoading(false);

@@ -22,9 +22,9 @@ Track current work items and progress. Update status as work progresses.
 - [x] 130+ hardcoded locale strings in frontend — **MIGRATED** to `useTranslations()` across 14 files, ~80 new keys in en.json + lv.json, 12 remaining ternaries are dynamic API data (city names, descriptions, date locales)
 
 ### P2 — Prevention / Partial UX
-- [ ] Middleware audit test (automated test that verifies new `/public/` dirs don't break middleware matcher)
-- [ ] Guest session token silent failure in WebSocket (invalid `session_token` doesn't return error — silently continues unauthenticated)
-- [ ] Toast messages not translated (mix of hardcoded English, hardcoded Latvian, and proper translation keys)
+- [x] Middleware audit test (automated test that verifies new `/public/` dirs don't break middleware matcher) — **DONE** Added audit test to `middleware.test.ts`
+- [x] Guest session token silent failure in WebSocket (invalid `session_token` doesn't return error — silently continues unauthenticated) — **FIXED** Returns `guest_error` with `INVALID_SESSION` code
+- [x] Toast messages not translated (mix of hardcoded English, hardcoded Latvian, and proper translation keys) — **DONE** Translated 30+ toast strings across 11 files, added ~20 new keys to en.json + lv.json
 
 ### P3 — Code Quality / Developer Safety
 - [ ] Shared guest auth dependency (extract `X-Guest-Session` handling into reusable FastAPI dependency instead of repeating in each endpoint)
@@ -33,6 +33,14 @@ Track current work items and progress. Update status as work progresses.
 ---
 
 ## Completed (Recent)
+
+### 2026-02-07 (P2 Fixes)
+- [x] Fix WebSocket guest session silent failure — invalid `session_token` now returns `guest_error` / `INVALID_SESSION`
+- [x] Add middleware audit test — verifies all `/public/` directories excluded from matcher
+- [x] Translate 30+ hardcoded toast messages across 11 files (4 components, 4 admin pages, 2 auth pages, 1 popup)
+  - Added ~20 new keys to en.json + lv.json (admin, reviews, wishlist, auth namespaces)
+  - Frontend: 382 tests passing, build clean
+  - Backend: 358 tests passing
 
 ### 2026-02-07
 - [x] Migrate 130+ hardcoded locale ternaries to `useTranslations()` across 14 frontend files

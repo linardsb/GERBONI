@@ -317,7 +317,9 @@
     "passwordUpdated": "Parole veiksmīgi atjaunināta",
     "invalidCredentials": "Nederīgs e-pasts vai parole",
     "emailExists": "Konts ar šo e-pastu jau pastāv",
-    "weakPassword": "Parolei jābūt vismaz 8 rakstzīmēm"
+    "weakPassword": "Parolei jābūt vismaz 8 rakstzīmēm",
+    "passwordRequirementsNotMet": "Paroles prasības nav izpildītas",
+    "passwordMismatch": "Paroles nesakrīt"
   },
   "account": {
     "title": "Mans konts",
@@ -801,6 +803,7 @@
     "emptyDescription": "Saglabājiet priekšmetus, kas jums patīk, noklikšķinot uz sirsniņas ikonas",
     "addedToWishlist": "Pievienots vēlmju sarakstam",
     "removedFromWishlist": "Noņemts no vēlmju saraksta",
+    "failedToUpdate": "Neizdevās atjaunināt vēlmju sarakstu",
     "moveToCart": "Pārvietot uz grozu",
     "itemCount": "{count, plural, =0 {Nav priekšmetu} =1 {1 priekšmets} other {# priekšmeti}}"
   },
@@ -817,6 +820,10 @@
     "submitReview": "Iesniegt atsauksmi",
     "thankYou": "Paldies par jūsu atsauksmi!",
     "ratingRequired": "Lūdzu, izvēlieties vērtējumu",
+    "loginRequired": "Lūdzu, ieejiet, lai iesniegtu atsauksmi",
+    "submitSuccess": "Atsauksme veiksmīgi iesniegta",
+    "submitFailed": "Neizdevās iesniegt atsauksmi",
+    "failedToMarkHelpful": "Neizdevās atzīmēt atsauksmi kā noderīgu",
     "stars": "{count, plural, =1 {1 zvaigzne} other {# zvaigznes}}"
   },
   "admin": {
@@ -831,7 +838,24 @@
     "pendingOrders": "Gaidošie pasūtījumi",
     "lowStock": "Zems krājums",
     "recentOrders": "Jaunākie pasūtījumi",
-    "viewAll": "Skatīt visus"
+    "viewAll": "Skatīt visus",
+    "failedLoadDashboard": "Neizdevās ielādēt vadības paneļa datus",
+    "failedLoadOrders": "Neizdevās ielādēt pasūtījumus",
+    "failedLoadOrder": "Neizdevās ielādēt pasūtījumu",
+    "orderStatusUpdated": "Pasūtījuma statuss atjaunināts",
+    "failedUpdateStatus": "Neizdevās atjaunināt statusu",
+    "orderMarkedShipped": "Pasūtījums atzīmēts kā nosūtīts",
+    "failedShipOrder": "Neizdevās nosūtīt pasūtījumu",
+    "failedLoadProducts": "Neizdevās ielādēt produktus",
+    "failedLoadVariants": "Neizdevās ielādēt variantus",
+    "variantUpdated": "Variants atjaunināts",
+    "failedUpdateVariant": "Neizdevās atjaunināt variantu",
+    "failedLoadUsers": "Neizdevās ielādēt lietotājus",
+    "userRoleUpdated": "Lietotāja loma atjaunināta",
+    "userDeactivated": "Lietotājs deaktivizēts",
+    "userActivated": "Lietotājs aktivizēts",
+    "failedUpdateUser": "Neizdevās atjaunināt lietotāju",
+    "failedUpdateRole": "Neizdevās atjaunināt lomu"
   },
   "metadata": {
     "homeTitle": "GERBONI - Latvijas pilsētu ģerboņu krekli",

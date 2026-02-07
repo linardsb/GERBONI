@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { IconUser, IconShield, IconShieldCheck } from "@/components/icons";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/elements/button";
 import { Badge } from "@/components/elements/badge";
 import { Card, CardContent } from "@/components/elements/card";
@@ -51,6 +52,7 @@ const ROLE_OPTIONS = [
 ];
 
 export default function AdminUsersPage() {
+  const t = useTranslations("admin");
   const { token, user: currentUser } = useAuthStore();
   const [userData, setUserData] = useState<AdminUserList | null>(null);
   const [loading, setLoading] = useState(true);
@@ -78,7 +80,7 @@ export default function AdminUsersPage() {
         });
         setUserData(data);
       } catch {
-        toast.error("Failed to load users");
+        toast.error(t("failedLoadUsers"));
       } finally {
         setLoading(false);
       }
@@ -93,7 +95,7 @@ export default function AdminUsersPage() {
     setSaving(true);
     try {
       await updateUserRole(editingUser.id, newRole, token);
-      toast.success("User role updated");
+      toast.success(t("userRoleUpdated"));
       setEditingUser(null);
 
       // Refresh list
@@ -104,7 +106,7 @@ export default function AdminUsersPage() {
       });
       setUserData(data);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to update role");
+      toast.error(err instanceof Error ? err.message : t("failedUpdateRole"));
     } finally {
       setSaving(false);
     }
@@ -116,10 +118,10 @@ export default function AdminUsersPage() {
     try {
       if (user.is_active) {
         await deactivateUser(user.id, token);
-        toast.success("User deactivated");
+        toast.success(t("userDeactivated"));
       } else {
         await activateUser(user.id, token);
-        toast.success("User activated");
+        toast.success(t("userActivated"));
       }
 
       // Refresh list
@@ -130,7 +132,7 @@ export default function AdminUsersPage() {
       });
       setUserData(data);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to update user");
+      toast.error(err instanceof Error ? err.message : t("failedUpdateUser"));
     }
   };
 

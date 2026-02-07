@@ -7,12 +7,14 @@ import { Input } from "@/components/elements/input";
 import { Text } from "@/components/elements/text";
 import { Stack } from "@/components/elements/stack";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
 const POPUP_DELAY = 5000; // 5 seconds
 const STORAGE_KEY = "gerboni_newsletter_dismissed";
 
 export function NewsletterPopup() {
+  const tCommon = useTranslations("common");
   const [isOpen, setIsOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
@@ -70,8 +72,8 @@ export function NewsletterPopup() {
         setIsOpen(false);
       }, 3000);
     } catch (err) {
-      toast.error("Error", {
-        description: err instanceof Error ? err.message : "Something went wrong",
+      toast.error(tCommon("error"), {
+        description: err instanceof Error ? err.message : undefined,
       });
     } finally {
       setLoading(false);
