@@ -45,9 +45,10 @@ frontend/src/app/layout.tsx
 ### 5. Project Status (MUST READ)
 ```
 tasks/CLAUDE.md
+tasks/todo.md
 ```
 
-This file contains current sprint status, open bugs, and test coverage. Check it to understand project state before starting work.
+These files contain current sprint status, open bugs, test coverage, and the active task list. Check them to understand project state and pending work before starting.
 
 ---
 

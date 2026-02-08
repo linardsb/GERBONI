@@ -11,7 +11,24 @@ Track current work items and progress. Update status as work progresses.
 
 ## Current Sprint
 
-(All P1, P2, and P3 backlog items complete. No remaining items.)
+### Quick Wins — High Value, Low Effort
+- [x] Product search & filtering (full-text search endpoint + color/size/price/stock filters on frontend)
+- [x] SEO: Add `robots.txt` and `sitemap.xml` generator
+- [x] SEO: Add JSON-LD structured data (Product, Organization schemas) + Product page SSR
+- [x] Email sending (order confirmations, shipping updates, password reset via Resend)
+
+### Medium Priority — Features & Hardening
+- [ ] Redis caching layer (products, cart, sessions)
+- [ ] Discount codes / coupons (models, endpoints, UI)
+- [ ] Sentry integration (replace in-house error tracker)
+- [ ] Admin CSV exports (orders, products, customers)
+- [ ] SEO: Hreflang + canonical tags (important for en/lv bilingual site)
+
+### Production Readiness
+- [ ] Multi-stage Docker builds (remove build tools from final images)
+- [ ] Database backup strategy + automated dumps
+- [ ] 2FA authentication option
+- [ ] Load testing scripts (k6 or Locust)
 
 ---
 
@@ -33,6 +50,37 @@ Track current work items and progress. Update status as work progresses.
 ---
 
 ## Completed (Recent)
+
+### 2026-02-08 (Quick Wins — All 4 Items)
+- [x] Product search & filtering (full-text search endpoint + color/size/price/stock filters on frontend)
+  - Backend: 7 new query params (`q`, `color`, `size`, `min_price`, `max_price`, `in_stock`, `sort`) on `GET /api/products`
+  - ILIKE search on city_name, city_name_lv, description, description_lv
+  - Color/size filter via EXISTS subquery, price/stock filter via HAVING on aggregates
+  - Sort options: price_asc, price_desc, name_asc, newest
+  - 33 new backend tests (TestProductSearch, TestProductColorFilter, etc.)
+  - Frontend: search input with 300ms debounce, color/size chips, sort dropdown
+  - URL params for shareable filter state, active filters summary with clear button
+  - Added 16 translation keys to en.json + lv.json (product namespace)
+  - Fix: wrapped `useSearchParams()` in Suspense boundary (Next.js requirement)
+- [x] SEO: `robots.txt` and `sitemap.xml` generator
+  - `frontend/src/app/robots.ts` — allow /, disallow /api/ and /admin/
+  - `frontend/src/app/sitemap.ts` — dynamic sitemap from products API, both en/lv locales
+  - ISR revalidation: 3600s for sitemap
+- [x] SEO: JSON-LD structured data (Product, Organization schemas) + Product page SSR
+  - `frontend/src/components/compositions/json-ld.tsx` — reusable JSON-LD component
+  - Organization schema in locale layout (name, url, logo, contactPoint)
+  - Product schema on detail pages (name, description, image, AggregateOffer, brand, sku)
+  - Product page split: server component (`page.tsx`) + client component (`product-client.tsx`)
+  - `generateMetadata()` for dynamic title, description, OpenGraph, alternates per product
+  - Server-side data fetching with `revalidate: 300`
+- [x] Email sending (order confirmations, shipping updates, password reset via Resend)
+  - `backend/app/services/email_service.py` — 4 async methods, all return bool, never raise
+  - `send_password_reset`, `send_order_confirmation`, `send_shipping_notification`, `send_newsletter_welcome`
+  - Wired into: auth.py (forgot password), payments.py (webhook), admin/orders.py (ship), newsletter.py (subscribe)
+  - Config: `resend_api_key`, `from_email`, `site_url` in config.py
+  - 12 new backend tests (mock Resend API, config, success/failure for all 4 types)
+  - Backend: 393 tests passing (was 358, +35 new), 72% coverage
+  - Frontend: 382 tests passing, build clean
 
 ### 2026-02-07 (P3 Code Quality)
 - [x] Extract shared guest auth dependency — `AuthResult`, `get_auth()`, `require_auth()` in `deps.py`

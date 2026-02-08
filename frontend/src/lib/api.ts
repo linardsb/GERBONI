@@ -93,8 +93,35 @@ export interface Variant {
   sku: string;
 }
 
-export const getProducts = (lang?: "en" | "lv") =>
-  fetchApi<Product[]>(`/products${lang ? `?lang=${lang}` : ""}`);
+export interface ProductFilters {
+  q?: string;
+  color?: string;
+  size?: string;
+  min_price?: number;
+  max_price?: number;
+  in_stock?: boolean;
+  sort?: string;
+  lang?: "en" | "lv";
+}
+
+export const getProducts = (langOrFilters?: "en" | "lv" | ProductFilters) => {
+  const params = new URLSearchParams();
+  if (typeof langOrFilters === "string") {
+    params.set("lang", langOrFilters);
+  } else if (langOrFilters) {
+    const f = langOrFilters;
+    if (f.lang) params.set("lang", f.lang);
+    if (f.q) params.set("q", f.q);
+    if (f.color) params.set("color", f.color);
+    if (f.size) params.set("size", f.size);
+    if (f.min_price !== undefined) params.set("min_price", String(f.min_price));
+    if (f.max_price !== undefined) params.set("max_price", String(f.max_price));
+    if (f.in_stock !== undefined) params.set("in_stock", String(f.in_stock));
+    if (f.sort) params.set("sort", f.sort);
+  }
+  const query = params.toString();
+  return fetchApi<Product[]>(`/products${query ? `?${query}` : ""}`);
+};
 
 export const getProduct = (id: number, lang?: "en" | "lv") =>
   fetchApi<ProductDetail>(`/products/${id}${lang ? `?lang=${lang}` : ""}`);

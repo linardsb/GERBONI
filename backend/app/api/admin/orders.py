@@ -8,8 +8,12 @@ from sqlalchemy.orm import selectinload
 from ...database import get_db
 from ...models import User, Order, OrderItem, OrderStatus
 from ...schemas import OrderStatusUpdate, OrderShipment
-from ...services import OrderService
+from ...services import OrderService, EmailService
 from ...exceptions import DomainException, domain_to_http
+
+import logging
+
+logger = logging.getLogger(__name__)
 from ..deps import get_admin_user
 
 router = APIRouter()
@@ -188,6 +192,24 @@ async def ship_order(
 
     await db.commit()
     await db.refresh(order)
+
+    # Send shipping notification email
+    try:
+        email = order.guest_email
+        if order.user_id:
+            user_result = await db.execute(select(User).where(User.id == order.user_id))
+            user_obj = user_result.scalar_one_or_none()
+            if user_obj:
+                email = user_obj.email
+        if email:
+            await EmailService.send_shipping_notification(
+                email=email,
+                order_id=order.id,
+                tracking_number=order.tracking_number,
+            )
+    except Exception as e:
+        logger.error(f"Failed to send shipping notification email: {e}")
+
     return {
         "id": order.id,
         "status": order.status,

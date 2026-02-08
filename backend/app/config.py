@@ -24,6 +24,11 @@ class Settings(BaseSettings):
     # Anthropic
     anthropic_api_key: str = ""
 
+    # Email (Resend)
+    resend_api_key: str = ""
+    from_email: str = "GERBONI <noreply@gerboni.lv>"
+    site_url: str = "https://gerboni.lv"
+
     # URLs
     frontend_url: str = "http://localhost:3000"
     backend_url: str = "http://localhost:8000"

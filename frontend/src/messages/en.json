@@ -138,7 +138,22 @@
     "freeShippingOver50": "Free shipping on orders over €50",
     "securePaymentStripe": "Secure payment with Stripe",
     "latvianHeritage": "Latvian Heritage",
-    "heritageDescription": "This t-shirt features the authentic coat of arms of {city} - a symbol representing the city's rich history and cultural heritage. Each coat of arms is carefully reproduced to preserve its historical significance."
+    "heritageDescription": "This t-shirt features the authentic coat of arms of {city} - a symbol representing the city's rich history and cultural heritage. Each coat of arms is carefully reproduced to preserve its historical significance.",
+    "searchPlaceholder": "Search by city name...",
+    "filterByColor": "Color",
+    "filterBySize": "Size",
+    "sortBy": "Sort by",
+    "sortDefault": "Default",
+    "sortPriceAsc": "Price: Low to High",
+    "sortPriceDesc": "Price: High to Low",
+    "sortNameAsc": "Name: A-Z",
+    "sortNewest": "Newest",
+    "colorBlack": "Black",
+    "colorWhite": "White",
+    "colorRed": "Red",
+    "clearFilters": "Clear filters",
+    "resultsCount": "{count} products found",
+    "noFilterResults": "No products match your filters. Try adjusting your search."
   },
   "cart": {
     "title": "Shopping Cart",

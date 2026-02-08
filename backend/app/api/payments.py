@@ -6,7 +6,7 @@ from sqlalchemy.orm import selectinload
 
 from ..database import get_db
 from ..models import Order, OrderItem, TShirtVariant, OrderStatus
-from ..services import StripeService, OrderService
+from ..services import StripeService, OrderService, EmailService
 from ..config import get_settings
 from .deps import require_auth, AuthResult
 from ..middleware import limiter
@@ -103,6 +103,30 @@ async def stripe_webhook(
             try:
                 await OrderService.mark_paid(db, int(order_id), payment_id or "")
                 await db.commit()
+
+                # Send order confirmation email
+                try:
+                    order = await OrderService.get_order(db, int(order_id))
+                    email = order.guest_email
+                    if order.user_id:
+                        from ..models import User
+                        user_result = await db.execute(
+                            select(User).where(User.id == order.user_id)
+                        )
+                        user = user_result.scalar_one_or_none()
+                        if user:
+                            email = user.email
+                    if email:
+                        item_count = len(order.items) if hasattr(order, "items") else 0
+                        await EmailService.send_order_confirmation(
+                            email=email,
+                            order_id=order.id,
+                            total=order.total,
+                            item_count=item_count,
+                        )
+                except Exception as e:
+                    logger.error(f"Failed to send order confirmation email: {e}")
+
             except InvalidStateTransitionError:
                 # Order already processed (idempotent webhook handling)
                 logger.info(f"Order {order_id} already paid, ignoring duplicate webhook")

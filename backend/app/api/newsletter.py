@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from ..database import get_db
 from ..models import NewsletterSubscription
 from ..schemas import NewsletterSubscribe, NewsletterUnsubscribe, MessageResponse
+from ..services import EmailService
 from ..middleware import limiter
 
 router = APIRouter()
@@ -46,6 +47,9 @@ async def subscribe(
     )
     db.add(subscription)
     await db.commit()
+
+    # Send welcome email (non-blocking, failure won't affect response)
+    await EmailService.send_newsletter_welcome(data.email.lower())
 
     return MessageResponse(message="Thanks for subscribing! You'll receive 10% off your first order.")
 

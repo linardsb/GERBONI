@@ -138,7 +138,22 @@
     "freeShippingOver50": "Bezmaksas piegāde pasūtījumiem virs €50",
     "securePaymentStripe": "Droša maksāšana ar Stripe",
     "latvianHeritage": "Latvijas mantojums",
-    "heritageDescription": "Šis krekls parāda {city} autentisko ģerboni - simbolu, kas atspoguļo pilsētas bagāto vēsturi un kultūras mantojumu. Katrs ģerbonis ir rūpīgi atveidots, lai saglabātu tā vēsturisko nozīmi."
+    "heritageDescription": "Šis krekls parāda {city} autentisko ģerboni - simbolu, kas atspoguļo pilsētas bagāto vēsturi un kultūras mantojumu. Katrs ģerbonis ir rūpīgi atveidots, lai saglabātu tā vēsturisko nozīmi.",
+    "searchPlaceholder": "Meklēt pēc pilsētas nosaukuma...",
+    "filterByColor": "Krāsa",
+    "filterBySize": "Izmērs",
+    "sortBy": "Kārtot pēc",
+    "sortDefault": "Noklusējums",
+    "sortPriceAsc": "Cena: no zemākās",
+    "sortPriceDesc": "Cena: no augstākās",
+    "sortNameAsc": "Nosaukums: A-Z",
+    "sortNewest": "Jaunākais",
+    "colorBlack": "Melns",
+    "colorWhite": "Balts",
+    "colorRed": "Sarkans",
+    "clearFilters": "Notīrīt filtrus",
+    "resultsCount": "{count} produkti atrasti",
+    "noFilterResults": "Neviens produkts neatbilst jūsu filtriem. Mēģiniet pielāgot meklēšanu."
   },
   "cart": {
     "title": "Iepirkumu grozs",

@@ -9,7 +9,7 @@ from ..schemas import (
     ForgotPasswordRequest, ResetPasswordRequest, MessageResponse,
     ChangePasswordRequest
 )
-from ..services import AuthService
+from ..services import AuthService, EmailService
 from ..config import get_settings
 from .deps import get_current_user_required
 from ..models import User
@@ -97,8 +97,7 @@ async def forgot_password(
     reset_token = await AuthService.create_password_reset_token(db, data.email)
 
     if reset_token:
-        # In production, send email here
-        # For now, we'll log the token (in dev mode only)
+        await EmailService.send_password_reset(data.email, reset_token.token)
         if settings.debug:
             print(f"Password reset token for {data.email}: {reset_token.token}")
 

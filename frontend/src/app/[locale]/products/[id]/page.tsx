@@ -1,426 +1,135 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import { useTranslations, useLocale } from "next-intl";
-import {
-  IconMinus,
-  IconPlus,
-  IconTruck,
-  IconRefresh,
-  IconShield,
-} from "@/components/icons";
-import { Button } from "@/components/elements/button";
-import { Button3D } from "@/components/elements/button-3d";
-import { SizeGuideModal } from "@/components/compositions/size-guide-modal";
-import { Card, CardContent } from "@/components/elements/card";
-import { Skeleton } from "@/components/elements/skeleton";
-import { Separator } from "@/components/elements/separator";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { Container } from "@/components/elements/container";
-import { Grid } from "@/components/elements/grid";
-import { Row } from "@/components/elements/row";
-import { Stack } from "@/components/elements/stack";
 import { Text } from "@/components/elements/text";
-import { TShirtMockup } from "@/components/components/tshirt-mockup";
-import { ColorSelector } from "@/components/components/color-selector";
-import { SizeSelector } from "@/components/components/size-selector";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/elements/accordion";
-import {
-  getProduct,
-  addToCart,
-  createGuestSession,
-  type ProductDetail,
-} from "@/lib/api";
-import { useAuthStore, useCartStore, useRecentlyViewedStore } from "@/lib/store";
-import { RecentlyViewed } from "@/components/compositions/recently-viewed";
-import { ProductRecommendations } from "@/components/compositions/product-recommendations";
-import { toast } from "sonner";
-import {
-  type ProductColorKey,
-  type ProductSize,
-  getColorName,
-} from "@/lib/product-colors";
+import { JsonLd } from "@/components/compositions/json-ld";
+import { ProductClient } from "./product-client";
+import type { ProductDetail } from "@/lib/api";
 
-export default function ProductPage() {
-  const t = useTranslations("product");
-  const tCommon = useTranslations("common");
-  const locale = useLocale() as "en" | "lv";
-  const params = useParams();
-  const { token, guestSession, setGuestSession } = useAuthStore();
-  const { setCart } = useCartStore();
-  const { addItem: addRecentlyViewed } = useRecentlyViewedStore();
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://gerboni.lv";
 
-  const [product, setProduct] = useState<ProductDetail | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+type Props = {
+  params: Promise<{ locale: string; id: string }>;
+};
 
-  const [selectedColor, setSelectedColor] = useState<ProductColorKey>("Black");
-  const [selectedSize, setSelectedSize] = useState<ProductSize>("M");
-  const [quantity, setQuantity] = useState(1);
-  const [adding, setAdding] = useState(false);
+async function fetchProduct(id: string, lang: string): Promise<ProductDetail | null> {
+  try {
+    const res = await fetch(`${API_URL}/products/${id}?lang=${lang}`, {
+      next: { revalidate: 300 },
+    });
+    if (!res.ok) return null;
+    return res.json();
+  } catch {
+    return null;
+  }
+}
 
-  useEffect(() => {
-    const id = Number(params.id);
-    if (isNaN(id)) {
-      setError(t("invalidProductId"));
-      setLoading(false);
-      return;
-    }
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale, id } = await params;
+  const product = await fetchProduct(id, locale);
 
-    getProduct(id, locale)
-      .then((fetchedProduct) => {
-        setProduct(fetchedProduct);
-        // Track recently viewed
-        addRecentlyViewed({
-          id: fetchedProduct.id,
-          city_name: fetchedProduct.city_name,
-          city_name_lv: fetchedProduct.city_name_lv,
-          coat_of_arms_image: fetchedProduct.coat_of_arms_image,
-          min_price: Math.min(...fetchedProduct.variants.map((v) => v.price)),
-        });
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, [params.id, addRecentlyViewed, locale]);
+  if (!product) {
+    return { title: "Product Not Found" };
+  }
 
-  const selectedVariant = product?.variants.find(
-    (v) => v.color === selectedColor && v.size === selectedSize
-  );
+  const cityName = locale === "lv"
+    ? product.city_name_lv || product.city_name
+    : product.city_name;
+  const description = locale === "lv"
+    ? product.description_lv || product.description
+    : product.description;
+  const title = locale === "lv"
+    ? `${cityName} ģerboņa krekls | GERBONI`
+    : `${cityName} Coat of Arms T-Shirt | GERBONI`;
 
-  // Helper to check if a color is in stock for current size
-  const isColorInStock = (color: ProductColorKey) => {
-    const variant = product?.variants.find(
-      (v) => v.color === color && v.size === selectedSize
-    );
-    return variant ? variant.stock > 0 : false;
+  return {
+    title,
+    description: description.slice(0, 160),
+    openGraph: {
+      title,
+      description: description.slice(0, 160),
+      url: `${SITE_URL}/${locale}/products/${id}`,
+      siteName: "GERBONI",
+      type: "website",
+      images: [
+        {
+          url: `${SITE_URL}/coats/${product.coat_of_arms_image}`,
+          width: 800,
+          height: 800,
+          alt: `${cityName} coat of arms t-shirt`,
+        },
+      ],
+    },
+    alternates: {
+      canonical: `${SITE_URL}/${locale}/products/${id}`,
+      languages: {
+        en: `${SITE_URL}/en/products/${id}`,
+        lv: `${SITE_URL}/lv/products/${id}`,
+      },
+    },
   };
+}
 
-  // Helper to get stock count for a color
-  const getColorStockCount = (color: ProductColorKey) => {
-    const variant = product?.variants.find(
-      (v) => v.color === color && v.size === selectedSize
-    );
-    return variant?.stock ?? 0;
-  };
+export default async function ProductPage({ params }: Props) {
+  const { locale, id } = await params;
 
-  // Helper to check if a size is in stock for current color
-  const isSizeInStock = (size: ProductSize) => {
-    const variant = product?.variants.find(
-      (v) => v.color === selectedColor && v.size === size
-    );
-    return variant ? variant.stock > 0 : false;
-  };
+  if (isNaN(Number(id))) {
+    notFound();
+  }
 
-  // Helper to get stock count for a size
-  const getSizeStockCount = (size: ProductSize) => {
-    const variant = product?.variants.find(
-      (v) => v.color === selectedColor && v.size === size
-    );
-    return variant?.stock ?? 0;
-  };
+  const product = await fetchProduct(id, locale);
 
-  const handleColorChange = (color: ProductColorKey) => {
-    setSelectedColor(color);
-  };
-
-  const handleSizeChange = (size: ProductSize) => {
-    setSelectedSize(size);
-  };
-
-  const handleAddToCart = async () => {
-    if (!selectedVariant) return;
-
-    setAdding(true);
-
-    try {
-      let session = guestSession;
-      if (!token && !session) {
-        session = await createGuestSession();
-        setGuestSession(session);
-      }
-
-      const cart = await addToCart(
-        selectedVariant.id,
-        quantity,
-        token,
-        session?.session_token
-      );
-      setCart(cart);
-      const cityName = locale === "lv" ? product?.city_name_lv : product?.city_name;
-      toast.success(t("addedToCart"), {
-        description: `${cityName} T-Shirt (${getColorName(selectedColor, locale)}, ${selectedSize})`,
-      });
-    } catch (err) {
-      toast.error(t("addToCartError"), {
-        description: err instanceof Error ? err.message : tCommon("tryAgain"),
-      });
-    } finally {
-      setAdding(false);
-    }
-  };
-
-  if (loading) {
+  if (!product) {
     return (
       <Container padding="md">
-        <Grid cols={2} gap="xl">
-          <Skeleton className="aspect-square w-full" />
-          <Stack gap="md">
-            <Skeleton className="h-10 w-3/4" />
-            <Skeleton className="h-6 w-1/2" />
-            <Skeleton className="h-8 w-24" />
-            <Skeleton className="h-24 w-full" />
-          </Stack>
-        </Grid>
+        <Text variant="error" align="center">Product not found</Text>
       </Container>
     );
   }
 
-  if (error || !product) {
-    return (
-      <Container padding="md">
-        <Text variant="error" align="center">{error || t("productNotFound")}</Text>
-      </Container>
-    );
-  }
+  const cityName = locale === "lv"
+    ? product.city_name_lv || product.city_name
+    : product.city_name;
+  const description = locale === "lv"
+    ? product.description_lv || product.description
+    : product.description;
+  const minPrice = product.variants.length
+    ? Math.min(...product.variants.map((v) => v.price))
+    : 24.99;
+  const maxPrice = product.variants.length
+    ? Math.max(...product.variants.map((v) => v.price))
+    : 28.99;
+  const totalStock = product.variants.reduce((sum, v) => sum + v.stock, 0);
 
-  const displayName = locale === "lv" ? product.city_name_lv : product.city_name;
-  const secondaryName = locale === "lv" ? product.city_name : product.city_name_lv;
-  const displayDescription = locale === "lv" ? (product.description_lv || product.description) : product.description;
+  const productJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: `${cityName} Coat of Arms T-Shirt`,
+    description,
+    image: `${SITE_URL}/coats/${product.coat_of_arms_image}`,
+    brand: {
+      "@type": "Brand",
+      name: "GERBONI",
+    },
+    offers: {
+      "@type": "AggregateOffer",
+      lowPrice: minPrice.toFixed(2),
+      highPrice: maxPrice.toFixed(2),
+      priceCurrency: "EUR",
+      availability: totalStock > 0
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock",
+      offerCount: product.variants.length,
+    },
+    sku: product.variants[0]?.sku,
+    category: "Clothing > T-Shirts",
+  };
 
   return (
-    <Container padding="md">
-      <Grid cols={2} gap="xl">
-        {/* Product Image */}
-        <Card className="overflow-hidden">
-          <CardContent className="p-0">
-            <div className="relative aspect-square bg-muted flex items-center justify-center p-12 group">
-              <TShirtMockup
-                color={selectedColor}
-                coatOfArmsImage={product.coat_of_arms_image}
-                coatOfArmsAlt={`${displayName} coat of arms`}
-                size="lg"
-                showHoverEffect
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Product Info */}
-        <Stack gap="section">
-          <Stack gap="element">
-            <Text as="h1" variant="heading-xl">{displayName}</Text>
-            <Text variant="muted-lg">
-              {secondaryName} {t("coatOfArmsTShirt")}
-            </Text>
-          </Stack>
-
-          <Row gap="element" align="baseline" className="flex-wrap">
-            <Text variant="price-lg">
-              €{selectedVariant ? (Number(selectedVariant.price) * quantity).toFixed(2) : "24.99"}
-            </Text>
-            {quantity > 1 && selectedVariant && (
-              <span className="text-muted-foreground font-bold">
-                (€{Number(selectedVariant.price).toFixed(2)} × {quantity})
-              </span>
-            )}
-          </Row>
-
-          <Text variant="muted">{displayDescription}</Text>
-
-          <Separator />
-
-          {/* Color Selection */}
-          <Stack gap="group">
-            <Text variant="label">{t("color")}: {getColorName(selectedColor, locale)}</Text>
-            <ColorSelector
-              value={selectedColor}
-              onValueChange={handleColorChange}
-              isColorInStock={isColorInStock}
-              getStockCount={getColorStockCount}
-            />
-          </Stack>
-
-          {/* Size Selection */}
-          <Stack gap="group">
-            <Row justify="between">
-              <Text variant="label">{t("size")}: {selectedSize}</Text>
-              <SizeGuideModal
-                trigger={
-                  <button className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-element transition-colors duration-fast">
-                    <span className="size-4" aria-hidden="true">📏</span>
-                    {t("sizeGuide")}
-                  </button>
-                }
-              />
-            </Row>
-            <SizeSelector
-              value={selectedSize}
-              onValueChange={handleSizeChange}
-              isSizeInStock={isSizeInStock}
-              getStockCount={getSizeStockCount}
-            />
-          </Stack>
-
-          {/* Quantity */}
-          <Stack gap="group">
-            <Text variant="label">{t("quantity")}</Text>
-            <Row gap="group">
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                aria-label={t("decreaseQuantity")}
-              >
-                <IconMinus className="size-4" aria-hidden="true" />
-              </Button>
-              <Text as="span" variant="body-lg" className="w-12 text-center font-medium tabular-nums">
-                {quantity}
-              </Text>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => setQuantity(quantity + 1)}
-                aria-label={t("increaseQuantity")}
-              >
-                <IconPlus className="size-4" aria-hidden="true" />
-              </Button>
-            </Row>
-          </Stack>
-
-          {/* Add to Cart - Sticky on mobile */}
-          <div className="sticky bottom-4 z-10 lg:static lg:z-auto bg-background/95 backdrop-blur-sm py-4 -mx-4 px-4 lg:mx-0 lg:px-0 lg:py-0 lg:bg-transparent lg:backdrop-blur-none">
-            <Stack gap="group">
-              <Button3D
-                size="2xl"
-                className="w-full"
-                onClick={handleAddToCart}
-                disabled={adding || !selectedVariant || selectedVariant.stock < 1}
-              >
-                {adding ? tCommon("loading") : t("addToCart")}
-              </Button3D>
-
-              {selectedVariant && selectedVariant.stock > 0 && selectedVariant.stock <= 3 && (
-                <Text variant="error" align="center" className="font-medium">
-                  {t("lowStock", { count: selectedVariant.stock })}
-                </Text>
-              )}
-              {selectedVariant && selectedVariant.stock > 3 && selectedVariant.stock <= 10 && (
-                <Text variant="warning" align="center">
-                  {t("lowStockRemaining", { count: selectedVariant.stock })}
-                </Text>
-              )}
-
-              {/* Trust signals */}
-              <Row gap="section" justify="center" className="pt-2">
-                <Row gap="element" className="text-muted-foreground">
-                  <IconTruck className="size-4" aria-hidden="true" />
-                  <Text variant="muted-sm">
-                    {t("freeShippingOver")}
-                  </Text>
-                </Row>
-                <Row gap="element" className="text-muted-foreground">
-                  <IconRefresh className="size-4" aria-hidden="true" />
-                  <Text variant="muted-sm">
-                    {t("fourteenDayReturns")}
-                  </Text>
-                </Row>
-              </Row>
-            </Stack>
-          </div>
-
-          <Separator />
-
-          {/* Product Details - Accordion */}
-          <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="materials">
-              <AccordionTrigger>
-                {t("materialsAndCare")}
-              </AccordionTrigger>
-              <AccordionContent>
-                <Stack gap="sm">
-                  <Row gap="element">
-                    <Text variant="body-sm" className="font-medium min-w-24">
-                      {t("material")}
-                    </Text>
-                    <Text variant="muted-sm">
-                      {t("materialDesc")}
-                    </Text>
-                  </Row>
-                  <Row gap="element">
-                    <Text variant="body-sm" className="font-medium min-w-24">
-                      {t("print")}
-                    </Text>
-                    <Text variant="muted-sm">
-                      {t("printDesc")}
-                    </Text>
-                  </Row>
-                  <Row gap="element">
-                    <Text variant="body-sm" className="font-medium min-w-24">
-                      {t("care")}
-                    </Text>
-                    <Text variant="muted-sm">
-                      {t("careDesc")}
-                    </Text>
-                  </Row>
-                </Stack>
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="shipping">
-              <AccordionTrigger>
-                {t("shippingSection")}
-              </AccordionTrigger>
-              <AccordionContent>
-                <Stack gap="sm">
-                  <Row gap="element">
-                    <IconTruck className="size-4 text-muted-foreground" aria-hidden="true" />
-                    <Text variant="muted-sm">
-                      {t("freeShippingOver50")}
-                    </Text>
-                  </Row>
-                  <Row gap="element">
-                    <IconShield className="size-4 text-muted-foreground" aria-hidden="true" />
-                    <Text variant="muted-sm">
-                      {t("securePaymentStripe")}
-                    </Text>
-                  </Row>
-                </Stack>
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="heritage">
-              <AccordionTrigger>
-                {t("latvianHeritage")}
-              </AccordionTrigger>
-              <AccordionContent>
-                <Text variant="muted-sm">
-                  {t("heritageDescription", { city: displayName })}
-                </Text>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        </Stack>
-      </Grid>
-
-      {/* Product Recommendations */}
-      <div className="mt-section">
-        <ProductRecommendations
-          type="related"
-          productId={product.id}
-          title={t("relatedProducts")}
-          limit={4}
-        />
-      </div>
-
-      {/* Recently Viewed */}
-      <div className="mt-section">
-        <RecentlyViewed excludeProductId={product.id} maxItems={6} />
-      </div>
-    </Container>
+    <>
+      <JsonLd data={productJsonLd} />
+      <ProductClient product={product} />
+    </>
   );
 }

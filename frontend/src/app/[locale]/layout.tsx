@@ -11,6 +11,9 @@ import { ExitIntentOffer } from "@/components/compositions/exit-intent-offer";
 import { WishlistProvider } from "@/components/providers/wishlist-provider";
 import { routing } from "@/i18n/routing";
 import { LocaleUpdater } from "@/components/providers/locale-updater";
+import { JsonLd } from "@/components/compositions/json-ld";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://gerboni.lv";
 
 type Props = {
   children: React.ReactNode;
@@ -55,8 +58,26 @@ export default async function LocaleLayout({ children, params }: Props) {
   // side is the easiest way to get started
   const messages = await getMessages();
 
+  const organizationJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "GERBONI",
+    url: SITE_URL,
+    logo: `${SITE_URL}/logo.svg`,
+    description:
+      locale === "lv"
+        ? "Augstas kvalitātes krekli ar autentiskiem Latvijas pilsētu ģerboņiem."
+        : "Premium t-shirts featuring authentic coats of arms from Latvian cities.",
+    contactPoint: {
+      "@type": "ContactPoint",
+      contactType: "customer service",
+      availableLanguage: ["English", "Latvian"],
+    },
+  };
+
   return (
     <NextIntlClientProvider messages={messages}>
+      <JsonLd data={organizationJsonLd} />
       <LocaleUpdater locale={locale} />
       <WishlistProvider>
         <Header />
