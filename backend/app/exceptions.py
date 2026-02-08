@@ -41,6 +41,11 @@ class AuthorizationError(DomainException):
     pass
 
 
+class ValidationError(DomainException):
+    """Input validation failure (e.g., invalid discount code)."""
+    pass
+
+
 def domain_to_http(exc: DomainException) -> HTTPException:
     """Translate domain exceptions to HTTP exceptions.
 

@@ -9,8 +9,35 @@ from ...database import get_db
 from ...models import User, Order, OrderStatus, UserRole
 from ...schemas import UserRoleUpdate
 from ..deps import get_admin_user, get_super_admin_user
+from ...utils.csv_export import csv_streaming_response
 
 router = APIRouter()
+
+
+@router.get("/export")
+async def export_users_csv(
+    admin: User = Depends(get_admin_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Export users as CSV. Excludes guest sessions."""
+    result = await db.execute(
+        select(User).where(User.is_guest == False).order_by(User.created_at.desc())
+    )
+    users = result.scalars().all()
+
+    headers = ["id", "email", "role", "is_active", "created_at"]
+    rows = [
+        {
+            "id": u.id,
+            "email": u.email,
+            "role": u.role,
+            "is_active": u.is_active,
+            "created_at": u.created_at.isoformat() if u.created_at else "",
+        }
+        for u in users
+    ]
+
+    return csv_streaming_response(rows, headers, "users.csv")
 
 
 @router.get("")

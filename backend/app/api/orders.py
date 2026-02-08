@@ -1,10 +1,12 @@
+from decimal import Decimal
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..database import get_db
 from ..models import Order
 from ..schemas import OrderCreate, OrderRead
-from ..services import OrderService, OrderOwner, ShippingInfo, CartOwner, CartService
+from ..services import OrderService, OrderOwner, ShippingInfo, CartOwner, CartService, DiscountService
 from ..exceptions import DomainException, domain_to_http
 from .deps import require_auth, AuthResult
 
@@ -36,6 +38,9 @@ def _format_order(order: Order) -> dict:
         "user_id": order.user_id,
         "guest_email": order.guest_email,
         "status": order.status,
+        "subtotal": order.subtotal,
+        "discount_code": order.discount_code,
+        "discount_amount": order.discount_amount,
         "total": order.total,
         "shipping_name": order.shipping_name,
         "shipping_address": order.shipping_address,
@@ -109,8 +114,32 @@ async def create_order(
         country=order_data.shipping.country,
     )
 
+    # Validate discount code if provided
+    discount_code_str = None
+    discount_amount = Decimal("0.00")
+    if order_data.discount_code:
+        try:
+            subtotal = sum(
+                item.variant.price * item.quantity for item in cart_items
+            )
+            discount_obj, discount_amount = await DiscountService.validate_code(
+                db, order_data.discount_code, subtotal
+            )
+            discount_code_str = discount_obj.code
+        except DomainException as e:
+            raise domain_to_http(e)
+
     try:
-        order = await OrderService.create_from_cart(db, order_owner, cart_items, shipping)
+        order = await OrderService.create_from_cart(
+            db, order_owner, cart_items, shipping,
+            discount_code=discount_code_str,
+            discount_amount=discount_amount,
+        )
+
+        # Increment discount usage after successful order creation
+        if discount_code_str and discount_obj:
+            await DiscountService.increment_usage(db, discount_obj.id)
+
         await db.commit()
         return _format_order(order)
     except DomainException as e:

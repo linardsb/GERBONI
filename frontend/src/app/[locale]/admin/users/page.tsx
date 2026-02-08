@@ -33,6 +33,7 @@ import {
   updateUserRole,
   activateUser,
   deactivateUser,
+  downloadCsv,
   type AdminUser,
   type AdminUserList,
 } from "@/lib/api";
@@ -269,6 +270,20 @@ export default function AdminUsersPage() {
                 ))}
               </SelectContent>
             </Select>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={async () => {
+                if (!token) return;
+                try {
+                  await downloadCsv("/admin/users/export", "users.csv", token);
+                } catch {
+                  toast.error(t("exportFailed"));
+                }
+              }}
+            >
+              {t("exportCsv")}
+            </Button>
           </Row>
         </Row>
 

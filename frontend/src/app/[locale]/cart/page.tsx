@@ -32,6 +32,7 @@ export default function CartPage() {
   const [loading, setLoading] = useState(true);
   const [showCheckout, setShowCheckout] = useState(false);
   const [processing, setProcessing] = useState(false);
+  const [discountCode, setDiscountCode] = useState<string | undefined>();
 
   const [shipping, setShipping] = useState<ShippingInfo>({
     name: "",
@@ -91,7 +92,8 @@ export default function CartPage() {
         shipping,
         token,
         guestSession?.session_token,
-        !token ? guestEmail : undefined
+        !token ? guestEmail : undefined,
+        discountCode,
       );
       router.push(`/checkout/success?order_id=${order.id}`);
     } catch (err) {
@@ -170,7 +172,13 @@ export default function CartPage() {
           ))}
         </Stack>
 
-        <CartSummary total={Number(cart.total)} onCheckout={() => setShowCheckout(true)} />
+        <CartSummary
+          total={Number(cart.total)}
+          onCheckout={(code) => {
+            setDiscountCode(code);
+            setShowCheckout(true);
+          }}
+        />
       </Stack>
     </Container>
   );

@@ -41,6 +41,7 @@ class ShippingInfo(BaseModel):
 class OrderCreate(BaseModel):
     shipping: ShippingInfo
     guest_email: EmailStr | None = None
+    discount_code: str | None = None
 
 
 class OrderRead(BaseModel):
@@ -48,6 +49,9 @@ class OrderRead(BaseModel):
     user_id: int | None
     guest_email: str | None
     status: str
+    subtotal: Decimal | None = None
+    discount_code: str | None = None
+    discount_amount: Decimal = Decimal("0.00")
     total: Decimal
     shipping_name: str | None
     shipping_address: str | None

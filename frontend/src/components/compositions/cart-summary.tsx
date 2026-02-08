@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
-import { IconTruck } from "@/components/icons";
+import { IconTruck, IconX } from "@/components/icons";
 import { Button } from "@/components/elements/button";
 import { Button3D } from "@/components/elements/button-3d";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/elements/card";
@@ -12,10 +12,11 @@ import { Text } from "@/components/elements/text";
 import { Stack } from "@/components/elements/stack";
 import { Row } from "@/components/elements/row";
 import { TrustBadges, PaymentMethodBadges } from "@/components/elements/trust-badges";
+import { validateDiscount } from "@/lib/api";
 
 interface CartSummaryProps {
   total: number;
-  onCheckout: () => void;
+  onCheckout: (discountCode?: string) => void;
 }
 
 const FREE_SHIPPING_THRESHOLD = 50;
@@ -24,9 +25,42 @@ export function CartSummary({ total, onCheckout }: CartSummaryProps) {
   const t = useTranslations("cart");
   const locale = useLocale() as "en" | "lv";
   const [promoCode, setPromoCode] = useState("");
-  const isFreeShipping = total >= FREE_SHIPPING_THRESHOLD;
-  const remainingForFreeShipping = FREE_SHIPPING_THRESHOLD - total;
-  const shippingProgress = Math.min((total / FREE_SHIPPING_THRESHOLD) * 100, 100);
+  const [appliedCode, setAppliedCode] = useState<string | null>(null);
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const [promoError, setPromoError] = useState<string | null>(null);
+  const [validating, setValidating] = useState(false);
+
+  const subtotal = total;
+  const finalTotal = subtotal - discountAmount;
+  const isFreeShipping = finalTotal >= FREE_SHIPPING_THRESHOLD;
+  const remainingForFreeShipping = FREE_SHIPPING_THRESHOLD - finalTotal;
+  const shippingProgress = Math.min((finalTotal / FREE_SHIPPING_THRESHOLD) * 100, 100);
+
+  const handleApplyPromo = async () => {
+    if (!promoCode.trim()) return;
+    setValidating(true);
+    setPromoError(null);
+    try {
+      const result = await validateDiscount(promoCode.trim(), subtotal);
+      if (result.valid && result.discount_amount) {
+        setAppliedCode(result.code);
+        setDiscountAmount(result.discount_amount);
+        setPromoCode("");
+      } else {
+        setPromoError(result.message || t("invalidCode"));
+      }
+    } catch {
+      setPromoError(t("invalidCode"));
+    } finally {
+      setValidating(false);
+    }
+  };
+
+  const handleRemoveDiscount = () => {
+    setAppliedCode(null);
+    setDiscountAmount(0);
+    setPromoError(null);
+  };
 
   return (
     <Card data-slot="cart-summary">
@@ -38,8 +72,29 @@ export function CartSummary({ total, onCheckout }: CartSummaryProps) {
           {/* Subtotal */}
           <Row justify="between">
             <Text as="span" variant="body-md">{t("subtotal")}</Text>
-            <Text as="span" variant="body-md" className="tabular-nums">€{total.toFixed(2)}</Text>
+            <Text as="span" variant="body-md" className="tabular-nums">€{subtotal.toFixed(2)}</Text>
           </Row>
+
+          {/* Discount line */}
+          {appliedCode && discountAmount > 0 && (
+            <Row justify="between">
+              <Row gap="element" align="center">
+                <Text as="span" variant="success">
+                  {t("discountLine", { code: appliedCode })}
+                </Text>
+                <button
+                  onClick={handleRemoveDiscount}
+                  className="text-muted-foreground hover:text-foreground"
+                  aria-label={t("removeDiscount")}
+                >
+                  <IconX className="size-3.5" />
+                </button>
+              </Row>
+              <Text as="span" variant="success" className="tabular-nums">
+                -€{discountAmount.toFixed(2)}
+              </Text>
+            </Row>
+          )}
 
           {/* Shipping */}
           <Row justify="between">
@@ -50,7 +105,7 @@ export function CartSummary({ total, onCheckout }: CartSummaryProps) {
           </Row>
 
           {/* Free shipping progress bar */}
-          {total > 0 && (
+          {finalTotal > 0 && (
             <div className="mt-2">
               <div className="relative h-2 w-full overflow-hidden rounded-full bg-muted">
                 <div
@@ -73,28 +128,36 @@ export function CartSummary({ total, onCheckout }: CartSummaryProps) {
           )}
 
           {/* Promo code input */}
-          <div className="mt-2">
-            <Row gap="element">
-              <Input
-                type="text"
-                placeholder={t("promoCode")}
-                value={promoCode}
-                onChange={(e) => setPromoCode(e.target.value)}
-                className="flex-1"
-                aria-label={t("promoCode")}
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={!promoCode.trim()}
-                onClick={() => {
-                  // TODO: Implement promo code validation
-                }}
-              >
-                {t("apply")}
-              </Button>
-            </Row>
-          </div>
+          {!appliedCode && (
+            <div className="mt-2">
+              <Row gap="element">
+                <Input
+                  type="text"
+                  placeholder={t("promoCode")}
+                  value={promoCode}
+                  onChange={(e) => {
+                    setPromoCode(e.target.value);
+                    setPromoError(null);
+                  }}
+                  className="flex-1"
+                  aria-label={t("promoCode")}
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={!promoCode.trim() || validating}
+                  onClick={handleApplyPromo}
+                >
+                  {t("apply")}
+                </Button>
+              </Row>
+              {promoError && (
+                <Text variant="error" className="mt-1 text-sm">
+                  {promoError}
+                </Text>
+              )}
+            </div>
+          )}
         </Stack>
       </CardContent>
       <Separator />
@@ -102,11 +165,11 @@ export function CartSummary({ total, onCheckout }: CartSummaryProps) {
         {/* Total */}
         <Row justify="between" className="w-full">
           <Text as="span" variant="heading-sm">{t("total")}</Text>
-          <Text as="span" variant="heading-sm" className="tabular-nums">€{total.toFixed(2)}</Text>
+          <Text as="span" variant="heading-sm" className="tabular-nums">€{finalTotal.toFixed(2)}</Text>
         </Row>
 
         {/* Checkout button */}
-        <Button3D size="lg" className="w-full" onClick={onCheckout}>
+        <Button3D size="lg" className="w-full" onClick={() => onCheckout(appliedCode || undefined)}>
           {t("proceedToCheckout")}
         </Button3D>
 

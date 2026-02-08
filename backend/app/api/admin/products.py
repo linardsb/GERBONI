@@ -9,10 +9,48 @@ from ...database import get_db
 from ...models import User, Product, TShirtVariant
 from ...schemas import VariantUpdate
 from ..deps import get_admin_user
+from ...services.cache_service import CacheService
+from ...utils.csv_export import csv_streaming_response
 
 router = APIRouter()
 
 LOW_STOCK_THRESHOLD = 10
+
+
+@router.get("/export")
+async def export_products_csv(
+    admin: User = Depends(get_admin_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Export products with variants as CSV. One row per variant."""
+    result = await db.execute(
+        select(Product)
+        .options(selectinload(Product.variants))
+        .order_by(Product.city_name)
+    )
+    products = result.scalars().all()
+
+    headers = [
+        "product_id", "city_name", "city_name_lv", "is_active",
+        "variant_id", "color", "size", "price", "stock", "sku",
+    ]
+    rows = []
+    for p in products:
+        for v in p.variants:
+            rows.append({
+                "product_id": p.id,
+                "city_name": p.city_name,
+                "city_name_lv": p.city_name_lv or "",
+                "is_active": p.is_active,
+                "variant_id": v.id,
+                "color": v.color,
+                "size": v.size,
+                "price": str(v.price),
+                "stock": v.stock,
+                "sku": v.sku or "",
+            })
+
+    return csv_streaming_response(rows, headers, "products.csv")
 
 
 @router.get("")
@@ -173,6 +211,9 @@ async def update_variant(
 
     await db.commit()
     await db.refresh(variant)
+
+    # Invalidate product caches after variant update
+    await CacheService.invalidate_products()
 
     return {
         "id": variant.id,

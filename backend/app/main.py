@@ -11,6 +11,7 @@ from .config import get_settings
 from .database import init_db
 from .api import api_router, api_v1_router
 from .error_tracker import error_tracker
+from .services.cache_service import CacheService
 from .middleware import (
     SecurityHeadersMiddleware,
     RequestSizeLimitMiddleware,
@@ -35,8 +36,26 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     # Startup
     await init_db()
+    await CacheService.init(settings.redis_url)
+
+    # Sentry (conditional on DSN)
+    if settings.sentry_dsn:
+        try:
+            import sentry_sdk
+
+            sentry_sdk.init(
+                dsn=settings.sentry_dsn,
+                traces_sample_rate=settings.sentry_traces_sample_rate,
+                environment=settings.sentry_environment,
+                send_default_pii=False,
+            )
+            logger.info("Sentry initialized (env=%s)", settings.sentry_environment)
+        except Exception as exc:
+            logger.warning("Sentry init failed: %s", exc)
+
     yield
     # Shutdown
+    await CacheService.close()
 
 
 app = FastAPI(
@@ -135,6 +154,7 @@ async def error_tracking_middleware(request, call_next):
         return response
     except Exception as exc:
         request_id = request.headers.get("x-request-id")
+        # In-memory tracker (always, for dev)
         error_tracker.track(
             error=exc,
             request_method=request.method,
@@ -142,6 +162,19 @@ async def error_tracking_middleware(request, call_next):
             request_id=request_id,
             status_code=500,
         )
+        # Sentry (when configured)
+        if settings.sentry_dsn:
+            try:
+                import sentry_sdk
+
+                sentry_sdk.set_context("request", {
+                    "request_id": request_id,
+                    "method": request.method,
+                    "path": str(request.url.path),
+                })
+                sentry_sdk.capture_exception(exc)
+            except Exception:
+                pass
         raise
 
 

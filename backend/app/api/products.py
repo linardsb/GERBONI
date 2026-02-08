@@ -8,6 +8,7 @@ from sqlalchemy.orm import selectinload
 from ..database import get_db
 from ..models import Product, TShirtVariant
 from ..schemas import ProductRead, ProductListRead, VariantRead
+from ..services.cache_service import CacheService
 
 router = APIRouter()
 
@@ -31,6 +32,16 @@ async def list_products(
 
     Supports search, filtering by color/size/price/stock, and sorting.
     """
+    # Check cache first
+    cache_params = {
+        "q": q, "color": color, "size": size, "min_price": min_price,
+        "max_price": max_price, "in_stock": in_stock, "sort": sort,
+        "skip": skip, "limit": limit, "lang": lang,
+    }
+    cached = await CacheService.get_products_list(cache_params)
+    if cached is not None:
+        return cached
+
     # Base query: products with aggregated variant info
     stmt = (
         select(
@@ -132,6 +143,12 @@ async def list_products(
                 created_at=product.created_at,
             )
         )
+    # Cache the result
+    await CacheService.set_products_list(
+        cache_params,
+        [p.model_dump(mode="json") for p in products],
+    )
+
     return products
 
 

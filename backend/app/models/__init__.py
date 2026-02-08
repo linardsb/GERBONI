@@ -7,6 +7,7 @@ from .address import Address
 from .newsletter import NewsletterSubscription
 from .wishlist import WishlistItem
 from .review import Review, ReviewHelpful
+from .discount import DiscountCode, DiscountType
 
 __all__ = [
     "User",
@@ -24,4 +25,6 @@ __all__ = [
     "WishlistItem",
     "Review",
     "ReviewHelpful",
+    "DiscountCode",
+    "DiscountType",
 ]

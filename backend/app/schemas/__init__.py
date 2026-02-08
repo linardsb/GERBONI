@@ -13,6 +13,10 @@ from .admin import (
     DashboardStats, OrderStatusUpdate, OrderShipment, VariantUpdate,
     UserRoleUpdate, AdminOrderRead, AdminUserRead, AdminProductRead, AdminVariantRead
 )
+from .discount import (
+    DiscountValidateRequest, DiscountValidateResponse,
+    DiscountCodeCreate, DiscountCodeRead,
+)
 
 __all__ = [
     "UserCreate",
@@ -51,4 +55,8 @@ __all__ = [
     "AdminUserRead",
     "AdminProductRead",
     "AdminVariantRead",
+    "DiscountValidateRequest",
+    "DiscountValidateResponse",
+    "DiscountCodeCreate",
+    "DiscountCodeRead",
 ]

@@ -26,6 +26,7 @@ import {
   getAdminProducts,
   getAdminProductVariants,
   updateVariant,
+  downloadCsv,
   type AdminProduct,
   type AdminProductList,
   type AdminVariant,
@@ -256,9 +257,25 @@ export default function AdminProductsPage() {
   return (
     <Container padding="md">
       <Stack gap="section">
-        <Text as="h1" variant="heading-xl">
-          Products
-        </Text>
+        <Row justify="between" align="center">
+          <Text as="h1" variant="heading-xl">
+            Products
+          </Text>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={async () => {
+              if (!token) return;
+              try {
+                await downloadCsv("/admin/products/export", "products.csv", token);
+              } catch {
+                toast.error(t("exportFailed"));
+              }
+            }}
+          >
+            {t("exportCsv")}
+          </Button>
+        </Row>
 
         <Card>
           <CardContent padding="none">

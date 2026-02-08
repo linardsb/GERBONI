@@ -22,6 +22,16 @@ export default function AdminLayout({
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
+    const meta = document.createElement("meta");
+    meta.name = "robots";
+    meta.content = "noindex, nofollow";
+    document.head.appendChild(meta);
+    return () => {
+      document.head.removeChild(meta);
+    };
+  }, []);
+
+  useEffect(() => {
     const checkAdmin = async () => {
       if (!token) {
         router.push("/login?redirect=/admin");

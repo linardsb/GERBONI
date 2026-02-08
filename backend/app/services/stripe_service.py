@@ -34,15 +34,27 @@ class StripeService:
                 }
             )
 
-        session = stripe.checkout.Session.create(
-            payment_method_types=["card"],
-            line_items=line_items,
-            mode="payment",
-            success_url=f"{success_url}?session_id={{CHECKOUT_SESSION_ID}}",
-            cancel_url=cancel_url,
-            metadata={"order_id": str(order.id)},
-            shipping_address_collection={"allowed_countries": ["LV", "EE", "LT"]},
-        )
+        session_params: dict = {
+            "payment_method_types": ["card"],
+            "line_items": line_items,
+            "mode": "payment",
+            "success_url": f"{success_url}?session_id={{CHECKOUT_SESSION_ID}}",
+            "cancel_url": cancel_url,
+            "metadata": {"order_id": str(order.id)},
+            "shipping_address_collection": {"allowed_countries": ["LV", "EE", "LT"]},
+        }
+
+        # Apply discount via Stripe coupon if order has a discount
+        if order.discount_amount and order.discount_amount > 0:
+            coupon = stripe.Coupon.create(
+                amount_off=int(order.discount_amount * 100),
+                currency="eur",
+                duration="once",
+                name=f"Discount: {order.discount_code or 'order'}",
+            )
+            session_params["discounts"] = [{"coupon": coupon.id}]
+
+        session = stripe.checkout.Session.create(**session_params)
         return session
 
     @staticmethod

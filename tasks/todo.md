@@ -18,11 +18,11 @@ Track current work items and progress. Update status as work progresses.
 - [x] Email sending (order confirmations, shipping updates, password reset via Resend)
 
 ### Medium Priority — Features & Hardening
-- [ ] Redis caching layer (products, cart, sessions)
-- [ ] Discount codes / coupons (models, endpoints, UI)
-- [ ] Sentry integration (replace in-house error tracker)
-- [ ] Admin CSV exports (orders, products, customers)
-- [ ] SEO: Hreflang + canonical tags (important for en/lv bilingual site)
+- [x] Redis caching layer (products, cart, sessions)
+- [x] Discount codes / coupons (models, endpoints, UI)
+- [x] Sentry integration (replace in-house error tracker)
+- [x] Admin CSV exports (orders, products, customers)
+- [x] SEO: Hreflang + canonical tags (important for en/lv bilingual site)
 
 ### Production Readiness
 - [ ] Multi-stage Docker builds (remove build tools from final images)
@@ -50,6 +50,39 @@ Track current work items and progress. Update status as work progresses.
 ---
 
 ## Completed (Recent)
+
+### 2026-02-08 (Medium Priority — All 5 Items)
+- [x] SEO: Hreflang + canonical tags
+  - Added `alternates` (canonical + hreflang en/lv/x-default) to locale layout `generateMetadata()`
+  - Cascades to all child pages; product pages override with product-specific alternates
+  - Admin layout: added noindex/nofollow meta via useEffect (client component)
+- [x] Redis caching layer
+  - `backend/app/services/cache_service.py` — CacheService with graceful degradation (all ops no-op when Redis unavailable)
+  - Products list cached 5min, detail 10min; pattern-based invalidation on admin variant update
+  - Custom JSON encoder for Decimal/datetime serialization
+  - Added Redis service to docker-compose.yml (redis:7-alpine with healthcheck)
+  - 26 new tests (JSONEncoder, no-Redis no-ops, mocked Redis get/set/delete/invalidate)
+- [x] Sentry integration
+  - Backend: conditional init when `sentry_dsn` set, error middleware captures to Sentry, errors API returns "use Sentry" message
+  - Frontend: @sentry/nextjs with client/server/edge configs, conditional withSentryConfig in next.config.ts
+  - In-memory error tracker kept as dev-mode fallback (zero impact when Sentry not configured)
+- [x] Admin CSV exports
+  - `backend/app/utils/csv_export.py` — StreamingResponse helper with csv.DictWriter
+  - `/export` endpoints on admin orders (with date/status filters), products (one row per variant), users (excludes guests)
+  - Route ordering: `/export` registered BEFORE `/{id}` to avoid path conflicts
+  - Frontend: `downloadCsv()` helper with blob URL + auth header, Export CSV buttons on all 3 admin pages
+  - 8 new tests (CSV content type, headers, row counts, auth required)
+- [x] Discount codes / coupons
+  - `DiscountCode` model (percentage/fixed, min_order, max_uses, date range, active flag)
+  - `DiscountService` (validate_code, calculate_discount, increment_usage, CRUD)
+  - Public `POST /api/discounts/validate` + Admin CRUD `/api/admin/discounts`
+  - Order model extended with subtotal, discount_code, discount_amount fields
+  - Stripe: on-the-fly Coupon creation for discounted checkout sessions
+  - Frontend: cart-summary promo code input wired to validate API, discount line display with remove
+  - 18 new tests (validation rules, calculations, API endpoints, admin CRUD)
+  - Timezone-aware datetime comparison helper for SQLite/PostgreSQL compatibility
+- Backend: 445 tests passing (was 393, +52 new: 26 cache + 18 discounts + 8 CSV exports)
+- Frontend: build clean, 376/382 tests passing (6 pre-existing store.test.ts failures unrelated to changes)
 
 ### 2026-02-08 (Quick Wins — All 4 Items)
 - [x] Product search & filtering (full-text search endpoint + color/size/price/stock filters on frontend)

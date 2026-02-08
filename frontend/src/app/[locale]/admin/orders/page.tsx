@@ -20,7 +20,7 @@ import { Stack } from "@/components/elements/stack";
 import { Text } from "@/components/elements/text";
 import { DataTable } from "@/components/admin/data-table";
 import { OrderStatusBadge } from "@/components/admin/order-status-badge";
-import { getAdminOrders, type AdminOrder, type AdminOrderList } from "@/lib/api";
+import { getAdminOrders, downloadCsv, type AdminOrder, type AdminOrderList } from "@/lib/api";
 import { useAuthStore } from "@/lib/store";
 
 const ORDER_STATUSES = [
@@ -145,6 +145,22 @@ export default function AdminOrdersPage() {
                 ))}
               </SelectContent>
             </Select>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={async () => {
+                if (!token) return;
+                try {
+                  const params: Record<string, string> = {};
+                  if (statusFilter !== "all") params.status = statusFilter;
+                  await downloadCsv("/admin/orders/export", "orders.csv", token, params);
+                } catch {
+                  toast.error(t("exportFailed"));
+                }
+              }}
+            >
+              {t("exportCsv")}
+            </Button>
           </Row>
         </Row>
 

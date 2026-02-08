@@ -187,7 +187,11 @@
     "promoCode": "Promo kods",
     "apply": "Pielietot",
     "proceedToCheckout": "Turpināt uz kasi",
-    "freeShippingProgress": "Progress līdz bezmaksas piegādei"
+    "freeShippingProgress": "Progress līdz bezmaksas piegādei",
+    "discountApplied": "Atlaide piemērota",
+    "invalidCode": "Nederīgs atlaides kods",
+    "discountLine": "Atlaide ({code})",
+    "removeDiscount": "Noņemt atlaidi"
   },
   "checkout": {
     "title": "Apmaksa",
@@ -870,7 +874,9 @@
     "userDeactivated": "Lietotājs deaktivizēts",
     "userActivated": "Lietotājs aktivizēts",
     "failedUpdateUser": "Neizdevās atjaunināt lietotāju",
-    "failedUpdateRole": "Neizdevās atjaunināt lomu"
+    "failedUpdateRole": "Neizdevās atjaunināt lomu",
+    "exportCsv": "Eksportēt CSV",
+    "exportFailed": "Eksportēšana neizdevās"
   },
   "metadata": {
     "homeTitle": "GERBONI - Latvijas pilsētu ģerboņu krekli",

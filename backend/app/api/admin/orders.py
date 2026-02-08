@@ -5,11 +5,14 @@ from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from datetime import datetime
+
 from ...database import get_db
 from ...models import User, Order, OrderItem, OrderStatus
 from ...schemas import OrderStatusUpdate, OrderShipment
 from ...services import OrderService, EmailService
 from ...exceptions import DomainException, domain_to_http
+from ...utils.csv_export import csv_streaming_response
 
 import logging
 
@@ -17,6 +20,53 @@ logger = logging.getLogger(__name__)
 from ..deps import get_admin_user
 
 router = APIRouter()
+
+
+@router.get("/export")
+async def export_orders_csv(
+    admin: User = Depends(get_admin_user),
+    db: AsyncSession = Depends(get_db),
+    status_filter: str | None = Query(None, alias="status"),
+    date_from: str | None = Query(None, description="ISO date YYYY-MM-DD"),
+    date_to: str | None = Query(None, description="ISO date YYYY-MM-DD"),
+):
+    """Export orders as CSV. Admin only."""
+    query = select(Order).options(selectinload(Order.items))
+
+    if status_filter:
+        query = query.where(Order.status == status_filter)
+    if date_from:
+        query = query.where(Order.created_at >= datetime.fromisoformat(date_from))
+    if date_to:
+        query = query.where(Order.created_at <= datetime.fromisoformat(date_to + "T23:59:59"))
+
+    query = query.order_by(Order.created_at.desc())
+    result = await db.execute(query)
+    orders = result.scalars().all()
+
+    headers = [
+        "id", "status", "total", "user_id", "guest_email",
+        "shipping_name", "shipping_city", "shipping_country",
+        "tracking_number", "item_count", "created_at",
+    ]
+    rows = [
+        {
+            "id": o.id,
+            "status": o.status,
+            "total": str(o.total),
+            "user_id": o.user_id or "",
+            "guest_email": o.guest_email or "",
+            "shipping_name": o.shipping_name or "",
+            "shipping_city": o.shipping_city or "",
+            "shipping_country": o.shipping_country or "",
+            "tracking_number": o.tracking_number or "",
+            "item_count": len(o.items),
+            "created_at": o.created_at.isoformat() if o.created_at else "",
+        }
+        for o in orders
+    ]
+
+    return csv_streaming_response(rows, headers, "orders.csv")
 
 
 @router.get("")

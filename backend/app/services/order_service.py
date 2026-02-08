@@ -136,6 +136,8 @@ class OrderService:
         owner: OrderOwner,
         cart_items: list[CartItem],
         shipping: ShippingInfo,
+        discount_code: str | None = None,
+        discount_amount: Decimal = Decimal("0.00"),
     ) -> Order:
         """Create order from cart items.
 
@@ -152,15 +154,20 @@ class OrderService:
         if not cart_items:
             raise EmptyCartError("Cart is empty")
 
-        # Calculate total
-        total = Decimal("0.00")
+        # Calculate subtotal
+        subtotal = Decimal("0.00")
         for item in cart_items:
-            total += item.variant.price * item.quantity
+            subtotal += item.variant.price * item.quantity
+
+        total = subtotal - discount_amount
 
         # Create order
         order = Order(
             user_id=owner.user_id,
             guest_email=owner.guest_email,
+            subtotal=subtotal,
+            discount_code=discount_code,
+            discount_amount=discount_amount,
             total=total,
             shipping_name=shipping.name,
             shipping_address=shipping.address,

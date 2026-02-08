@@ -29,6 +29,14 @@ class Settings(BaseSettings):
     from_email: str = "GERBONI <noreply@gerboni.lv>"
     site_url: str = "https://gerboni.lv"
 
+    # Redis
+    redis_url: str = ""
+
+    # Sentry
+    sentry_dsn: str = ""
+    sentry_traces_sample_rate: float = 0.1
+    sentry_environment: str = "development"
+
     # URLs
     frontend_url: str = "http://localhost:3000"
     backend_url: str = "http://localhost:8000"

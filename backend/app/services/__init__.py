@@ -6,6 +6,8 @@ from .wishlist_service import WishlistService, WishlistOwner
 from .recommendation_service import RecommendationService
 from .review_service import ReviewService, ReviewOwner
 from .email_service import EmailService
+from .cache_service import CacheService
+from .discount_service import DiscountService
 
 __all__ = [
     "StripeService",
@@ -22,4 +24,6 @@ __all__ = [
     "ReviewService",
     "ReviewOwner",
     "EmailService",
+    "CacheService",
+    "DiscountService",
 ]

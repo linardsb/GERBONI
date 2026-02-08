@@ -245,6 +245,9 @@ export interface Order {
   user_id: number | null;
   guest_email: string | null;
   status: string;
+  subtotal: number | null;
+  discount_code: string | null;
+  discount_amount: number;
   total: number;
   shipping_name: string | null;
   shipping_address: string | null;
@@ -279,13 +282,30 @@ export const createOrder = (
   shipping: ShippingInfo,
   token?: string | null,
   guestSession?: string | null,
-  guestEmail?: string
+  guestEmail?: string,
+  discountCode?: string,
 ) =>
   fetchApi<Order>("/orders", {
     method: "POST",
-    body: JSON.stringify({ shipping, guest_email: guestEmail }),
+    body: JSON.stringify({ shipping, guest_email: guestEmail, discount_code: discountCode }),
     token,
     guestSession,
+  });
+
+// Discounts
+export interface DiscountValidation {
+  valid: boolean;
+  code: string;
+  type: string | null;
+  value: number | null;
+  discount_amount: number | null;
+  message: string | null;
+}
+
+export const validateDiscount = (code: string, subtotal: number) =>
+  fetchApi<DiscountValidation>("/discounts/validate", {
+    method: "POST",
+    body: JSON.stringify({ code, subtotal }),
   });
 
 // Payments
@@ -771,3 +791,31 @@ export const deactivateUser = (id: number, token: string) =>
     method: "PUT",
     token,
   });
+
+// ── CSV Exports ─────────────────────────────────────────────────────
+
+export async function downloadCsv(
+  endpoint: string,
+  filename: string,
+  token: string,
+  params?: Record<string, string>,
+) {
+  const url = new URL(`${API_URL}${endpoint}`);
+  if (params) {
+    Object.entries(params).forEach(([k, v]) => {
+      if (v) url.searchParams.set(k, v);
+    });
+  }
+  const res = await fetch(url.toString(), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error("Export failed");
+  const blob = await res.blob();
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+}

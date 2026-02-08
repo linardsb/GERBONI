@@ -40,6 +40,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: titles[locale] || titles.en,
     description: descriptions[locale] || descriptions.en,
+    alternates: {
+      canonical: `${SITE_URL}/${locale}`,
+      languages: {
+        en: `${SITE_URL}/en`,
+        lv: `${SITE_URL}/lv`,
+        "x-default": `${SITE_URL}/en`,
+      },
+    },
   };
 }
 

@@ -187,7 +187,11 @@
     "promoCode": "Promo code",
     "apply": "Apply",
     "proceedToCheckout": "Proceed to Checkout",
-    "freeShippingProgress": "Progress to free shipping"
+    "freeShippingProgress": "Progress to free shipping",
+    "discountApplied": "Discount applied",
+    "invalidCode": "Invalid discount code",
+    "discountLine": "Discount ({code})",
+    "removeDiscount": "Remove discount"
   },
   "checkout": {
     "title": "Checkout",
@@ -870,7 +874,9 @@
     "userDeactivated": "User deactivated",
     "userActivated": "User activated",
     "failedUpdateUser": "Failed to update user",
-    "failedUpdateRole": "Failed to update role"
+    "failedUpdateRole": "Failed to update role",
+    "exportCsv": "Export CSV",
+    "exportFailed": "Export failed"
   },
   "metadata": {
     "homeTitle": "GERBONI - Latvian City Coat of Arms T-Shirts",
