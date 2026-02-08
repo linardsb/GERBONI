@@ -105,3 +105,31 @@ class ChangePasswordRequest(BaseModel):
         if not re.search(r"\d", v):
             raise ValueError("Password must contain at least one digit")
         return v
+
+
+# ── 2FA Schemas ──────────────────────────────────────────────────────
+
+class TwoFactorSetupResponse(BaseModel):
+    secret: str
+    provisioning_uri: str
+    qr_code: str  # base64-encoded PNG
+
+
+class TwoFactorVerifyRequest(BaseModel):
+    code: str  # 6-digit TOTP code or 8-char backup code
+
+
+class TwoFactorBackupCodesResponse(BaseModel):
+    backup_codes: list[str]
+
+
+class LoginResponse(BaseModel):
+    access_token: str | None = None
+    token_type: str = "bearer"
+    requires_2fa: bool = False
+    temp_token: str | None = None
+
+
+class TwoFactorDisableRequest(BaseModel):
+    password: str
+    code: str  # TOTP code to confirm

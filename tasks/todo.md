@@ -25,10 +25,10 @@ Track current work items and progress. Update status as work progresses.
 - [x] SEO: Hreflang + canonical tags (important for en/lv bilingual site)
 
 ### Production Readiness
-- [ ] Multi-stage Docker builds (remove build tools from final images)
-- [ ] Database backup strategy + automated dumps
-- [ ] 2FA authentication option
-- [ ] Load testing scripts (k6 or Locust)
+- [x] Multi-stage Docker builds (remove build tools from final images)
+- [x] Database backup strategy + automated dumps
+- [x] 2FA authentication option (TOTP)
+- [x] Load testing scripts (Locust)
 
 ---
 
@@ -50,6 +50,31 @@ Track current work items and progress. Update status as work progresses.
 ---
 
 ## Completed (Recent)
+
+### 2026-02-08 (Production Readiness — All 4 Items)
+- [x] Multi-stage Docker builds
+  - Backend: 2-stage build (builder with gcc/libpq-dev → runtime with libpq5/curl only), non-root `appuser`
+  - Frontend: 3-stage build (deps → builder → runner with Next.js standalone output), non-root `nextjs` user
+  - Added `output: "standalone"` to `next.config.ts`
+  - Created `docker-compose.prod.yml` (no volume mounts, no --reload, restart: always, env validation)
+- [x] Database backup strategy
+  - `scripts/backup-db.sh` — pg_dump with custom format, 30-day rotation, optional S3 upload
+  - `scripts/restore-db.sh` — pg_restore with safety confirmation + post-restore verification
+  - `db-backup` service in docker-compose.prod.yml (postgres:16-alpine, daily cron at 2:00 AM)
+- [x] 2FA authentication (TOTP)
+  - Backend: 3 new User model fields + alembic migration 002
+  - AuthService: 10 new methods (TOTP generate/verify, backup codes, QR code, temp tokens)
+  - 5 new schemas (TwoFactorSetupResponse, TwoFactorVerifyRequest, etc.)
+  - 4 new API endpoints (setup, enable, disable, verify) + modified login flow
+  - 25 new backend tests (all passing)
+  - Frontend: login + register pages with 2FA verification step
+  - Account page security tab with full 2FA lifecycle (setup → QR → backup codes → disable)
+  - 31 new i18n keys across auth + account namespaces (en + lv)
+- [x] Load testing scripts (Locust)
+  - `load-tests/locustfile.py` — 4 weighted user scenarios (browse, cart, auth, checkout)
+  - Locust service in docker-compose.prod.yml (profile: loadtest, web UI on :8089)
+- Backend: 470 tests passing (was 445, +25 new 2FA tests)
+- Frontend: build clean
 
 ### 2026-02-08 (Medium Priority — All 5 Items)
 - [x] SEO: Hreflang + canonical tags

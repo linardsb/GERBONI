@@ -191,8 +191,10 @@ export const removeCartItem = (
 
 // Auth
 export interface AuthResponse {
-  access_token: string;
+  access_token: string | null;
   token_type: string;
+  requires_2fa?: boolean;
+  temp_token?: string | null;
 }
 
 export interface User {
@@ -790,6 +792,44 @@ export const deactivateUser = (id: number, token: string) =>
   fetchApi<{ id: number; is_active: boolean }>(`/admin/users/${id}/deactivate`, {
     method: "PUT",
     token,
+  });
+
+// ── 2FA ─────────────────────────────────────────────────────────────
+
+export interface TwoFactorSetup {
+  secret: string;
+  provisioning_uri: string;
+  qr_code: string;
+}
+
+export interface TwoFactorBackupCodes {
+  backup_codes: string[];
+}
+
+export const setup2FA = (token: string) =>
+  fetchApi<TwoFactorSetup>("/auth/2fa/setup", {
+    method: "POST",
+    token,
+  });
+
+export const enable2FA = (code: string, token: string) =>
+  fetchApi<TwoFactorBackupCodes>("/auth/2fa/enable", {
+    method: "POST",
+    body: JSON.stringify({ code }),
+    token,
+  });
+
+export const disable2FA = (password: string, code: string, token: string) =>
+  fetchApi<MessageResponse>("/auth/2fa/disable", {
+    method: "POST",
+    body: JSON.stringify({ password, code }),
+    token,
+  });
+
+export const verify2FA = (tempToken: string, code: string) =>
+  fetchApi<AuthResponse>(`/auth/2fa/verify?temp_token=${encodeURIComponent(tempToken)}`, {
+    method: "POST",
+    body: JSON.stringify({ code }),
   });
 
 // ── CSV Exports ─────────────────────────────────────────────────────

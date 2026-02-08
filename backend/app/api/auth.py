@@ -1,5 +1,6 @@
 from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException, status, Request
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..database import get_db
@@ -7,7 +8,9 @@ from ..schemas import (
     UserCreate, UserRead, UserLogin, Token,
     GuestSessionCreate, GuestSessionRead,
     ForgotPasswordRequest, ResetPasswordRequest, MessageResponse,
-    ChangePasswordRequest
+    ChangePasswordRequest,
+    TwoFactorSetupResponse, TwoFactorVerifyRequest,
+    TwoFactorBackupCodesResponse, LoginResponse, TwoFactorDisableRequest,
 )
 from ..services import AuthService, EmailService
 from ..config import get_settings
@@ -30,7 +33,7 @@ async def register(
     return user
 
 
-@router.post("/login", response_model=Token)
+@router.post("/login", response_model=LoginResponse)
 @limiter.limit("5/minute")  # Prevent brute force attacks
 async def login(
     request: Request,
@@ -43,11 +46,17 @@ async def login(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
         )
+
+    # If 2FA is enabled, return a temp token instead of the full JWT
+    if user.two_factor_enabled:
+        temp_token = AuthService.create_2fa_temp_token(user.id)
+        return LoginResponse(requires_2fa=True, temp_token=temp_token)
+
     access_token = AuthService.create_access_token(
         data={"sub": str(user.id)},
         expires_delta=timedelta(minutes=settings.access_token_expire_minutes),
     )
-    return Token(access_token=access_token)
+    return LoginResponse(access_token=access_token)
 
 
 @router.get("/me", response_model=UserRead)
@@ -163,3 +172,178 @@ async def change_password(
         )
 
     return MessageResponse(message="Password changed successfully")
+
+
+# ── 2FA Endpoints ────────────────────────────────────────────────────
+
+
+@router.post("/2fa/setup", response_model=TwoFactorSetupResponse)
+async def setup_2fa(
+    user: User = Depends(get_current_user_required),
+    db: AsyncSession = Depends(get_db),
+):
+    """Generate TOTP secret and QR code for 2FA setup.
+    Persists the secret on the user (but does not enable 2FA yet)."""
+    if user.two_factor_enabled:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="2FA is already enabled",
+        )
+
+    secret = AuthService.generate_totp_secret()
+    provisioning_uri = AuthService.get_totp_provisioning_uri(secret, user.email)
+    qr_code = AuthService.generate_qr_code_base64(provisioning_uri)
+
+    # Persist secret so /2fa/enable can verify against it
+    user.two_factor_secret = secret
+    await db.commit()
+
+    return TwoFactorSetupResponse(
+        secret=secret,
+        provisioning_uri=provisioning_uri,
+        qr_code=qr_code,
+    )
+
+
+@router.post("/2fa/enable", response_model=TwoFactorBackupCodesResponse)
+async def enable_2fa(
+    data: TwoFactorVerifyRequest,
+    user: User = Depends(get_current_user_required),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Confirm 2FA setup by verifying a TOTP code.
+    The client must have called /2fa/setup first and pass the code
+    generated from the secret. On success, 2FA is enabled and backup
+    codes are returned (shown once).
+    """
+    if user.two_factor_enabled:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="2FA is already enabled",
+        )
+
+    # The secret was returned by /2fa/setup — client sends it back
+    # For security, we need the secret in the request. But the plan says
+    # the client generates a TOTP from the secret. We need the secret
+    # stored temporarily. Since setup doesn't persist, we ask client to
+    # include it. Let's accept secret + code in the body.
+    # Actually, the plan says /2fa/setup returns the secret. Then /2fa/enable
+    # verifies the code. The client must send the secret along with the code
+    # so we can verify. Let's parse it from the request.
+    #
+    # Alternative: persist the secret on setup (but not enable yet).
+    # That's cleaner. Let's do that — we store the secret on setup
+    # but keep two_factor_enabled=False until /enable confirms.
+
+    # If user doesn't have a secret yet, they need to call /setup first
+    if not user.two_factor_secret:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Call /2fa/setup first to generate a secret",
+        )
+
+    if not AuthService.verify_totp(user.two_factor_secret, data.code):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid verification code",
+        )
+
+    # Enable 2FA and generate backup codes
+    backup_codes = AuthService.generate_backup_codes()
+    user.two_factor_enabled = True
+    user.backup_codes = AuthService.hash_backup_codes(backup_codes)
+    await db.commit()
+
+    return TwoFactorBackupCodesResponse(backup_codes=backup_codes)
+
+
+@router.post("/2fa/disable", response_model=MessageResponse)
+async def disable_2fa(
+    data: TwoFactorDisableRequest,
+    user: User = Depends(get_current_user_required),
+    db: AsyncSession = Depends(get_db),
+):
+    """Disable 2FA. Requires current password and a valid TOTP code."""
+    if not user.two_factor_enabled:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="2FA is not enabled",
+        )
+
+    if not AuthService.verify_password(data.password, user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Incorrect password",
+        )
+
+    if not AuthService.verify_totp(user.two_factor_secret, data.code):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid verification code",
+        )
+
+    user.two_factor_enabled = False
+    user.two_factor_secret = None
+    user.backup_codes = None
+    await db.commit()
+
+    return MessageResponse(message="Two-factor authentication has been disabled")
+
+
+@router.post("/2fa/verify", response_model=LoginResponse)
+@limiter.limit("5/minute")  # Rate limit to prevent brute force
+async def verify_2fa(
+    request: Request,
+    data: TwoFactorVerifyRequest,
+    temp_token: str,
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Verify 2FA code during login.
+    Called after /login returns requires_2fa=true with a temp_token.
+    Accepts either a 6-digit TOTP code or an 8-character backup code.
+    """
+    user_id = AuthService.decode_2fa_temp_token(temp_token)
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired verification token",
+        )
+
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+    if not user or not user.two_factor_enabled:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid verification token",
+        )
+
+    code = data.code.strip()
+    verified = False
+
+    # Try TOTP first (6-digit code)
+    if len(code) == 6 and code.isdigit():
+        verified = AuthService.verify_totp(user.two_factor_secret, code)
+
+    # Try backup code (8-char alphanumeric)
+    if not verified and user.backup_codes:
+        success, updated_hashes = AuthService.verify_backup_code(user.backup_codes, code)
+        if success:
+            verified = True
+            user.backup_codes = updated_hashes
+            await db.flush()
+
+    if not verified:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid verification code",
+        )
+
+    # Issue full JWT
+    access_token = AuthService.create_access_token(
+        data={"sub": str(user.id)},
+        expires_delta=timedelta(minutes=settings.access_token_expire_minutes),
+    )
+    await db.commit()
+    return LoginResponse(access_token=access_token)

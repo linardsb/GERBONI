@@ -1,4 +1,12 @@
+import json
+import secrets
+import string
+import io
+import base64
 from datetime import datetime, timedelta
+
+import pyotp
+import qrcode
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy import select
@@ -205,3 +213,89 @@ class AuthService:
         user.password_hash = AuthService.get_password_hash(new_password)
         await db.commit()
         return True
+
+    # ── 2FA (TOTP) Methods ──────────────────────────────────────────────
+
+    @staticmethod
+    def generate_totp_secret() -> str:
+        """Generate a new TOTP secret key."""
+        return pyotp.random_base32()
+
+    @staticmethod
+    def get_totp_provisioning_uri(secret: str, email: str) -> str:
+        """Get the otpauth:// URI for QR code generation."""
+        totp = pyotp.TOTP(secret)
+        return totp.provisioning_uri(name=email, issuer_name="GERBONI")
+
+    @staticmethod
+    def generate_qr_code_base64(provisioning_uri: str) -> str:
+        """Generate a QR code as a base64-encoded PNG."""
+        img = qrcode.make(provisioning_uri)
+        buffer = io.BytesIO()
+        img.save(buffer, format="PNG")
+        buffer.seek(0)
+        return base64.b64encode(buffer.read()).decode("utf-8")
+
+    @staticmethod
+    def verify_totp(secret: str, code: str) -> bool:
+        """Verify a 6-digit TOTP code (allows 1-step window for clock drift)."""
+        totp = pyotp.TOTP(secret)
+        return totp.verify(code, valid_window=1)
+
+    @staticmethod
+    def generate_backup_codes(count: int = 10) -> list[str]:
+        """Generate a list of 8-character alphanumeric backup codes."""
+        chars = string.ascii_uppercase + string.digits
+        return [
+            "".join(secrets.choice(chars) for _ in range(8))
+            for _ in range(count)
+        ]
+
+    @staticmethod
+    def hash_backup_codes(codes: list[str]) -> str:
+        """Hash backup codes and return as JSON-encoded list."""
+        hashed = [pwd_context.hash(code) for code in codes]
+        return json.dumps(hashed)
+
+    @staticmethod
+    def verify_backup_code(stored_hashes_json: str, code: str) -> tuple[bool, str | None]:
+        """
+        Check a backup code against stored hashes.
+        Returns (success, updated_hashes_json). If success, the used code
+        is removed from the list.
+        """
+        try:
+            hashes = json.loads(stored_hashes_json)
+        except (json.JSONDecodeError, TypeError):
+            return False, None
+
+        for i, h in enumerate(hashes):
+            if pwd_context.verify(code, h):
+                hashes.pop(i)
+                return True, json.dumps(hashes)
+
+        return False, None
+
+    @staticmethod
+    def create_2fa_temp_token(user_id: int) -> str:
+        """Create a short-lived token for the 2FA verification step."""
+        return AuthService.create_access_token(
+            data={"sub": str(user_id), "type": "2fa_pending"},
+            expires_delta=timedelta(minutes=5),
+        )
+
+    @staticmethod
+    def decode_2fa_temp_token(token: str) -> int | None:
+        """Decode a 2FA temp token and return user_id, or None if invalid."""
+        payload = AuthService.decode_token(token)
+        if not payload:
+            return None
+        if payload.get("type") != "2fa_pending":
+            return None
+        sub = payload.get("sub")
+        if not sub:
+            return None
+        try:
+            return int(sub)
+        except (ValueError, TypeError):
+            return None

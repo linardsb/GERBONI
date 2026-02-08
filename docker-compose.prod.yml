@@ -1,0 +1,116 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: gerboni
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD}
+      POSTGRES_DB: gerboni
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gerboni"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: always
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: always
+
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://gerboni:${DB_PASSWORD}@db:5432/gerboni
+      - REDIS_URL=redis://redis:6379/0
+      - DEBUG=false
+      - SECRET_KEY=${SECRET_KEY:?Set SECRET_KEY}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - SENTRY_DSN=${SENTRY_DSN}
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - FROM_EMAIL=${FROM_EMAIL:-noreply@gerboni.lv}
+      - SITE_URL=${SITE_URL:-https://gerboni.lv}
+      - FRONTEND_URL=${FRONTEND_URL:-https://gerboni.lv}
+      - BACKEND_URL=${BACKEND_URL:-https://api.gerboni.lv}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/products"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: always
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=${BACKEND_URL:-http://localhost:8000}/api
+      - NEXT_PUBLIC_WS_URL=${WS_URL:-ws://localhost:8000}/api
+      - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY}
+      - NEXT_PUBLIC_SENTRY_DSN=${NEXT_PUBLIC_SENTRY_DSN}
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: always
+
+  db-backup:
+    image: postgres:16-alpine
+    volumes:
+      - ./scripts:/scripts:ro
+      - backups:/backups
+    environment:
+      - PGHOST=db
+      - PGUSER=gerboni
+      - PGPASSWORD=${DB_PASSWORD}
+      - PGDATABASE=gerboni
+    depends_on:
+      db:
+        condition: service_healthy
+    # Run backup daily at 2:00 AM via entrypoint override
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        echo "0 2 * * * /scripts/backup-db.sh >> /var/log/backup.log 2>&1" > /etc/crontabs/root
+        crond -f -l 2
+    restart: always
+    profiles:
+      - backup
+
+  locust:
+    image: locustio/locust:latest
+    volumes:
+      - ./load-tests:/mnt/locust:ro
+    command: -f /mnt/locust/locustfile.py --host=http://backend:8000
+    ports:
+      - "8089:8089"
+    depends_on:
+      backend:
+        condition: service_healthy
+    profiles:
+      - loadtest
+
+volumes:
+  postgres_data:
+  backups:

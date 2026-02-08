@@ -37,6 +37,9 @@ import {
   setDefaultAddress,
   changePassword,
   getOrders,
+  setup2FA,
+  enable2FA,
+  disable2FA,
   type Address,
   type AddressCreate,
   type AddressUpdate,
@@ -59,6 +62,7 @@ const statusVariants: Record<string, "default" | "secondary" | "destructive" | "
 
 export default function AccountPage() {
   const t = useTranslations("account");
+  const tCommon = useTranslations("common");
   const tStatus = useTranslations("orderStatus");
   const { token, user } = useAuthStore();
   const [activeTab, setActiveTab] = useState<TabId>("profile");
@@ -87,6 +91,15 @@ export default function AccountPage() {
   // Orders state
   const [orders, setOrders] = useState<Order[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
+
+  // 2FA state
+  const [twoFASetup, setTwoFASetup] = useState<{ secret: string; qr_code: string } | null>(null);
+  const [twoFACode, setTwoFACode] = useState("");
+  const [twoFAEnabled, setTwoFAEnabled] = useState(false);
+  const [backupCodes, setBackupCodes] = useState<string[] | null>(null);
+  const [disablePassword, setDisablePassword] = useState("");
+  const [disableCode, setDisableCode] = useState("");
+  const [twoFALoading, setTwoFALoading] = useState(false);
 
   // Load data based on active tab
   useEffect(() => {
@@ -165,6 +178,54 @@ export default function AccountPage() {
       await loadAddresses();
     } catch {
       toast.error(t("failedSetDefault"));
+    }
+  };
+
+  const handleSetup2FA = async () => {
+    if (!token) return;
+    setTwoFALoading(true);
+    try {
+      const data = await setup2FA(token);
+      setTwoFASetup({ secret: data.secret, qr_code: data.qr_code });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t("failedSetup2FA"));
+    } finally {
+      setTwoFALoading(false);
+    }
+  };
+
+  const handleEnable2FA = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!token) return;
+    setTwoFALoading(true);
+    try {
+      const data = await enable2FA(twoFACode, token);
+      setBackupCodes(data.backup_codes);
+      setTwoFAEnabled(true);
+      setTwoFASetup(null);
+      setTwoFACode("");
+      toast.success(t("twoFAEnabled"));
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t("invalidCode"));
+    } finally {
+      setTwoFALoading(false);
+    }
+  };
+
+  const handleDisable2FA = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!token) return;
+    setTwoFALoading(true);
+    try {
+      await disable2FA(disablePassword, disableCode, token);
+      setTwoFAEnabled(false);
+      setDisablePassword("");
+      setDisableCode("");
+      toast.success(t("twoFADisabled"));
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t("failedDisable2FA"));
+    } finally {
+      setTwoFALoading(false);
     }
   };
 
@@ -303,72 +364,227 @@ export default function AccountPage() {
 
           {/* Security Tab */}
           {activeTab === "security" && (
-            <Card>
-              <CardHeader>
-                <CardTitle>{t("changePassword")}</CardTitle>
-                <CardDescription>
-                  {t("securityDescription")}
-                </CardDescription>
-              </CardHeader>
-              <CardContent padding="md">
-                <form onSubmit={handlePasswordChange}>
-                  <Stack gap="group">
-                    {passwordError && (
-                      <div className="rounded-md bg-destructive/10 p-3 border border-destructive/20">
-                        <Row gap="element">
-                          <IconAlertCircle className="size-4 text-destructive" aria-hidden="true" />
-                          <Text variant="error">{passwordError}</Text>
-                        </Row>
-                      </div>
+            <Stack gap="group">
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t("changePassword")}</CardTitle>
+                  <CardDescription>
+                    {t("securityDescription")}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent padding="md">
+                  <form onSubmit={handlePasswordChange}>
+                    <Stack gap="group">
+                      {passwordError && (
+                        <div className="rounded-md bg-destructive/10 p-3 border border-destructive/20">
+                          <Row gap="element">
+                            <IconAlertCircle className="size-4 text-destructive" aria-hidden="true" />
+                            <Text variant="error">{passwordError}</Text>
+                          </Row>
+                        </div>
+                      )}
+
+                      <Stack gap="element">
+                        <Label htmlFor="current_password">{t("currentPassword")}</Label>
+                        <Input
+                          id="current_password"
+                          type="password"
+                          value={currentPassword}
+                          onChange={(e) => setCurrentPassword(e.target.value)}
+                          required
+                          autoComplete="current-password"
+                        />
+                      </Stack>
+
+                      <Stack gap="element">
+                        <Label htmlFor="new_password">{t("newPassword")}</Label>
+                        <Input
+                          id="new_password"
+                          type="password"
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                          required
+                          autoComplete="new-password"
+                          aria-describedby="password-requirements"
+                        />
+                        <Text variant="muted-sm" id="password-requirements">
+                          {t("passwordRequirements")}
+                        </Text>
+                      </Stack>
+
+                      <Stack gap="element">
+                        <Label htmlFor="confirm_password">{t("confirmNewPassword")}</Label>
+                        <Input
+                          id="confirm_password"
+                          type="password"
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          required
+                          autoComplete="new-password"
+                        />
+                      </Stack>
+
+                      <Button type="submit" disabled={changingPassword} className="w-fit">
+                        {changingPassword ? t("changingPassword") : t("changePassword")}
+                      </Button>
+                    </Stack>
+                  </form>
+                </CardContent>
+              </Card>
+
+              {/* 2FA Section */}
+              <Card>
+                <CardHeader>
+                  <Row justify="between" align="center">
+                    <Stack gap="element">
+                      <CardTitle>{t("twoFactorAuth")}</CardTitle>
+                      <CardDescription>{t("twoFactorDescription")}</CardDescription>
+                    </Stack>
+                    {twoFAEnabled && (
+                      <Badge variant="default">{t("enabled")}</Badge>
                     )}
-
-                    <Stack gap="element">
-                      <Label htmlFor="current_password">{t("currentPassword")}</Label>
-                      <Input
-                        id="current_password"
-                        type="password"
-                        value={currentPassword}
-                        onChange={(e) => setCurrentPassword(e.target.value)}
-                        required
-                        autoComplete="current-password"
-                      />
+                  </Row>
+                </CardHeader>
+                <CardContent padding="md">
+                  {/* Not enabled — show setup flow */}
+                  {!twoFAEnabled && !twoFASetup && !backupCodes && (
+                    <Stack gap="group">
+                      <Text variant="muted-sm">{t("twoFactorNotEnabled")}</Text>
+                      <Button onClick={handleSetup2FA} disabled={twoFALoading} className="w-fit">
+                        {twoFALoading ? tCommon("loading") : t("enable2FA")}
+                      </Button>
                     </Stack>
+                  )}
 
-                    <Stack gap="element">
-                      <Label htmlFor="new_password">{t("newPassword")}</Label>
-                      <Input
-                        id="new_password"
-                        type="password"
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                        required
-                        autoComplete="new-password"
-                        aria-describedby="password-requirements"
-                      />
-                      <Text variant="muted-sm" id="password-requirements">
-                        {t("passwordRequirements")}
-                      </Text>
+                  {/* QR code setup step */}
+                  {twoFASetup && !backupCodes && (
+                    <form onSubmit={handleEnable2FA}>
+                      <Stack gap="group">
+                        <Text variant="muted-sm">{t("scanQrCode")}</Text>
+                        <div className="flex justify-center">
+                          <img
+                            src={`data:image/png;base64,${twoFASetup.qr_code}`}
+                            alt="2FA QR Code"
+                            width={200}
+                            height={200}
+                          />
+                        </div>
+                        <Stack gap="element">
+                          <Text variant="muted-sm">{t("manualEntry")}</Text>
+                          <code className="block bg-muted px-3 py-2 rounded-md text-sm font-mono break-all select-all">
+                            {twoFASetup.secret}
+                          </code>
+                        </Stack>
+                        <Separator />
+                        <Stack gap="element">
+                          <Label htmlFor="totp-code">{t("verificationCode")}</Label>
+                          <Input
+                            id="totp-code"
+                            type="text"
+                            value={twoFACode}
+                            onChange={(e) => setTwoFACode(e.target.value)}
+                            placeholder="123456"
+                            maxLength={6}
+                            autoComplete="one-time-code"
+                            required
+                            className="text-center text-lg tracking-widest max-w-48"
+                          />
+                        </Stack>
+                        <Row gap="element">
+                          <Button type="submit" disabled={twoFALoading}>
+                            {twoFALoading ? tCommon("loading") : t("verifyAndEnable")}
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => {
+                              setTwoFASetup(null);
+                              setTwoFACode("");
+                            }}
+                          >
+                            {tCommon("cancel")}
+                          </Button>
+                        </Row>
+                      </Stack>
+                    </form>
+                  )}
+
+                  {/* Backup codes (shown once after enabling) */}
+                  {backupCodes && (
+                    <Stack gap="group">
+                      <div className="rounded-md bg-warning/10 p-3 border border-warning/20">
+                        <Text variant="body-sm" className="font-medium">
+                          {t("backupCodesWarning")}
+                        </Text>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        {backupCodes.map((code) => (
+                          <code
+                            key={code}
+                            className="bg-muted px-3 py-2 rounded-md text-sm font-mono text-center select-all"
+                          >
+                            {code}
+                          </code>
+                        ))}
+                      </div>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          navigator.clipboard.writeText(backupCodes.join("\n"));
+                          toast.success(t("backupCodesCopied"));
+                        }}
+                        className="w-fit"
+                      >
+                        {t("copyBackupCodes")}
+                      </Button>
+                      <Button
+                        onClick={() => setBackupCodes(null)}
+                        className="w-fit"
+                      >
+                        {t("doneBackupCodes")}
+                      </Button>
                     </Stack>
+                  )}
 
-                    <Stack gap="element">
-                      <Label htmlFor="confirm_password">{t("confirmNewPassword")}</Label>
-                      <Input
-                        id="confirm_password"
-                        type="password"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        required
-                        autoComplete="new-password"
-                      />
-                    </Stack>
-
-                    <Button type="submit" disabled={changingPassword} className="w-fit">
-                      {changingPassword ? t("changingPassword") : t("changePassword")}
-                    </Button>
-                  </Stack>
-                </form>
-              </CardContent>
-            </Card>
+                  {/* Enabled — show disable form */}
+                  {twoFAEnabled && !backupCodes && (
+                    <form onSubmit={handleDisable2FA}>
+                      <Stack gap="group">
+                        <Text variant="muted-sm">{t("twoFactorCurrentlyEnabled")}</Text>
+                        <Separator />
+                        <Text variant="body-sm" className="font-medium">{t("disable2FA")}</Text>
+                        <Stack gap="element">
+                          <Label htmlFor="disable-password">{t("currentPassword")}</Label>
+                          <Input
+                            id="disable-password"
+                            type="password"
+                            value={disablePassword}
+                            onChange={(e) => setDisablePassword(e.target.value)}
+                            required
+                          />
+                        </Stack>
+                        <Stack gap="element">
+                          <Label htmlFor="disable-code">{t("verificationCode")}</Label>
+                          <Input
+                            id="disable-code"
+                            type="text"
+                            value={disableCode}
+                            onChange={(e) => setDisableCode(e.target.value)}
+                            placeholder="123456"
+                            maxLength={6}
+                            required
+                            className="text-center text-lg tracking-widest max-w-48"
+                          />
+                        </Stack>
+                        <Button type="submit" variant="destructive" disabled={twoFALoading} className="w-fit">
+                          {twoFALoading ? tCommon("loading") : t("disable2FA")}
+                        </Button>
+                      </Stack>
+                    </form>
+                  )}
+                </CardContent>
+              </Card>
+            </Stack>
           )}
 
           {/* Addresses Tab */}
