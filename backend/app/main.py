@@ -36,6 +36,9 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     # Startup
     await init_db()
+    if settings.debug:
+        from .seed import seed_database
+        await seed_database()
     await CacheService.init(settings.redis_url)
 
     # Sentry (conditional on DSN)
