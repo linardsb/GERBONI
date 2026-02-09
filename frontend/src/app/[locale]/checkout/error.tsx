@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { Stack } from "@/components/elements/stack";
 import { Text } from "@/components/elements/text";
 import { Button } from "@/components/elements/button";
@@ -13,6 +14,9 @@ export default function CheckoutError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const t = useTranslations("checkout");
+  const tc = useTranslations("common");
+
   useEffect(() => {
     console.error("[CheckoutError]", error);
   }, [error]);
@@ -23,12 +27,12 @@ export default function CheckoutError({
         <IconAlertTriangle className="size-12 text-destructive" aria-hidden="true" />
       </div>
       <Stack gap="element" align="center">
-        <Text variant="heading-sm">Checkout error</Text>
+        <Text variant="heading-sm">{t("error")}</Text>
         <Text variant="muted" align="center">
-          Something went wrong during checkout. No payment has been processed.
+          {t("errorDescription")}
         </Text>
       </Stack>
-      <Button onClick={reset}>Try Again</Button>
+      <Button onClick={reset}>{tc("tryAgain")}</Button>
     </Stack>
   );
 }

@@ -42,7 +42,7 @@ def get_support_agent() -> Agent:
         _support_agent = Agent(
             "anthropic:claude-sonnet-4-20250514",
             deps_type=AgentDependencies,
-            result_type=str,
+            output_type=str,
             system_prompt="""You are a friendly customer support agent for GERBONI,
 a Latvian t-shirt store selling city coat of arms designs.
 

@@ -1,6 +1,7 @@
 import logging
 from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException, status, Request
+from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -79,15 +80,19 @@ async def create_guest_session(
     return session
 
 
+class ConvertGuestRequest(BaseModel):
+    session_token: str
+    password: str
+
+
 @router.post("/convert-guest", response_model=Token)
 @limiter.limit("5/minute")  # Same as login - prevent brute force
 async def convert_guest(
     request: Request,
-    session_token: str,
-    password: str,
+    data: ConvertGuestRequest,
     db: AsyncSession = Depends(get_db),
 ):
-    user = await AuthService.convert_guest_to_user(db, session_token, password)
+    user = await AuthService.convert_guest_to_user(db, data.session_token, data.password)
     access_token = AuthService.create_access_token(
         data={"sub": str(user.id)},
         expires_delta=timedelta(minutes=settings.access_token_expire_minutes),

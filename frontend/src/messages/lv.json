@@ -232,7 +232,9 @@
     "stepShipping": "Piegāde",
     "stepPayment": "Maksājums",
     "stepConfirmation": "Apstiprināt",
-    "checkoutProgress": "Pasūtījuma progress"
+    "checkoutProgress": "Pasūtījuma progress",
+    "error": "Apmaksas kļūda",
+    "errorDescription": "Apmaksas laikā radās kļūda. Neviens maksājums nav apstrādāts."
   },
   "order": {
     "title": "Pasūtījums",
@@ -826,7 +828,13 @@
     "subscribe": "Abonēt",
     "noThanks": "Nē, paldies",
     "success": "Laipni lūgti GERBONI! Pārbaudiet e-pastu atlaides kodam.",
-    "alreadySubscribed": "Jūs jau esat abonējuši!"
+    "alreadySubscribed": "Jūs jau esat abonējuši!",
+    "unsubscribeTitle": "Atteikties no jaunumu vēstules",
+    "unsubscribeDescription": "Ievadiet savu e-pasta adresi, lai atteiktos no mūsu jaunumu vēstules.",
+    "unsubscribeButton": "Atteikties",
+    "unsubscribeSuccess": "Jūs esat atteikušies no mūsu jaunumu vēstules.",
+    "unsubscribeError": "Kaut kas nogāja greizi. Lūdzu, mēģiniet vēlreiz.",
+    "backToHome": "Atpakaļ uz sākumu"
   },
   "exitIntent": {
     "title": "Pagaidiet! Neejiet prom!",
@@ -955,7 +963,9 @@
     "recipients": "Saņēmēji",
     "sent": "Nosūtīts",
     "failed": "Neizdevās",
-    "sentAt": "Nosūtīts"
+    "sentAt": "Nosūtīts",
+    "accessDenied": "Piekļuve liegta",
+    "accessDeniedDescription": "Jums nav atļaujas piekļūt administrācijas panelim."
   },
   "metadata": {
     "homeTitle": "GERBONI - Latvijas pilsētu ģerboņu krekli",

@@ -116,10 +116,22 @@ def mock_unauth_ctx(unauthenticated_deps):
 
 
 def get_tool_func(agent, tool_name: str):
-    """Extract a tool function from the agent by name."""
-    tools = agent._function_tools
-    if tool_name in tools:
-        return tools[tool_name].function
+    """Extract a tool function from the agent by name.
+
+    Wraps internal API access for pydantic-ai compatibility.
+    v0.0.53: agent._function_tools[name].function
+    v1.51.0: agent._function_toolset.tools[name].function
+    """
+    # v1.x: _function_toolset with .tools dict
+    if hasattr(agent, "_function_toolset"):
+        toolset = agent._function_toolset
+        if hasattr(toolset, "tools") and tool_name in toolset.tools:
+            return toolset.tools[tool_name].function
+    # v0.0.53: _function_tools plain dict
+    if hasattr(agent, "_function_tools"):
+        tools = agent._function_tools
+        if tool_name in tools:
+            return tools[tool_name].function
     raise ValueError(f"Tool '{tool_name}' not found in agent")
 
 

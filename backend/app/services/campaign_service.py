@@ -1,5 +1,6 @@
 """Newsletter campaign management service."""
 
+import html as html_mod
 import json
 import logging
 from datetime import datetime, timezone
@@ -151,14 +152,14 @@ class CampaignService:
 
         product_cards = ""
         for p in products:
-            product_url = f"{settings.frontend_url}/en/products/{p.id}"
+            product_url = f"{settings.frontend_url}/products/{p.id}"
             image_url = f"{settings.frontend_url}{p.coat_of_arms_image}" if p.coat_of_arms_image else ""
             product_cards += f"""
             <div style="display: inline-block; width: 200px; margin: 8px; vertical-align: top;
                         border: 1px solid #eee; border-radius: 8px; overflow: hidden;">
-                {f'<img src="{image_url}" alt="{p.city_name}" style="width: 100%; height: 150px; object-fit: cover;">' if image_url else ''}
+                {f'<img src="{image_url}" alt="{html_mod.escape(p.city_name)}" style="width: 100%; height: 150px; object-fit: cover;">' if image_url else ''}
                 <div style="padding: 12px;">
-                    <p style="margin: 0; font-weight: bold;">{p.city_name}</p>
+                    <p style="margin: 0; font-weight: bold;">{html_mod.escape(p.city_name)}</p>
                     <a href="{product_url}"
                        style="display: inline-block; margin-top: 8px; color: #0891b2; text-decoration: none;">
                         View Product &rarr;
@@ -178,7 +179,7 @@ class CampaignService:
             </div>
             """
 
-        unsubscribe_url = f"{settings.frontend_url}/en/unsubscribe"
+        unsubscribe_url = f"{settings.frontend_url}/unsubscribe"
 
         return f"""
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -187,7 +188,7 @@ class CampaignService:
             </div>
             <div style="padding: 24px;">
                 <p style="font-size: 16px; line-height: 1.6; color: #333;">
-                    {campaign.intro_text}
+                    {html_mod.escape(campaign.intro_text)}
                 </p>
                 {products_section}
             </div>

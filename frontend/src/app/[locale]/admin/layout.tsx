@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
 import { IconLock } from "@/components/icons";
 import { Skeleton } from "@/components/elements/skeleton";
 import { Container } from "@/components/elements/container";
@@ -18,6 +19,7 @@ export default function AdminLayout({
 }) {
   const { token, setAuth } = useAuthStore();
   const router = useRouter();
+  const t = useTranslations("admin");
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -92,8 +94,8 @@ export default function AdminLayout({
       <Container padding="md" size="md" className="min-h-screen flex items-center justify-center">
         <EmptyState
           icon={IconLock}
-          title="Access Denied"
-          description="You don't have permission to access the admin panel."
+          title={t("accessDenied")}
+          description={t("accessDeniedDescription")}
         />
       </Container>
     );

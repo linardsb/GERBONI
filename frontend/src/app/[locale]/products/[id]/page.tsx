@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { Container } from "@/components/elements/container";
 import { Text } from "@/components/elements/text";
 import { JsonLd } from "@/components/compositions/json-ld";
@@ -30,7 +31,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const product = await fetchProduct(id, locale);
 
   if (!product) {
-    return { title: "Product Not Found" };
+    const t = await getTranslations({ locale, namespace: "product" });
+    return { title: t("productNotFound") };
   }
 
   const cityName = locale === "lv"
@@ -81,9 +83,10 @@ export default async function ProductPage({ params }: Props) {
   const product = await fetchProduct(id, locale);
 
   if (!product) {
+    const t = await getTranslations({ locale, namespace: "product" });
     return (
       <Container padding="md">
-        <Text variant="error" align="center">Product not found</Text>
+        <Text variant="error" align="center">{t("productNotFound")}</Text>
       </Container>
     );
   }

@@ -232,7 +232,9 @@
     "stepShipping": "Shipping",
     "stepPayment": "Payment",
     "stepConfirmation": "Confirm",
-    "checkoutProgress": "Checkout progress"
+    "checkoutProgress": "Checkout progress",
+    "error": "Checkout error",
+    "errorDescription": "Something went wrong during checkout. No payment has been processed."
   },
   "order": {
     "title": "Order",
@@ -826,7 +828,13 @@
     "subscribe": "Subscribe",
     "noThanks": "No thanks",
     "success": "Welcome to GERBONI! Check your email for your discount code.",
-    "alreadySubscribed": "You're already subscribed!"
+    "alreadySubscribed": "You're already subscribed!",
+    "unsubscribeTitle": "Unsubscribe from Newsletter",
+    "unsubscribeDescription": "Enter your email address to unsubscribe from our newsletter.",
+    "unsubscribeButton": "Unsubscribe",
+    "unsubscribeSuccess": "You have been unsubscribed from our newsletter.",
+    "unsubscribeError": "Something went wrong. Please try again.",
+    "backToHome": "Back to Home"
   },
   "exitIntent": {
     "title": "Wait! Don't Leave Yet",
@@ -955,7 +963,9 @@
     "recipients": "Recipients",
     "sent": "Sent",
     "failed": "Failed",
-    "sentAt": "Sent"
+    "sentAt": "Sent",
+    "accessDenied": "Access Denied",
+    "accessDeniedDescription": "You don't have permission to access the admin panel."
   },
   "metadata": {
     "homeTitle": "GERBONI - Latvian City Coat of Arms T-Shirts",
