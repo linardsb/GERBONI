@@ -44,8 +44,9 @@ def event_loop() -> Generator[asyncio.AbstractEventLoop, None, None]:
 @pytest.fixture
 async def db_session() -> AsyncGenerator[AsyncSession, None]:
     """Create a test database session with tables."""
-    # Import Base here to avoid circular imports
+    # Import Base and all models to ensure metadata is populated
     from app.database import Base
+    import app.models  # noqa: F401 — registers models with Base.metadata
 
     # Create tables
     async with test_engine.begin() as conn:

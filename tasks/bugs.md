@@ -12,7 +12,7 @@ Track bugs, issues, and their resolutions. Reference these IDs in commits and to
 
 ## Open Bugs
 
-(No open bugs — 3 new bugs found during Feb 8 audit, all fixed same session)
+(No open bugs — all tracked bugs are CLOSED)
 
 ---
 
@@ -525,6 +525,94 @@ Leftover from pre-i18n migration. The default prop value bypassed the translatio
 
 ---
 
+### BUG-012: Test Fixture Missing Model Import Causes Table Creation Failures
+**Status:** CLOSED
+**Severity:** Medium
+**Reported:** 2026-02-09
+**Fixed:** 2026-02-09
+**Component:** Backend / Test Infrastructure
+**GitHub Issue:** N/A (found during test suite validation)
+
+**Description:**
+The `db_session` pytest fixture in `conftest.py` called `Base.metadata.create_all` before any SQLAlchemy models had been imported. Because models register with `Base.metadata` at import time, `create_all` with empty metadata creates no tables. This caused `no such table: users` errors for the first test in any file that doesn't import models at module level.
+
+**Steps to Reproduce:**
+1. Run `pytest tests/test_admin_dashboard.py` in isolation
+2. First test using `auth_client` fails: `OperationalError: no such table: users`
+3. Subsequent tests pass because `client` fixture imports `app.main` which triggers model imports
+4. Running the full suite sometimes masks the issue due to test ordering and import side effects
+
+**Expected Behavior:**
+All tests pass regardless of file import order or which test runs first.
+
+**Actual Behavior:**
+First test per file that touches DB fails if the file has no module-level model imports. Affected: `test_admin_dashboard.py`, `test_admin_export.py`, `test_admin_products.py`, `test_campaigns.py`, `test_error_tracking.py` (5 files, 1 error each).
+
+**Root Cause:**
+The `db_session` fixture did `from app.database import Base` then `Base.metadata.create_all`, but never imported `app.models`. Models register their tables with `Base.metadata` when first imported. The `client` fixture (which runs after `db_session`) imports `app.main` which chains to model imports — but by then `create_all` already ran on empty metadata. Subsequent tests work because the module-level imports persist across function-scoped fixtures.
+
+**Fix:**
+Added `import app.models  # noqa: F401` to `db_session` fixture before `Base.metadata.create_all`.
+
+**Related Files:**
+- `backend/tests/conftest.py`
+
+**Regression Test:** All 497 backend tests now pass when run together or in isolation per file.
+
+**Learning Outcomes:**
+- **Fragile Area?** Yes — Test Infrastructure (new Known Fragile Area #6)
+- **Pattern:** `Base.metadata.create_all` requires all model modules to be imported first. SQLAlchemy model classes register with `Base.metadata` at class definition time (import time), not at query time.
+- **Prevention Strategy:** Always import all models before calling `create_all`. Add a comment in `conftest.py` explaining this requirement. Test files should be runnable in isolation (`pytest tests/test_X.py`) as part of CI verification.
+
+**Related Bugs:** None
+
+---
+
+### BUG-013: Pydantic AI API Breaking Changes (output_type → result_type)
+**Status:** CLOSED
+**Severity:** Medium
+**Reported:** 2026-02-09
+**Fixed:** 2026-02-09
+**Component:** Backend / AI Agent + Tests
+**GitHub Issue:** N/A (found during test suite validation)
+
+**Description:**
+The installed pydantic-ai version (0.0.53) renamed `output_type` to `result_type` in `Agent.__init__()` and changed `agent._function_toolset` (object with `.tools` dict) to `agent._function_tools` (plain dict). Both the agent code and tests used the old API, causing 30 test errors.
+
+**Steps to Reproduce:**
+1. Install pydantic-ai 0.0.53 (or any version after the rename)
+2. Run `pytest tests/test_agent.py`
+3. All tests fail: `TypeError: Agent.__init__() got an unexpected keyword argument 'output_type'`
+4. After fixing Agent init, tests fail: `AttributeError: 'Agent' object has no attribute '_function_toolset'`
+
+**Expected Behavior:**
+Agent initializes correctly and tests can access tool functions.
+
+**Actual Behavior:**
+30 out of 31 agent tests fail due to renamed API.
+
+**Root Cause:**
+Pydantic AI is pre-1.0 and its internal API is unstable. The code was written against an older version that used `output_type` and `_function_toolset`, but the installed version uses `result_type` and `_function_tools`.
+
+**Fix:**
+- `support_agent.py` line 45: `output_type=str` → `result_type=str`
+- `test_agent.py` `get_tool_func()`: `agent._function_toolset` → `agent._function_tools`, `.tools[name]` → `[name]`
+
+**Related Files:**
+- `backend/app/agent/support_agent.py`
+- `backend/tests/test_agent.py`
+
+**Regression Test:** All 31 agent tests pass after fix.
+
+**Learning Outcomes:**
+- **Fragile Area?** Yes — AI Agent (#4) + Test Infrastructure (#6)
+- **Pattern:** Pre-1.0 library internal APIs change without deprecation warnings. Private attributes (`_function_toolset`) are especially unstable.
+- **Prevention Strategy:** Pin pydantic-ai version in `requirements.txt`. When accessing internal APIs for testing, wrap in a helper function (already done: `get_tool_func()`) so only one place needs updating. Consider adding a CI check that runs tests after `pip install --upgrade` to catch API drift early.
+
+**Related Bugs:** None
+
+---
+
 ## Bug Template
 
 ```markdown
@@ -573,7 +661,7 @@ Leftover from pre-i18n migration. The default prop value bypassed the translatio
 
 | Month | Opened | Closed | Net |
 |-------|--------|--------|-----|
-| Feb 2026 | 11 | 11 | 0 |
+| Feb 2026 | 13 | 13 | 0 |
 
 ---
 
@@ -591,10 +679,12 @@ Tracking coverage improvements to prevent future bugs:
 | 2026-02-08 | BUG-009 Debug print info disclosure | N/A | N/A | Code review (logging fix) |
 | 2026-02-08 | BUG-010 Silent exception swallowing | N/A | N/A | Code review (logging fix) |
 | 2026-02-08 | BUG-011 Hardcoded i18n default | N/A | N/A | Code review (removed default) |
+| 2026-02-09 | BUG-012 conftest model import fix | N/A | N/A | All 497 tests now pass in isolation |
+| 2026-02-09 | BUG-013 pydantic-ai API drift fix | N/A | N/A | 31 agent tests restored |
 | 2026-02-08 | ESLint audit: 9 warnings → 0 | N/A | N/A | 5 useEffect deps + 3 unused vars + 1 img |
 | 2026-02-06 | E2E Tests | 19 failing | 0 failing | Fixed selectors |
 | 2026-02-06 | BUG-004 Admin Orders API | N/A | N/A | 10 (TestUpdateOrderStatus) |
 
-**Current Backend Test Count:** 470 tests (24 test files)
-**Current Frontend Unit Test Count:** 382 tests (16 test files)
+**Current Backend Test Count:** 497 tests (28 test files) — all passing
+**Current Frontend Unit Test Count:** 382 tests (16 test files) — all passing
 **Current Frontend E2E Test Count:** 6 spec files (40 tests)

@@ -257,6 +257,8 @@ Areas that have broken before or are high-risk. Pay extra attention when modifyi
 
 5. **i18n Translations** — New UI text MUST go in both `en.json` AND `lv.json`. Hard-coded strings cause locale-dependent rendering bugs (see BUG-001). All 18 routes are locale-prefixed.
 
+6. **Test Infrastructure / Dependency Versions** — The `db_session` fixture in `conftest.py` MUST `import app.models` before `Base.metadata.create_all` — without it, SQLAlchemy metadata is empty and no tables are created (BUG-012). Pydantic AI is pre-1.0 with unstable internal API: `result_type` not `output_type`, `_function_tools` not `_function_toolset` (BUG-013). Pin dependency versions and wrap internal API access in helper functions.
+
 ---
 
 ## Post-Fix Verification Workflow

@@ -72,6 +72,17 @@ Track current work items and progress. Update status as work progresses.
 
 ## Completed (Recent)
 
+### 2026-02-09 (Test Suite Fix — Dependency Compatibility)
+- [x] Fix BUG-012: conftest.py `db_session` fixture missing model import before `Base.metadata.create_all`
+  - Added `import app.models` to ensure table metadata is populated before `create_all`
+  - Fixed 5 test files with 1 error each (admin_dashboard, admin_export, admin_products, campaigns, error_tracking)
+- [x] Fix BUG-013: pydantic-ai v0.0.53 API breaking changes
+  - `support_agent.py`: `output_type=str` → `result_type=str`
+  - `test_agent.py`: `agent._function_toolset.tools[name]` → `agent._function_tools[name]`
+  - Fixed 30 agent test errors
+- [x] Install missing test dependencies (`aiosqlite`, `email-validator`)
+- Backend: 497/497 tests passing, Frontend: 382/382 tests passing
+
 ### 2026-02-08 (Full Test & Code Audit)
 - [x] Run full test suite: 470 backend + 382 frontend + build clean
 - [x] ESLint audit: 9 warnings → 0 (5 missing useEffect deps, 3 unused vars, 1 img element)

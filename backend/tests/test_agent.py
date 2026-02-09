@@ -117,9 +117,9 @@ def mock_unauth_ctx(unauthenticated_deps):
 
 def get_tool_func(agent, tool_name: str):
     """Extract a tool function from the agent by name."""
-    toolset = agent._function_toolset
-    if tool_name in toolset.tools:
-        return toolset.tools[tool_name].function
+    tools = agent._function_tools
+    if tool_name in tools:
+        return tools[tool_name].function
     raise ValueError(f"Tool '{tool_name}' not found in agent")
 
 

@@ -52,7 +52,7 @@ You are an expert Python programmer building a production-ready FastAPI e-commer
 | PostgreSQL | 16 | Database |
 | Pydantic | v2 | Validation & schemas |
 | pydantic-settings | Latest | Configuration |
-| Pydantic AI | >=0.0.39 | AI agent framework |
+| Pydantic AI | 0.0.53 | AI agent framework (uses `result_type`, not `output_type`) |
 | Stripe | >=11.0.0 | Payments |
 | python-jose | Latest | JWT tokens |
 | passlib | Latest | Password hashing |
@@ -1014,6 +1014,36 @@ class TestOrderAPI:
 | Mock external dependencies | `AsyncMock(spec=AsyncSession)` |
 | Test both success and failure | `test_*_success`, `test_*_fails` |
 | Descriptive test names | `test_cancel_shipped_order_fails` |
+
+### Critical: conftest.py Model Import
+
+The `db_session` fixture **MUST** import all models before calling `Base.metadata.create_all`. Without this, SQLAlchemy metadata is empty and no tables are created:
+
+```python
+@pytest.fixture
+async def db_session():
+    from app.database import Base
+    import app.models  # noqa: F401 — registers models with Base.metadata
+
+    async with test_engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    # ...
+```
+
+See BUG-012 for the full root cause analysis.
+
+### Agent Tool Access in Tests
+
+Use the `get_tool_func()` helper to access agent tool functions. This wraps the internal API in one place, making it easy to update when pydantic-ai changes (see BUG-013):
+
+```python
+def get_tool_func(agent, tool_name: str):
+    """Extract a tool function from the agent by name."""
+    tools = agent._function_tools  # pydantic-ai 0.0.53+
+    if tool_name in tools:
+        return tools[tool_name].function
+    raise ValueError(f"Tool '{tool_name}' not found in agent")
+```
 
 ---
 
