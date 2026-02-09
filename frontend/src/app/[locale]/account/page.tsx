@@ -462,6 +462,7 @@ export default function AccountPage() {
                       <Stack gap="group">
                         <Text variant="muted-sm">{t("scanQrCode")}</Text>
                         <div className="flex justify-center">
+                          {/* eslint-disable-next-line @next/next/no-img-element -- base64 data URI, Next Image optimization not applicable */}
                           <img
                             src={`data:image/png;base64,${twoFASetup.qr_code}`}
                             alt="2FA QR Code"

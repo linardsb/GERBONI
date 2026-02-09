@@ -63,7 +63,7 @@ export default function AdminOrdersPage() {
     };
 
     fetchOrders();
-  }, [token, statusFilter, page]);
+  }, [token, statusFilter, page, t]);
 
   const columns = [
     {

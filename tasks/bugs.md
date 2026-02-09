@@ -12,7 +12,7 @@ Track bugs, issues, and their resolutions. Reference these IDs in commits and to
 
 ## Open Bugs
 
-(No open bugs)
+(No open bugs — 3 new bugs found during Feb 8 audit, all fixed same session)
 
 ---
 
@@ -392,6 +392,139 @@ Guests couldn't list orders at all. Any unauthenticated user could view any orde
 
 ---
 
+### BUG-009: Debug Print Leaking Password Reset Tokens
+**Status:** CLOSED
+**Severity:** High
+**Reported:** 2026-02-08
+**Fixed:** 2026-02-08
+**Component:** Backend / Auth API
+**GitHub Issue:** https://github.com/linardsb/GERBONI/issues/4
+
+**Description:**
+When `DEBUG=true`, the password reset endpoint printed the full reset token to stdout using `print()`, exposing sensitive security tokens in server logs.
+
+**Steps to Reproduce:**
+1. Set `DEBUG=true` in backend config
+2. Call `POST /api/auth/forgot-password` with any email
+3. Check server stdout — full reset token printed in plaintext
+
+**Expected Behavior:**
+Sensitive tokens should never appear in logs, even in debug mode. At most, a sanitized log entry indicating a token was created.
+
+**Actual Behavior:**
+`print(f"Password reset token for {data.email}: {reset_token.token}")` exposed the full token in stdout.
+
+**Root Cause:**
+Developer convenience debug statement left in production code. Used `print()` instead of proper structured logging, bypassing log level controls.
+
+**Fix:**
+- Added `import logging` and `logger = logging.getLogger(__name__)` to `auth.py`
+- Replaced `print(f"Password reset token for {data.email}: {reset_token.token}")` with `logger.debug("Password reset token created for %s", data.email)`
+- Token value no longer logged at any level
+
+**Related Files:**
+- `backend/app/api/auth.py`
+
+**Regression Test:** N/A — logging behavior, verified by code review
+
+**Learning Outcomes:**
+- **Fragile Area?** No — but establishes logging standard
+- **Pattern:** Debug `print()` statements leaking sensitive data
+- **Prevention Strategy:** Never use `print()` in backend code. Use `logging.getLogger(__name__)`. Never log token values, even at DEBUG level. Consider a pre-commit hook or linting rule to flag `print()` in `app/` directory.
+
+**Related Bugs:** None
+
+---
+
+### BUG-010: Silent Exception Swallowing in Error Handlers
+**Status:** CLOSED
+**Severity:** Medium
+**Reported:** 2026-02-08
+**Fixed:** 2026-02-08
+**Component:** Backend / Middleware + WebSocket
+**GitHub Issue:** https://github.com/linardsb/GERBONI/issues/5
+
+**Description:**
+Three locations used bare `except Exception: pass`, silently swallowing errors and making debugging impossible. Affected: Sentry error forwarding in middleware, WebSocket auth timeout handler, and WebSocket error sender.
+
+**Steps to Reproduce:**
+1. Trigger an error that the Sentry middleware should capture
+2. If Sentry SDK fails, error is silently lost — no log entry
+3. Similarly, WebSocket timeout/error sending failures produce no diagnostic output
+
+**Expected Behavior:**
+Failed error handling should itself be logged so developers can diagnose infrastructure issues (broken Sentry connection, WebSocket failures, etc.).
+
+**Actual Behavior:**
+All three handlers used `except Exception: pass`, creating silent black holes.
+
+**Root Cause:**
+Defensive coding taken too far — the handlers were written to "never fail" but the implementation hid legitimate infrastructure problems.
+
+**Fix:**
+- `main.py` Sentry middleware: `except Exception as sentry_exc: logger.warning("Failed to send exception to Sentry: %s", sentry_exc)`
+- `agent.py` auth timeout: `except Exception as e: logger.debug("Error sending auth timeout message: %s", e)`
+- `agent.py` error sender: `except Exception as send_exc: logger.debug("Failed to send error to WebSocket client: %s", send_exc)`
+
+**Related Files:**
+- `backend/app/main.py`
+- `backend/app/api/agent.py`
+
+**Regression Test:** N/A — logging behavior, verified by code review
+
+**Learning Outcomes:**
+- **Fragile Area?** No — but affects debugging of Fragile Area #4 (WebSocket)
+- **Pattern:** Bare `except Exception: pass` hiding infrastructure failures
+- **Prevention Strategy:** Never use bare `except: pass` or `except Exception: pass`. At minimum log at DEBUG level. Consider a linting rule to flag bare except blocks.
+
+**Related Bugs:** None
+
+---
+
+### BUG-011: Hardcoded English Default in ProductGrid Component
+**Status:** CLOSED
+**Severity:** Low
+**Reported:** 2026-02-08
+**Fixed:** 2026-02-08
+**Component:** Frontend / i18n
+**GitHub Issue:** https://github.com/linardsb/GERBONI/issues/6
+
+**Description:**
+The `ProductGrid` component had a hardcoded English default for the `emptyMessage` prop: `"No products available."`. If a caller forgot to pass a translated message, English text would appear regardless of locale.
+
+**Steps to Reproduce:**
+1. Use `<ProductGrid products={[]} />` without passing `emptyMessage`
+2. Switch locale to Latvian
+3. "No products available." displays in English
+
+**Expected Behavior:**
+No hardcoded English defaults. Callers must provide translated messages explicitly.
+
+**Actual Behavior:**
+Default parameter value `"No products available."` provided English fallback.
+
+**Root Cause:**
+Leftover from pre-i18n migration. The default prop value bypassed the translation system.
+
+**Fix:**
+- Removed default value: `emptyMessage?: string` (was `emptyMessage = "No products available."`)
+- Verified sole caller (`products/page.tsx:282`) already passes `t("noProductsAvailable")` as the prop
+
+**Related Files:**
+- `frontend/src/components/compositions/product-grid.tsx`
+- `frontend/src/app/[locale]/products/page.tsx`
+
+**Regression Test:** N/A — existing i18n tests cover translation usage
+
+**Learning Outcomes:**
+- **Fragile Area?** Yes — i18n Translations (Known Fragile Area #5)
+- **Pattern:** Hardcoded English strings as default prop values surviving i18n migration
+- **Prevention Strategy:** Search for English string defaults in component props during i18n audits. Grep for `= "` in component prop destructuring.
+
+**Related Bugs:** BUG-001 (also i18n hardcoded strings)
+
+---
+
 ## Bug Template
 
 ```markdown
@@ -440,7 +573,7 @@ Guests couldn't list orders at all. Any unauthenticated user could view any orde
 
 | Month | Opened | Closed | Net |
 |-------|--------|--------|-----|
-| Feb 2026 | 8 | 8 | 0 |
+| Feb 2026 | 11 | 11 | 0 |
 
 ---
 
@@ -455,9 +588,13 @@ Tracking coverage improvements to prevent future bugs:
 | 2026-02-07 | BUG-005 Agent refund bypass | N/A | N/A | 4 (refund via OrderService) |
 | 2026-02-07 | BUG-006 Payments guest checkout | N/A | N/A | 4 (guest checkout security) |
 | 2026-02-07 | `app/api/agent.py` (WebSocket) | 0% | 91% | 30 |
+| 2026-02-08 | BUG-009 Debug print info disclosure | N/A | N/A | Code review (logging fix) |
+| 2026-02-08 | BUG-010 Silent exception swallowing | N/A | N/A | Code review (logging fix) |
+| 2026-02-08 | BUG-011 Hardcoded i18n default | N/A | N/A | Code review (removed default) |
+| 2026-02-08 | ESLint audit: 9 warnings → 0 | N/A | N/A | 5 useEffect deps + 3 unused vars + 1 img |
 | 2026-02-06 | E2E Tests | 19 failing | 0 failing | Fixed selectors |
 | 2026-02-06 | BUG-004 Admin Orders API | N/A | N/A | 10 (TestUpdateOrderStatus) |
 
-**Current Backend Test Count:** 358 tests (21 test files)
-**Current Frontend Unit Test Count:** 380 tests (16 test files)
+**Current Backend Test Count:** 470 tests (24 test files)
+**Current Frontend Unit Test Count:** 382 tests (16 test files)
 **Current Frontend E2E Test Count:** 6 spec files (40 tests)

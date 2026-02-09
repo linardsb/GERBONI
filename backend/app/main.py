@@ -173,8 +173,8 @@ async def error_tracking_middleware(request, call_next):
                     "path": str(request.url.path),
                 })
                 sentry_sdk.capture_exception(exc)
-            except Exception:
-                pass
+            except Exception as sentry_exc:
+                logger.warning("Failed to send exception to Sentry: %s", sentry_exc)
         raise
 
 

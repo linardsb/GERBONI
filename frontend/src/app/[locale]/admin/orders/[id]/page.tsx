@@ -75,7 +75,7 @@ export default function AdminOrderDetailPage() {
     };
 
     fetchOrder();
-  }, [token, orderId, router]);
+  }, [token, orderId, router, t]);
 
   const handleStatusChange = async (newStatus: string) => {
     if (!token || !order) return;

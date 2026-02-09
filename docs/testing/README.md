@@ -9,8 +9,8 @@ Run from the project root:
 | Command | What it does |
 |---|---|
 | `make test` | Run **all** backend + frontend tests |
-| `make test-backend` | Backend only (pytest, 309 tests) |
-| `make test-frontend` | Frontend only (vitest, 380 tests) |
+| `make test-backend` | Backend only (pytest, 470 tests) |
+| `make test-frontend` | Frontend only (vitest, 382 tests) |
 | `make test-file FILE=backend/tests/test_auth.py` | Single backend test file |
 | `make test-file FILE=frontend/src/__tests__/components/button.test.tsx` | Single frontend test file |
 | `make test-lint` | Frontend ESLint check |
@@ -24,7 +24,7 @@ Run from the project root:
       /------\
      / Unit  \       16 Vitest specs (components, pages, utilities)
     /----------\
-   /   API     \     20 pytest modules (endpoints, services, admin)
+   /   API     \     24 pytest modules (endpoints, services, admin)
   /--------------\
 ```
 
@@ -32,8 +32,8 @@ Run from the project root:
 
 | Suite | Framework | Files | Tests | Coverage Threshold | Runtime |
 |-------|-----------|-------|-------|-------------------|---------|
-| Backend API | pytest | 20 modules | 309 tests | ≥60% | ~60s |
-| Frontend Unit | Vitest | 16 files | 380 tests | ≥80% | ~5s |
+| Backend API | pytest | 24 modules | 470 tests | ≥60% | ~95s |
+| Frontend Unit | Vitest | 16 files | 382 tests | ≥80% | ~5s |
 | Frontend E2E | Playwright | 6 specs | ~35 scenarios | N/A | ~2m |
 
 ## Backend Testing (pytest)
@@ -43,14 +43,19 @@ Run from the project root:
 ```
 backend/tests/
 ├── conftest.py                # Fixtures: db_session, client, auth_client, admin_client
+├── test_2fa.py                # Two-factor authentication (TOTP)
 ├── test_addresses.py          # User address management
 ├── test_admin_dashboard.py    # Admin dashboard stats
+├── test_admin_export.py       # Admin CSV exports (orders, products, users)
 ├── test_admin_orders.py       # Admin order management, status transitions
 ├── test_admin_products.py     # Admin product/variant management
 ├── test_admin_users.py        # Admin user roles, activate/deactivate
 ├── test_agent.py              # AI agent tools, WebSocket
 ├── test_auth.py               # Registration, login, guest sessions
+├── test_cache.py              # Redis caching layer
 ├── test_cart.py               # Cart CRUD, item management
+├── test_discounts.py          # Discount codes and coupons
+├── test_email.py              # Email service (Resend)
 ├── test_error_tracking.py     # Error tracking API (admin-only)
 ├── test_newsletter.py         # Newsletter subscriptions
 ├── test_order_state_machine.py # Order state transitions (valid + invalid)
@@ -60,6 +65,7 @@ backend/tests/
 ├── test_products.py           # Product catalog, variants, filtering
 ├── test_recommendations.py    # Product recommendations
 ├── test_reviews.py            # Product reviews, helpfulness
+├── test_websocket_agent.py    # WebSocket chat integration (30 tests)
 └── test_wishlist.py           # Wishlist CRUD, move-to-cart
 ```
 
@@ -135,19 +141,24 @@ def mock_anthropic_agent():
 ```
 frontend/src/__tests__/
 ├── components/
-│   ├── chat-widget.test.tsx        # AI chat widget
-│   ├── product-card.test.tsx       # Product display
-│   ├── cart-item.test.tsx          # Cart item component
-│   └── error-boundary.test.tsx     # Error handling
+│   ├── badge.test.tsx              # Badge component variants
+│   ├── button.test.tsx             # Button component variants
+│   ├── card.test.tsx               # Card component
+│   ├── grid.test.tsx               # Grid layout component
+│   ├── input.test.tsx              # Input component
+│   ├── product-card.test.tsx       # Product display + locale
+│   ├── row.test.tsx                # Row layout component
+│   ├── stack.test.tsx              # Stack layout component
+│   └── text.test.tsx               # Text component variants
 ├── lib/
 │   ├── api.test.ts                 # API client
 │   ├── store.test.ts               # Zustand stores
-│   ├── websocket.test.ts           # WebSocket manager (NEW)
-│   └── utils.test.ts               # Utility functions
+│   └── websocket.test.ts           # WebSocket manager
 ├── pages/
 │   ├── faq-page.test.tsx           # FAQ i18n (BUG-001)
-│   ├── root-page.test.tsx          # Root redirect (BUG-003)
-│   └── products-page.test.tsx      # Product listing
+│   └── root-page.test.tsx          # Root redirect (BUG-003)
+├── utils/
+│   └── design-validation.test.ts   # Design system token validation
 └── middleware.test.ts              # Next.js middleware (BUG-002)
 ```
 

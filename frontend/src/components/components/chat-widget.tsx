@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import {
   IconMessageCircle,
   IconX,
@@ -28,7 +28,6 @@ const CHAT_WIDGET_ID = "chat-widget-window";
 export function ChatWidget() {
   const { isOpen, messages, isTyping, toggleChat, addMessage, setTyping } = useChatStore();
   const { token, guestSession } = useAuthStore();
-  const locale = useLocale() as "en" | "lv";
   const t = useTranslations("chat");
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);

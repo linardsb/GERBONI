@@ -46,8 +46,8 @@ async def websocket_chat(
                 sanitize_error_message(AuthTimeoutError("Authentication required within 30 seconds"))
             )
             await websocket.close(code=4001, reason="Authentication timeout")
-        except Exception:
-            pass
+        except Exception as e:
+            logger.debug("Error sending auth timeout message: %s", e)
 
     try:
         # Start auth timeout monitoring
@@ -190,8 +190,8 @@ async def websocket_chat(
         logger.error(f"WebSocket connection error: {type(e).__name__}: {e}")
         try:
             await websocket.send_json(sanitize_error_message(e))
-        except Exception:
-            pass
+        except Exception as send_exc:
+            logger.debug("Failed to send error to WebSocket client: %s", send_exc)
     finally:
         # Cleanup: cancel auth timeout task if still running
         if auth_timeout_task and not auth_timeout_task.done():

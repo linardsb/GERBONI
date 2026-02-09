@@ -88,7 +88,7 @@ export default function AdminUsersPage() {
     };
 
     fetchUsers();
-  }, [token, roleFilter, page]);
+  }, [token, roleFilter, page, t]);
 
   const handleRoleChange = async () => {
     if (!token || !editingUser) return;

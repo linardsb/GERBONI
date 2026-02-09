@@ -1,3 +1,4 @@
+import logging
 from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy import select
@@ -20,6 +21,7 @@ from ..middleware import limiter
 
 router = APIRouter()
 settings = get_settings()
+logger = logging.getLogger(__name__)
 
 
 @router.post("/register", response_model=UserRead)
@@ -108,7 +110,7 @@ async def forgot_password(
     if reset_token:
         await EmailService.send_password_reset(data.email, reset_token.token)
         if settings.debug:
-            print(f"Password reset token for {data.email}: {reset_token.token}")
+            logger.debug("Password reset token created for %s", data.email)
 
     # Always return success to prevent email enumeration
     return MessageResponse(

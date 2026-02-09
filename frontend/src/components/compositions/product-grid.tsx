@@ -12,7 +12,7 @@ interface ProductGridProps {
   emptyMessage?: string;
 }
 
-export function ProductGrid({ products, loading, emptyMessage = "No products available." }: ProductGridProps) {
+export function ProductGrid({ products, loading, emptyMessage }: ProductGridProps) {
   if (loading) {
     return (
       <Grid cols={4} gap="lg">

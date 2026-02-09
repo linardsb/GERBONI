@@ -69,7 +69,7 @@ export default function AdminProductsPage() {
     };
 
     fetchProducts();
-  }, [token, page]);
+  }, [token, page, t]);
 
   const handleProductClick = async (product: AdminProduct) => {
     if (!token) return;

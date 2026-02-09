@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useTranslations, useLocale } from "next-intl"
+import { useTranslations } from "next-intl"
 import { cva } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
@@ -65,7 +65,6 @@ function SizeSelector({
   className,
 }: SizeSelectorProps) {
   const t = useTranslations("product")
-  const locale = useLocale() as "en" | "lv"
 
   return (
     <div

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/routing";
 import { IconShoppingCart } from "@/components/icons";
 import { Button } from "@/components/elements/button";
@@ -25,7 +25,6 @@ import { toast } from "sonner";
 
 export default function CartPage() {
   const t = useTranslations("cart");
-  const locale = useLocale();
   const router = useRouter();
   const { token, guestSession } = useAuthStore();
   const { cart, setCart } = useCartStore();

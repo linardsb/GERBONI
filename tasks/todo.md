@@ -51,6 +51,17 @@ Track current work items and progress. Update status as work progresses.
 
 ## Completed (Recent)
 
+### 2026-02-08 (Full Test & Code Audit)
+- [x] Run full test suite: 470 backend + 382 frontend + build clean
+- [x] ESLint audit: 9 warnings → 0 (5 missing useEffect deps, 3 unused vars, 1 img element)
+- [x] Backend code audit: 18 findings reviewed, 3 bugs filed (BUG-009, BUG-010, BUG-011)
+- [x] Frontend code audit: 35 findings reviewed, 1 bug filed (BUG-011)
+- [x] Fix BUG-009: Debug print leaking password reset tokens → replaced with structured logging
+- [x] Fix BUG-010: Silent exception swallowing (3 bare `except: pass` blocks) → added logging
+- [x] Fix BUG-011: Hardcoded English default in ProductGrid `emptyMessage` → removed default
+- [x] Updated docs/testing/README.md with accurate test counts (24 backend modules, 470 tests)
+- [x] Updated tasks/bugs.md with BUG-009 through BUG-011 and current test counts
+
 ### 2026-02-08 (Production Readiness — All 4 Items)
 - [x] Multi-stage Docker builds
   - Backend: 2-stage build (builder with gcc/libpq-dev → runtime with libpq5/curl only), non-root `appuser`
