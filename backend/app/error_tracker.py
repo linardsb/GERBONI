@@ -9,7 +9,7 @@ import logging
 import traceback
 from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +64,7 @@ class ErrorTracker:
         fingerprint_source = f"{error_type}:{error_message}:{request_path}"
         fingerprint = hashlib.md5(fingerprint_source.encode()).hexdigest()[:12]
 
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         occurrence = ErrorOccurrence(
             timestamp=now,
             request_method=request_method,

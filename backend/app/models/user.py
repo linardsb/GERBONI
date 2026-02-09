@@ -1,6 +1,6 @@
-from datetime import datetime, date, timedelta
+from datetime import datetime, date, timedelta, timezone
 from enum import Enum
-from sqlalchemy import String, Boolean, DateTime, Date, Text, func
+from sqlalchemy import String, Boolean, DateTime, Date, Text, func, Index
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from ..database import Base
 import secrets
@@ -50,6 +50,9 @@ class User(Base):
 
 class GuestSession(Base):
     __tablename__ = "guest_sessions"
+    __table_args__ = (
+        Index("ix_guest_sessions_expires_at", "expires_at"),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
     session_token: Mapped[str] = mapped_column(
@@ -58,7 +61,7 @@ class GuestSession(Base):
     email: Mapped[str | None] = mapped_column(String(255), nullable=True)
     expires_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=lambda: datetime.utcnow() + timedelta(days=7),
+        default=lambda: datetime.now(timezone.utc) + timedelta(days=7),
     )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()

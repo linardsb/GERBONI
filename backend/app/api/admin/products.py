@@ -1,6 +1,6 @@
 """Admin product management endpoints."""
 
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Query, Request
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -11,6 +11,7 @@ from ...schemas import VariantUpdate
 from ..deps import get_admin_user
 from ...services.cache_service import CacheService
 from ...utils.csv_export import csv_streaming_response
+from ...middleware import limiter
 
 router = APIRouter()
 
@@ -176,7 +177,9 @@ async def list_variants(
 
 
 @router.put("/{product_id}/variants/{variant_id}")
+@limiter.limit("30/minute")
 async def update_variant(
+    request: Request,
     product_id: int,
     variant_id: int,
     data: VariantUpdate,

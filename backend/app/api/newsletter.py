@@ -1,13 +1,14 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..database import get_db
-from ..models import NewsletterSubscription
+from ..models import NewsletterSubscription, User
 from ..schemas import NewsletterSubscribe, NewsletterUnsubscribe, MessageResponse
 from ..services import EmailService
 from ..middleware import limiter
+from .deps import get_current_user_required
 
 router = APIRouter()
 
@@ -69,7 +70,7 @@ async def unsubscribe(
 
     if subscription and subscription.is_active:
         subscription.is_active = False
-        subscription.unsubscribed_at = datetime.utcnow()
+        subscription.unsubscribed_at = datetime.now(timezone.utc)
         await db.commit()
 
     # Always return success to prevent email enumeration
@@ -78,13 +79,13 @@ async def unsubscribe(
 
 @router.get("/status")
 async def check_status(
-    email: str,
+    user: User = Depends(get_current_user_required),
     db: AsyncSession = Depends(get_db),
 ):
-    """Check newsletter subscription status for an email."""
+    """Check newsletter subscription status for the authenticated user."""
     result = await db.execute(
         select(NewsletterSubscription).where(
-            NewsletterSubscription.email == email.lower()
+            NewsletterSubscription.email == user.email.lower()
         )
     )
     subscription = result.scalar_one_or_none()

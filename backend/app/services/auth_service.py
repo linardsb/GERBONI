@@ -3,7 +3,7 @@ import secrets
 import string
 import io
 import base64
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import pyotp
 import qrcode
@@ -33,9 +33,9 @@ class AuthService:
     def create_access_token(data: dict, expires_delta: timedelta | None = None) -> str:
         to_encode = data.copy()
         if expires_delta:
-            expire = datetime.utcnow() + expires_delta
+            expire = datetime.now(timezone.utc) + expires_delta
         else:
-            expire = datetime.utcnow() + timedelta(
+            expire = datetime.now(timezone.utc) + timedelta(
                 minutes=settings.access_token_expire_minutes
             )
         to_encode.update({"exp": expire})
@@ -103,7 +103,7 @@ class AuthService:
         result = await db.execute(
             select(GuestSession).where(
                 GuestSession.session_token == session_token,
-                GuestSession.expires_at > datetime.utcnow(),
+                GuestSession.expires_at > datetime.now(timezone.utc),
             )
         )
         return result.scalar_one_or_none()
@@ -151,7 +151,7 @@ class AuthService:
             select(PasswordResetToken).where(
                 PasswordResetToken.user_id == user.id,
                 PasswordResetToken.used == False,
-                PasswordResetToken.expires_at > datetime.utcnow(),
+                PasswordResetToken.expires_at > datetime.now(timezone.utc),
             )
         )
         for token in existing.scalars().all():
@@ -171,7 +171,7 @@ class AuthService:
             select(PasswordResetToken).where(
                 PasswordResetToken.token == token,
                 PasswordResetToken.used == False,
-                PasswordResetToken.expires_at > datetime.utcnow(),
+                PasswordResetToken.expires_at > datetime.now(timezone.utc),
             )
         )
         return result.scalar_one_or_none()

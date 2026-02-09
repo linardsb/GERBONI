@@ -6,12 +6,12 @@ from sqlalchemy.orm import selectinload
 
 from ..database import get_db
 from ..models import Order, OrderItem, TShirtVariant, OrderStatus
-from ..services import StripeService, OrderService, EmailService
+from ..services import StripeService, OrderService, EmailService, DiscountService
 from ..config import get_settings
 from .deps import require_auth, AuthResult
 from ..middleware import limiter
 from ..utils.errors import safe_error_response, ErrorCode
-from ..exceptions import InvalidStateTransitionError
+from ..exceptions import InvalidStateTransitionError, DomainException
 
 router = APIRouter()
 settings = get_settings()
@@ -51,6 +51,17 @@ async def create_checkout(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Order already processed",
         )
+
+    # Re-validate discount code if order has one (may have expired since order creation)
+    if order.discount_code:
+        try:
+            subtotal = order.subtotal or order.total
+            await DiscountService.validate_code(db, order.discount_code, subtotal)
+        except DomainException:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Discount code is no longer valid. Please create a new order.",
+            )
 
     items = [(item, item.variant) for item in order.items]
 

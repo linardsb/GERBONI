@@ -274,4 +274,4 @@ class TestCampaignSend:
         data = response.json()
         assert data["sent_count"] == 1
         assert data["failed_count"] == 1
-        assert data["status"] == "sent"  # still "sent" since some succeeded
+        assert data["status"] == "partial"  # partial: some succeeded, some failed

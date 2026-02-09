@@ -463,10 +463,10 @@ Shipping to:
         # Policy: "14-day return window from delivery date"
         # For DELIVERED orders: use updated_at as proxy for delivery date
         # For non-DELIVERED orders (PAID, PROCESSING, SHIPPED): window hasn't started yet
-        from datetime import datetime
+        from datetime import datetime, timezone
         if order.status == OrderStatus.DELIVERED.value:
             delivery_date = order.updated_at.replace(tzinfo=None)
-            days_since_delivery = (datetime.utcnow() - delivery_date).days
+            days_since_delivery = (datetime.now(timezone.utc).replace(tzinfo=None) - delivery_date).days
             if days_since_delivery > 14:
                 return f"Refund window has expired for Order #{order_id}. Order was delivered {days_since_delivery} days ago (14-day limit from delivery). For orders outside the refund window, please direct the customer to contact support@gerboni.lv for special consideration."
 

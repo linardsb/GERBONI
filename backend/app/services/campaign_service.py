@@ -12,8 +12,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..config import get_settings
 from ..models import NewsletterCampaign, Product
+from ..models.campaign import CampaignStatus
 from ..models.newsletter import NewsletterSubscription
-from ..exceptions import EntityNotFoundError, InvalidStateTransitionError
+from ..exceptions import EntityNotFoundError, InvalidStateTransitionError, ValidationError
 
 logger = logging.getLogger(__name__)
 
@@ -68,7 +69,7 @@ class CampaignService:
         featured_product_ids: list[int] | None = None,
     ) -> NewsletterCampaign:
         campaign = await CampaignService.get(db, campaign_id)
-        if campaign.status != "draft":
+        if campaign.status != CampaignStatus.DRAFT.value:
             raise InvalidStateTransitionError("Only draft campaigns can be edited")
 
         if title is not None:
@@ -86,7 +87,7 @@ class CampaignService:
     @staticmethod
     async def delete(db: AsyncSession, campaign_id: int) -> None:
         campaign = await CampaignService.get(db, campaign_id)
-        if campaign.status != "draft":
+        if campaign.status != CampaignStatus.DRAFT.value:
             raise InvalidStateTransitionError("Only draft campaigns can be deleted")
         await db.delete(campaign)
         await db.flush()
@@ -94,7 +95,7 @@ class CampaignService:
     @staticmethod
     async def send(db: AsyncSession, campaign_id: int) -> NewsletterCampaign:
         campaign = await CampaignService.get(db, campaign_id)
-        if campaign.status != "draft":
+        if campaign.status != CampaignStatus.DRAFT.value:
             raise InvalidStateTransitionError("Only draft campaigns can be sent")
 
         # Query active subscribers
@@ -103,24 +104,31 @@ class CampaignService:
         )
         subscribers = list(result.scalars().all())
 
-        campaign.status = "sending"
+        campaign.status = CampaignStatus.SENDING.value
         campaign.recipient_count = len(subscribers)
         await db.flush()
 
         if not subscribers:
-            campaign.status = "sent"
+            campaign.status = CampaignStatus.SENT.value
             campaign.sent_at = datetime.now(timezone.utc)
             await db.flush()
             return campaign
 
-        # Load featured products if any
+        # Load featured products if any, validating they exist (#7)
         products = []
         product_ids = json.loads(campaign.featured_product_ids) if campaign.featured_product_ids else []
         if product_ids:
             result = await db.execute(
-                select(Product).where(Product.id.in_(product_ids))
+                select(Product).where(Product.id.in_(product_ids), Product.is_active == True)
             )
             products = list(result.scalars().all())
+            found_ids = {p.id for p in products}
+            missing_ids = set(product_ids) - found_ids
+            if missing_ids:
+                logger.warning(
+                    "Campaign %d references missing/inactive products: %s",
+                    campaign_id, missing_ids,
+                )
 
         # Build email HTML
         html = CampaignService._build_email_html(campaign, products)
@@ -141,7 +149,12 @@ class CampaignService:
 
         campaign.sent_count = sent
         campaign.failed_count = failed
-        campaign.status = "sent" if failed == 0 else ("failed" if sent == 0 else "sent")
+        if failed == 0:
+            campaign.status = CampaignStatus.SENT.value
+        elif sent == 0:
+            campaign.status = CampaignStatus.PARTIAL.value
+        else:
+            campaign.status = CampaignStatus.PARTIAL.value
         campaign.sent_at = datetime.now(timezone.utc)
         await db.flush()
         return campaign

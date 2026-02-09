@@ -1,11 +1,15 @@
 from datetime import datetime
-from sqlalchemy import DateTime, func, ForeignKey, Integer
+from sqlalchemy import DateTime, func, ForeignKey, Integer, Index
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from ..database import Base
 
 
 class CartItem(Base):
     __tablename__ = "cart_items"
+    __table_args__ = (
+        Index("ix_cart_items_user_variant", "user_id", "variant_id"),
+        Index("ix_cart_items_session_variant", "session_id", "variant_id"),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)

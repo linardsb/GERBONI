@@ -1,11 +1,12 @@
 """Admin order management endpoints."""
 
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+import logging
+from datetime import datetime
+
+from fastapi import APIRouter, Depends, HTTPException, status, Query, Request
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
-
-from datetime import datetime
 
 from ...database import get_db
 from ...models import User, Order, OrderItem, OrderStatus
@@ -13,11 +14,10 @@ from ...schemas import OrderStatusUpdate, OrderShipment
 from ...services import OrderService, EmailService
 from ...exceptions import DomainException, domain_to_http
 from ...utils.csv_export import csv_streaming_response
-
-import logging
+from ...middleware import limiter
+from ..deps import get_admin_user
 
 logger = logging.getLogger(__name__)
-from ..deps import get_admin_user
 
 router = APIRouter()
 
@@ -172,7 +172,9 @@ async def get_order(
 
 
 @router.put("/{order_id}/status")
+@limiter.limit("30/minute")
 async def update_order_status(
+    request: Request,
     order_id: int,
     data: OrderStatusUpdate,
     admin: User = Depends(get_admin_user),
@@ -219,7 +221,9 @@ async def update_order_status(
 
 
 @router.post("/{order_id}/ship")
+@limiter.limit("30/minute")
 async def ship_order(
+    request: Request,
     order_id: int,
     data: OrderShipment,
     admin: User = Depends(get_admin_user),

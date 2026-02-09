@@ -1,6 +1,6 @@
 """Admin discount code CRUD endpoints."""
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ...database import get_db
@@ -9,6 +9,7 @@ from ...schemas import DiscountCodeCreate, DiscountCodeRead
 from ...services import DiscountService
 from ...exceptions import DomainException, domain_to_http
 from ..deps import get_admin_user
+from ...middleware import limiter
 
 router = APIRouter()
 
@@ -23,7 +24,9 @@ async def list_discounts(
 
 
 @router.post("", response_model=DiscountCodeRead)
+@limiter.limit("10/minute")
 async def create_discount(
+    request: Request,
     data: DiscountCodeCreate,
     admin: User = Depends(get_admin_user),
     db: AsyncSession = Depends(get_db),

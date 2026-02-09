@@ -1,15 +1,20 @@
 """Admin user management endpoints."""
 
 from decimal import Decimal
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Query, Request
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ...database import get_db
 from ...models import User, Order, OrderStatus, UserRole
-from ...schemas import UserRoleUpdate
+from ...schemas import UserRoleUpdate, MessageResponse
 from ..deps import get_admin_user, get_super_admin_user
 from ...utils.csv_export import csv_streaming_response
+from ...middleware import limiter
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -174,7 +179,9 @@ async def get_user(
 
 
 @router.put("/{user_id}/role")
+@limiter.limit("10/minute")
 async def update_user_role(
+    request: Request,
     user_id: int,
     data: UserRoleUpdate,
     super_admin: User = Depends(get_super_admin_user),
@@ -231,7 +238,9 @@ async def update_user_role(
 
 
 @router.put("/{user_id}/activate")
+@limiter.limit("10/minute")
 async def activate_user(
+    request: Request,
     user_id: int,
     admin: User = Depends(get_admin_user),
     db: AsyncSession = Depends(get_db),
@@ -254,7 +263,9 @@ async def activate_user(
 
 
 @router.put("/{user_id}/deactivate")
+@limiter.limit("10/minute")
 async def deactivate_user(
+    request: Request,
     user_id: int,
     admin: User = Depends(get_admin_user),
     db: AsyncSession = Depends(get_db),
@@ -288,3 +299,37 @@ async def deactivate_user(
     await db.refresh(user)
 
     return {"id": user.id, "is_active": user.is_active}
+
+
+@router.post("/{user_id}/reset-2fa", response_model=MessageResponse)
+@limiter.limit("5/minute")
+async def reset_user_2fa(
+    request: Request,
+    user_id: int,
+    admin: User = Depends(get_super_admin_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Reset 2FA for a locked-out user. Requires super_admin."""
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found",
+        )
+
+    if not user.two_factor_enabled:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="2FA is not enabled for this user",
+        )
+
+    user.two_factor_enabled = False
+    user.two_factor_secret = None
+    user.backup_codes = None
+    await db.commit()
+
+    logger.info("Admin %s reset 2FA for user %s (%s)", admin.email, user.id, user.email)
+
+    return MessageResponse(message=f"2FA has been reset for {user.email}")

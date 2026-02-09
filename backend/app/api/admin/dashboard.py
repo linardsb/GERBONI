@@ -1,6 +1,6 @@
 """Admin dashboard endpoints."""
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 from fastapi import APIRouter, Depends
 from sqlalchemy import select, func
@@ -52,7 +52,7 @@ async def get_dashboard_stats(
     total_customers = total_customers_result.scalar() or 0
 
     # Orders today
-    today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+    today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
     orders_today_result = await db.execute(
         select(func.count(Order.id)).where(Order.created_at >= today_start)
     )

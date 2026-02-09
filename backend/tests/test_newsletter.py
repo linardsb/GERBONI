@@ -126,54 +126,50 @@ class TestUnsubscribeNewsletter:
 
 
 class TestNewsletterStatus:
-    """Tests for GET /api/newsletter/status"""
+    """Tests for GET /api/newsletter/status (requires authentication)"""
+
+    async def test_status_requires_auth(self, client: AsyncClient):
+        """Test that status endpoint requires authentication."""
+        response = await client.get("/api/newsletter/status")
+        assert response.status_code == 401
 
     async def test_status_subscribed(
-        self, client: AsyncClient, db_session: AsyncSession
+        self, auth_client: AsyncClient, db_session: AsyncSession
     ):
-        """Test checking status of active subscription."""
+        """Test checking status when authenticated user is subscribed."""
         subscription = NewsletterSubscription(
-            email="status@example.com",
+            email="test@example.com",
             is_active=True,
             source="popup",
         )
         db_session.add(subscription)
         await db_session.commit()
 
-        response = await client.get(
-            "/api/newsletter/status",
-            params={"email": "status@example.com"},
-        )
+        response = await auth_client.get("/api/newsletter/status")
         assert response.status_code == 200
         data = response.json()
         assert data["subscribed"] is True
 
-    async def test_status_not_subscribed(self, client: AsyncClient):
-        """Test checking status of non-existent email."""
-        response = await client.get(
-            "/api/newsletter/status",
-            params={"email": "nonexistent@example.com"},
-        )
+    async def test_status_not_subscribed(self, auth_client: AsyncClient):
+        """Test checking status when authenticated user is not subscribed."""
+        response = await auth_client.get("/api/newsletter/status")
         assert response.status_code == 200
         data = response.json()
         assert data["subscribed"] is False
 
     async def test_status_inactive(
-        self, client: AsyncClient, db_session: AsyncSession
+        self, auth_client: AsyncClient, db_session: AsyncSession
     ):
-        """Test checking status of inactive subscription."""
+        """Test checking status when subscription is inactive."""
         subscription = NewsletterSubscription(
-            email="inactive@example.com",
+            email="test@example.com",
             is_active=False,
             source="footer",
         )
         db_session.add(subscription)
         await db_session.commit()
 
-        response = await client.get(
-            "/api/newsletter/status",
-            params={"email": "inactive@example.com"},
-        )
+        response = await auth_client.get("/api/newsletter/status")
         assert response.status_code == 200
         data = response.json()
         assert data["subscribed"] is False

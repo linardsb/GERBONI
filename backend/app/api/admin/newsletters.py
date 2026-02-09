@@ -1,7 +1,7 @@
 """Admin newsletter campaign endpoints."""
 
 import json
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ...database import get_db
@@ -10,6 +10,7 @@ from ...schemas import CampaignCreate, CampaignUpdate, CampaignRead
 from ...services import CampaignService
 from ...exceptions import DomainException, domain_to_http
 from ..deps import get_admin_user
+from ...middleware import limiter
 
 router = APIRouter()
 
@@ -104,7 +105,9 @@ async def update_campaign(
 
 
 @router.post("/{campaign_id}/send", response_model=CampaignRead)
+@limiter.limit("5/minute")
 async def send_campaign(
+    request: Request,
     campaign_id: int,
     admin: User = Depends(get_admin_user),
     db: AsyncSession = Depends(get_db),

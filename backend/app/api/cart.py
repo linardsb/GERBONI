@@ -1,5 +1,5 @@
 from decimal import Decimal
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..database import get_db
@@ -8,6 +8,7 @@ from ..schemas import CartItemCreate, CartItemUpdate, CartRead, CartItemRead, Ca
 from ..services import CartService, CartOwner
 from ..exceptions import DomainException, domain_to_http
 from .deps import get_auth, require_auth, AuthResult
+from ..middleware import limiter
 
 router = APIRouter()
 
@@ -42,7 +43,9 @@ def build_cart_response(items: list[CartItem], totals) -> CartRead:
 
 
 @router.get("", response_model=CartRead)
+@limiter.limit("60/minute")
 async def get_cart(
+    request: Request,
     auth: AuthResult = Depends(get_auth),
     db: AsyncSession = Depends(get_db),
 ):
@@ -58,7 +61,9 @@ async def get_cart(
 
 
 @router.post("", response_model=CartRead)
+@limiter.limit("30/minute")
 async def add_to_cart(
+    request: Request,
     item_data: CartItemCreate,
     auth: AuthResult = Depends(require_auth),
     db: AsyncSession = Depends(get_db),
@@ -75,7 +80,9 @@ async def add_to_cart(
 
 
 @router.put("/{item_id}", response_model=CartRead)
+@limiter.limit("30/minute")
 async def update_cart_item(
+    request: Request,
     item_id: int,
     item_data: CartItemUpdate,
     auth: AuthResult = Depends(require_auth),
@@ -93,7 +100,9 @@ async def update_cart_item(
 
 
 @router.delete("/{item_id}", response_model=CartRead)
+@limiter.limit("30/minute")
 async def remove_cart_item(
+    request: Request,
     item_id: int,
     auth: AuthResult = Depends(require_auth),
     db: AsyncSession = Depends(get_db),
