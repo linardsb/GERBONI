@@ -2,12 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "@/i18n/routing";
-import { useTranslations } from "next-intl";
-import { IconLock } from "@/components/icons";
 import { Skeleton } from "@/components/elements/skeleton";
-import { Container } from "@/components/elements/container";
 import { Stack } from "@/components/elements/stack";
-import { EmptyState } from "@/components/compositions/empty-state";
 import { AdminSidebar } from "@/components/admin/sidebar";
 import { getMe } from "@/lib/api";
 import { useAuthStore } from "@/lib/store";
@@ -19,7 +15,6 @@ export default function AdminLayout({
 }) {
   const { token, setAuth } = useAuthStore();
   const router = useRouter();
-  const t = useTranslations("admin");
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -36,7 +31,8 @@ export default function AdminLayout({
   useEffect(() => {
     const checkAdmin = async () => {
       if (!token) {
-        router.push("/login?redirect=/admin");
+        // No token — redirect to home, not login (don't reveal admin exists)
+        router.push("/");
         return;
       }
 
@@ -44,14 +40,16 @@ export default function AdminLayout({
         const userData = await getMe(token);
         setAuth(token, userData);
 
-        // Check if user has admin role
         if (userData.role === "admin" || userData.role === "super_admin") {
           setIsAdmin(true);
         } else {
-          setIsAdmin(false);
+          // Non-admin user — silently redirect to home
+          router.push("/");
+          return;
         }
       } catch {
-        router.push("/login?redirect=/admin");
+        router.push("/");
+        return;
       } finally {
         setLoading(false);
       }
@@ -90,15 +88,9 @@ export default function AdminLayout({
   }
 
   if (!isAdmin) {
-    return (
-      <Container padding="md" size="md" className="min-h-screen flex items-center justify-center">
-        <EmptyState
-          icon={IconLock}
-          title={t("accessDenied")}
-          description={t("accessDeniedDescription")}
-        />
-      </Container>
-    );
+    // Non-admin users are redirected in the useEffect above.
+    // This renders briefly during redirect — show nothing.
+    return null;
   }
 
   return (
