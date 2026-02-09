@@ -5,6 +5,8 @@ from .user import (
     ChangePasswordRequest,
     TwoFactorSetupResponse, TwoFactorVerifyRequest,
     TwoFactorBackupCodesResponse, LoginResponse, TwoFactorDisableRequest,
+    UserProfileRead, UserProfileUpdate,
+    VALID_SIZES, VALID_COLORS, VALID_CITIES,
 )
 from .product import ProductRead, ProductListRead, VariantRead
 from .order import OrderCreate, OrderRead, OrderItemRead
@@ -19,6 +21,7 @@ from .discount import (
     DiscountValidateRequest, DiscountValidateResponse,
     DiscountCodeCreate, DiscountCodeRead,
 )
+from .campaign import CampaignCreate, CampaignUpdate, CampaignRead
 
 __all__ = [
     "UserCreate",
@@ -66,4 +69,12 @@ __all__ = [
     "TwoFactorBackupCodesResponse",
     "LoginResponse",
     "TwoFactorDisableRequest",
+    "UserProfileRead",
+    "UserProfileUpdate",
+    "VALID_SIZES",
+    "VALID_COLORS",
+    "VALID_CITIES",
+    "CampaignCreate",
+    "CampaignUpdate",
+    "CampaignRead",
 ]

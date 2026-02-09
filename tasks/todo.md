@@ -11,6 +11,27 @@ Track current work items and progress. Update status as work progresses.
 
 ## Current Sprint
 
+### New Features
+- [x] Customer Full Profile (display name, phone, birthday, preferred size/colors/cities)
+  - Backend: 6 new User model fields + alembic migration 003
+  - Schemas: `UserProfileRead`, `UserProfileUpdate` with validation against seed data constants
+  - API: `GET /auth/me/profile` + `PATCH /auth/me/profile`
+  - CORS: added `PATCH` to allow_methods
+  - Frontend: enhanced account Profile tab with editable preferences form (chip-select for colors/cities)
+  - i18n: ~15 new keys in account namespace (en + lv)
+  - 12 new backend tests (get/update/validation/roundtrip)
+- [x] Newsletter Campaigns (admin create/send branded email campaigns to subscribers)
+  - Backend: `NewsletterCampaign` model + alembic migration 004
+  - Schemas: `CampaignCreate`, `CampaignUpdate`, `CampaignRead`
+  - Service: `CampaignService` with CRUD + send workflow (queries active subscribers, builds HTML, sends via Resend)
+  - API: 6 admin endpoints at `/api/admin/newsletters` (list, create, get, update, send, delete)
+  - Frontend: admin newsletters page with campaign list, create/edit form, product picker, send/delete actions
+  - Admin sidebar: added Newsletters nav item
+  - i18n: ~35 new keys in admin namespace (en + lv)
+  - 15 new backend tests (CRUD, state rules, send with mock, featured products, partial failure)
+- Backend: 497 tests passing (was 470, +27 new: 12 profile + 15 campaign)
+- Frontend: build clean, 382 tests passing
+
 ### Quick Wins — High Value, Low Effort
 - [x] Product search & filtering (full-text search endpoint + color/size/price/stock filters on frontend)
 - [x] SEO: Add `robots.txt` and `sitemap.xml` generator

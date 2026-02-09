@@ -8,6 +8,7 @@ from .review_service import ReviewService, ReviewOwner
 from .email_service import EmailService
 from .cache_service import CacheService
 from .discount_service import DiscountService
+from .campaign_service import CampaignService
 
 __all__ = [
     "StripeService",
@@ -26,4 +27,5 @@ __all__ = [
     "EmailService",
     "CacheService",
     "DiscountService",
+    "CampaignService",
 ]

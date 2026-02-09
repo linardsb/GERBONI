@@ -1,6 +1,6 @@
-from datetime import datetime, timedelta
+from datetime import datetime, date, timedelta
 from enum import Enum
-from sqlalchemy import String, Boolean, DateTime, func
+from sqlalchemy import String, Boolean, DateTime, Date, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from ..database import Base
 import secrets
@@ -26,6 +26,14 @@ class User(Base):
     two_factor_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
     two_factor_secret: Mapped[str | None] = mapped_column(String(64), nullable=True)
     backup_codes: Mapped[str | None] = mapped_column(String(500), nullable=True)
+
+    # Profile fields
+    display_name: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    phone: Mapped[str | None] = mapped_column(String(30), nullable=True)
+    birthday: Mapped[date | None] = mapped_column(Date, nullable=True)
+    preferred_size: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    preferred_colors: Mapped[str | None] = mapped_column(Text, nullable=True)  # JSON array
+    preferred_cities: Mapped[str | None] = mapped_column(Text, nullable=True)  # JSON array
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()

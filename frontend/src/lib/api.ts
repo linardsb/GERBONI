@@ -204,6 +204,21 @@ export interface User {
   is_guest: boolean;
   is_active: boolean;
   created_at: string;
+  display_name?: string | null;
+  phone?: string | null;
+  birthday?: string | null;
+  preferred_size?: string | null;
+  preferred_colors?: string[];
+  preferred_cities?: string[];
+}
+
+export interface UserProfileUpdate {
+  display_name?: string | null;
+  phone?: string | null;
+  birthday?: string | null;
+  preferred_size?: string | null;
+  preferred_colors?: string[] | null;
+  preferred_cities?: string[] | null;
 }
 
 export interface GuestSession {
@@ -859,3 +874,78 @@ export async function downloadCsv(
   document.body.removeChild(a);
   URL.revokeObjectURL(a.href);
 }
+
+// ── Profile ─────────────────────────────────────────────────────────
+
+export const getProfile = (token: string) =>
+  fetchApi<User>("/auth/me/profile", { token });
+
+export const updateProfile = (data: UserProfileUpdate, token: string) =>
+  fetchApi<User>("/auth/me/profile", {
+    method: "PATCH",
+    body: JSON.stringify(data),
+    token,
+  });
+
+// ── Newsletter Campaigns (Admin) ────────────────────────────────────
+
+export interface Campaign {
+  id: number;
+  title: string;
+  subject: string;
+  intro_text: string;
+  featured_product_ids: number[];
+  status: string;
+  recipient_count: number;
+  sent_count: number;
+  failed_count: number;
+  created_by: number;
+  created_at: string;
+  sent_at: string | null;
+}
+
+export interface CampaignCreate {
+  title: string;
+  subject: string;
+  intro_text: string;
+  featured_product_ids?: number[];
+}
+
+export interface CampaignUpdate {
+  title?: string;
+  subject?: string;
+  intro_text?: string;
+  featured_product_ids?: number[];
+}
+
+export const listCampaigns = (token: string) =>
+  fetchApi<Campaign[]>("/admin/newsletters", { token });
+
+export const createCampaign = (data: CampaignCreate, token: string) =>
+  fetchApi<Campaign>("/admin/newsletters", {
+    method: "POST",
+    body: JSON.stringify(data),
+    token,
+  });
+
+export const getCampaign = (id: number, token: string) =>
+  fetchApi<Campaign>(`/admin/newsletters/${id}`, { token });
+
+export const updateCampaign = (id: number, data: CampaignUpdate, token: string) =>
+  fetchApi<Campaign>(`/admin/newsletters/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+    token,
+  });
+
+export const sendCampaign = (id: number, token: string) =>
+  fetchApi<Campaign>(`/admin/newsletters/${id}/send`, {
+    method: "POST",
+    token,
+  });
+
+export const deleteCampaign = (id: number, token: string) =>
+  fetchApi<{ status: string }>(`/admin/newsletters/${id}`, {
+    method: "DELETE",
+    token,
+  });

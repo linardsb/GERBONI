@@ -8,6 +8,7 @@ from .newsletter import NewsletterSubscription
 from .wishlist import WishlistItem
 from .review import Review, ReviewHelpful
 from .discount import DiscountCode, DiscountType
+from .campaign import NewsletterCampaign
 
 __all__ = [
     "User",
@@ -27,4 +28,5 @@ __all__ = [
     "ReviewHelpful",
     "DiscountCode",
     "DiscountType",
+    "NewsletterCampaign",
 ]

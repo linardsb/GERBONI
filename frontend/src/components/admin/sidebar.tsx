@@ -6,6 +6,7 @@ import {
   IconPackage,
   IconShirt,
   IconUsers,
+  IconMail,
   IconChevronLeft,
 } from "@/components/icons";
 import { Stack } from "@/components/elements/stack";
@@ -17,6 +18,7 @@ const navItems = [
   { href: "/admin/orders", label: "Orders", icon: IconPackage },
   { href: "/admin/products", label: "Products", icon: IconShirt },
   { href: "/admin/users", label: "Users", icon: IconUsers },
+  { href: "/admin/newsletters", label: "Newsletters", icon: IconMail },
 ];
 
 export function AdminSidebar() {

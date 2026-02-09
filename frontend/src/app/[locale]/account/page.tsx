@@ -40,10 +40,13 @@ import {
   setup2FA,
   enable2FA,
   disable2FA,
+  getProfile,
+  updateProfile,
   type Address,
   type AddressCreate,
   type AddressUpdate,
   type Order,
+  type UserProfileUpdate,
 } from "@/lib/api";
 import { useAuthStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
@@ -101,10 +104,30 @@ export default function AccountPage() {
   const [disableCode, setDisableCode] = useState("");
   const [twoFALoading, setTwoFALoading] = useState(false);
 
+  // Profile preferences state
+  const [profileLoaded, setProfileLoaded] = useState(false);
+  const [profileSaving, setProfileSaving] = useState(false);
+  const [displayName, setDisplayName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [birthday, setBirthday] = useState("");
+  const [preferredSize, setPreferredSize] = useState("");
+  const [preferredColors, setPreferredColors] = useState<string[]>([]);
+  const [preferredCities, setPreferredCities] = useState<string[]>([]);
+
+  const SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
+  const COLORS = ["Black", "White", "Red"];
+  const CITIES = [
+    "Riga", "Daugavpils", "Jelgava", "Jekabpils", "Jurmala",
+    "Liepaja", "Ogre", "Rezekne", "Valmiera", "Ventspils",
+  ];
+
   // Load data based on active tab
   useEffect(() => {
     if (!token) return;
 
+    if (activeTab === "profile" && !profileLoaded) {
+      loadProfile();
+    }
     if (activeTab === "addresses" && addresses.length === 0) {
       loadAddresses();
     }
@@ -113,6 +136,55 @@ export default function AccountPage() {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, token]);
+
+  const loadProfile = async () => {
+    if (!token) return;
+    try {
+      const profile = await getProfile(token);
+      setDisplayName(profile.display_name || "");
+      setPhone(profile.phone || "");
+      setBirthday(profile.birthday ? profile.birthday.split("T")[0] : "");
+      setPreferredSize(profile.preferred_size || "");
+      setPreferredColors(profile.preferred_colors || []);
+      setPreferredCities(profile.preferred_cities || []);
+      setProfileLoaded(true);
+    } catch {
+      toast.error(t("failedLoadProfile"));
+    }
+  };
+
+  const handleProfileSave = async () => {
+    if (!token) return;
+    setProfileSaving(true);
+    try {
+      const data: UserProfileUpdate = {
+        display_name: displayName || null,
+        phone: phone || null,
+        birthday: birthday || null,
+        preferred_size: preferredSize || null,
+        preferred_colors: preferredColors,
+        preferred_cities: preferredCities,
+      };
+      await updateProfile(data, token);
+      toast.success(t("profileSaved"));
+    } catch {
+      toast.error(t("failedSaveProfile"));
+    } finally {
+      setProfileSaving(false);
+    }
+  };
+
+  const toggleColor = (color: string) => {
+    setPreferredColors((prev) =>
+      prev.includes(color) ? prev.filter((c) => c !== color) : [...prev, color]
+    );
+  };
+
+  const toggleCity = (city: string) => {
+    setPreferredCities((prev) =>
+      prev.includes(city) ? prev.filter((c) => c !== city) : [...prev, city]
+    );
+  };
 
   const loadAddresses = async () => {
     if (!token) return;
@@ -320,46 +392,160 @@ export default function AccountPage() {
         <div className="flex-1 min-w-0">
           {/* Profile Tab */}
           {activeTab === "profile" && (
-            <Card>
-              <CardHeader>
-                <CardTitle>{t("profileInfo")}</CardTitle>
-                <CardDescription>
-                  {t("profileDescription")}
-                </CardDescription>
-              </CardHeader>
-              <CardContent padding="md">
-                <Stack gap="group">
-                  <Row justify="between" className="py-3 border-b border-border-subtle">
-                    <Text variant="muted-sm">{t("email")}</Text>
-                    <Text as="span" variant="body-sm" className="font-medium">
-                      {user.email}
-                    </Text>
-                  </Row>
-                  <Row justify="between" className="py-3 border-b border-border-subtle">
-                    <Text variant="muted-sm">{t("accountType")}</Text>
-                    <Badge variant={user.is_guest ? "secondary" : "default"}>
-                      {user.is_guest ? t("guest") : t("registered")}
-                    </Badge>
-                  </Row>
-                  <Row justify="between" className="py-3 border-b border-border-subtle">
-                    <Text variant="muted-sm">{t("status")}</Text>
-                    <Badge variant={user.is_active ? "default" : "destructive"}>
-                      {user.is_active ? t("active") : t("inactive")}
-                    </Badge>
-                  </Row>
-                  <Row justify="between" className="py-3">
-                    <Text variant="muted-sm">{t("memberSince")}</Text>
-                    <Text as="span" variant="body-sm" className="font-medium">
-                      {new Date(user.created_at).toLocaleDateString(dateLocale, {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
-                    </Text>
-                  </Row>
-                </Stack>
-              </CardContent>
-            </Card>
+            <Stack gap="group">
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t("profileInfo")}</CardTitle>
+                  <CardDescription>
+                    {t("profileDescription")}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent padding="md">
+                  <Stack gap="group">
+                    <Row justify="between" className="py-3 border-b border-border-subtle">
+                      <Text variant="muted-sm">{t("email")}</Text>
+                      <Text as="span" variant="body-sm" className="font-medium">
+                        {user.email}
+                      </Text>
+                    </Row>
+                    <Row justify="between" className="py-3 border-b border-border-subtle">
+                      <Text variant="muted-sm">{t("accountType")}</Text>
+                      <Badge variant={user.is_guest ? "secondary" : "default"}>
+                        {user.is_guest ? t("guest") : t("registered")}
+                      </Badge>
+                    </Row>
+                    <Row justify="between" className="py-3 border-b border-border-subtle">
+                      <Text variant="muted-sm">{t("status")}</Text>
+                      <Badge variant={user.is_active ? "default" : "destructive"}>
+                        {user.is_active ? t("active") : t("inactive")}
+                      </Badge>
+                    </Row>
+                    <Row justify="between" className="py-3">
+                      <Text variant="muted-sm">{t("memberSince")}</Text>
+                      <Text as="span" variant="body-sm" className="font-medium">
+                        {new Date(user.created_at).toLocaleDateString(dateLocale, {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
+                      </Text>
+                    </Row>
+                  </Stack>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t("preferences")}</CardTitle>
+                  <CardDescription>
+                    {t("preferencesDescription")}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent padding="md">
+                  <Stack gap="group">
+                    <Stack gap="element">
+                      <Label htmlFor="displayName">{t("displayName")}</Label>
+                      <Input
+                        id="displayName"
+                        value={displayName}
+                        onChange={(e) => setDisplayName(e.target.value)}
+                        placeholder={t("displayNamePlaceholder")}
+                      />
+                    </Stack>
+
+                    <Stack gap="element">
+                      <Label htmlFor="phone">{t("phone")}</Label>
+                      <Input
+                        id="phone"
+                        type="tel"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        placeholder="+371 12345678"
+                      />
+                    </Stack>
+
+                    <Stack gap="element">
+                      <Label htmlFor="birthday">{t("birthday")}</Label>
+                      <Input
+                        id="birthday"
+                        type="date"
+                        value={birthday}
+                        onChange={(e) => setBirthday(e.target.value)}
+                      />
+                    </Stack>
+
+                    <Stack gap="element">
+                      <Label>{t("preferredSize")}</Label>
+                      <Row gap="element" className="flex-wrap">
+                        {SIZES.map((size) => (
+                          <button
+                            key={size}
+                            type="button"
+                            onClick={() => setPreferredSize(preferredSize === size ? "" : size)}
+                            className={cn(
+                              "px-3 py-1.5 rounded-md text-sm border transition-colors duration-fast",
+                              preferredSize === size
+                                ? "bg-primary text-primary-foreground border-primary"
+                                : "bg-background text-foreground border-border hover:border-primary/50"
+                            )}
+                          >
+                            {size}
+                          </button>
+                        ))}
+                      </Row>
+                    </Stack>
+
+                    <Stack gap="element">
+                      <Label>{t("preferredColors")}</Label>
+                      <Row gap="element" className="flex-wrap">
+                        {COLORS.map((color) => (
+                          <button
+                            key={color}
+                            type="button"
+                            onClick={() => toggleColor(color)}
+                            className={cn(
+                              "px-3 py-1.5 rounded-md text-sm border transition-colors duration-fast",
+                              preferredColors.includes(color)
+                                ? "bg-primary text-primary-foreground border-primary"
+                                : "bg-background text-foreground border-border hover:border-primary/50"
+                            )}
+                          >
+                            {color}
+                          </button>
+                        ))}
+                      </Row>
+                    </Stack>
+
+                    <Stack gap="element">
+                      <Label>{t("preferredCities")}</Label>
+                      <Row gap="element" className="flex-wrap">
+                        {CITIES.map((city) => (
+                          <button
+                            key={city}
+                            type="button"
+                            onClick={() => toggleCity(city)}
+                            className={cn(
+                              "px-3 py-1.5 rounded-md text-sm border transition-colors duration-fast",
+                              preferredCities.includes(city)
+                                ? "bg-primary text-primary-foreground border-primary"
+                                : "bg-background text-foreground border-border hover:border-primary/50"
+                            )}
+                          >
+                            {city}
+                          </button>
+                        ))}
+                      </Row>
+                    </Stack>
+
+                    <Row justify="end" className="pt-group">
+                      <Button onClick={handleProfileSave} disabled={profileSaving}>
+                        {profileSaving ? t("saving") : t("savePreferences")}
+                      </Button>
+                    </Row>
+                  </Stack>
+                </CardContent>
+              </Card>
+            </Stack>
           )}
 
           {/* Security Tab */}

@@ -12,6 +12,7 @@ from ..schemas import (
     ChangePasswordRequest,
     TwoFactorSetupResponse, TwoFactorVerifyRequest,
     TwoFactorBackupCodesResponse, LoginResponse, TwoFactorDisableRequest,
+    UserProfileRead, UserProfileUpdate,
 )
 from ..services import AuthService, EmailService
 from ..config import get_settings
@@ -174,6 +175,82 @@ async def change_password(
         )
 
     return MessageResponse(message="Password changed successfully")
+
+
+# ── Profile Endpoints ───────────────────────────────────────────────
+
+
+@router.get("/me/profile", response_model=UserProfileRead)
+async def get_profile(
+    user: User = Depends(get_current_user_required),
+):
+    """Get the current user's full profile including preferences."""
+    import json
+    # Parse JSON list fields for the response
+    data = {
+        "id": user.id,
+        "email": user.email,
+        "role": user.role,
+        "is_active": user.is_active,
+        "created_at": user.created_at,
+        "display_name": user.display_name,
+        "phone": user.phone,
+        "birthday": user.birthday,
+        "preferred_size": user.preferred_size,
+        "preferred_colors": json.loads(user.preferred_colors) if user.preferred_colors else [],
+        "preferred_cities": json.loads(user.preferred_cities) if user.preferred_cities else [],
+    }
+    return UserProfileRead(**data)
+
+
+@router.patch("/me/profile", response_model=UserProfileRead)
+async def update_profile(
+    data: UserProfileUpdate,
+    user: User = Depends(get_current_user_required),
+    db: AsyncSession = Depends(get_db),
+):
+    """Update the current user's profile preferences."""
+    import json
+    from datetime import date
+
+    if data.display_name is not None:
+        user.display_name = data.display_name or None
+    if data.phone is not None:
+        user.phone = data.phone or None
+    if data.birthday is not None:
+        if data.birthday:
+            try:
+                user.birthday = date.fromisoformat(data.birthday)
+            except ValueError:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid date format. Use YYYY-MM-DD.",
+                )
+        else:
+            user.birthday = None
+    if data.preferred_size is not None:
+        user.preferred_size = data.preferred_size or None
+    if data.preferred_colors is not None:
+        user.preferred_colors = json.dumps(data.preferred_colors) if data.preferred_colors else None
+    if data.preferred_cities is not None:
+        user.preferred_cities = json.dumps(data.preferred_cities) if data.preferred_cities else None
+
+    await db.commit()
+    await db.refresh(user)
+
+    return UserProfileRead(
+        id=user.id,
+        email=user.email,
+        role=user.role,
+        is_active=user.is_active,
+        created_at=user.created_at,
+        display_name=user.display_name,
+        phone=user.phone,
+        birthday=user.birthday,
+        preferred_size=user.preferred_size,
+        preferred_colors=json.loads(user.preferred_colors) if user.preferred_colors else [],
+        preferred_cities=json.loads(user.preferred_cities) if user.preferred_cities else [],
+    )
 
 
 # ── 2FA Endpoints ────────────────────────────────────────────────────

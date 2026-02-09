@@ -133,3 +133,64 @@ class LoginResponse(BaseModel):
 class TwoFactorDisableRequest(BaseModel):
     password: str
     code: str  # TOTP code to confirm
+
+
+# ── Profile Schemas ─────────────────────────────────────────────────
+
+VALID_SIZES = ["XS", "S", "M", "L", "XL", "XXL"]
+VALID_COLORS = ["Black", "White", "Red"]
+VALID_CITIES = [
+    "Riga", "Daugavpils", "Jelgava", "Jekabpils", "Jurmala",
+    "Liepaja", "Ogre", "Rezekne", "Valmiera", "Ventspils",
+]
+
+
+class UserProfileRead(BaseModel):
+    id: int
+    email: str
+    role: str
+    is_active: bool
+    created_at: datetime
+    display_name: str | None = None
+    phone: str | None = None
+    birthday: datetime | None = None
+    preferred_size: str | None = None
+    preferred_colors: list[str] = []
+    preferred_cities: list[str] = []
+
+    class Config:
+        from_attributes = True
+
+
+class UserProfileUpdate(BaseModel):
+    display_name: str | None = None
+    phone: str | None = None
+    birthday: str | None = None  # ISO date string
+    preferred_size: str | None = None
+    preferred_colors: list[str] | None = None
+    preferred_cities: list[str] | None = None
+
+    @field_validator("preferred_size")
+    @classmethod
+    def validate_size(cls, v: str | None) -> str | None:
+        if v is not None and v not in VALID_SIZES:
+            raise ValueError(f"Invalid size. Must be one of: {', '.join(VALID_SIZES)}")
+        return v
+
+    @field_validator("preferred_colors")
+    @classmethod
+    def validate_colors(cls, v: list[str] | None) -> list[str] | None:
+        if v is not None:
+            for color in v:
+                if color not in VALID_COLORS:
+                    raise ValueError(f"Invalid color '{color}'. Must be one of: {', '.join(VALID_COLORS)}")
+        return v
+
+    @field_validator("preferred_cities")
+    @classmethod
+    def validate_cities(cls, v: list[str] | None) -> list[str] | None:
+        if v is not None:
+            for city in v:
+                if city not in VALID_CITIES:
+                    raise ValueError(f"Invalid city '{city}'. Must be one of: {', '.join(VALID_CITIES)}")
+        return v
