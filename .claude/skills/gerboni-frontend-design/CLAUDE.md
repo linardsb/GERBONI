@@ -13,6 +13,8 @@
 
 | ID | Time | T | Title | Read |
 |----|------|---|-------|------|
+| #12806 | 8:49 AM | 🔵 | GERBONI Frontend Design System Skill Token-Based Component Standards | ~988 |
+| #12760 | 8:27 AM | 🔵 | Comprehensive Frontend Design System Enforcement Skill | ~756 |
 | #12659 | 6:35 AM | ✅ | Frontend Design Skill Updated with Layout Architecture Quick Reference | ~650 |
 | #12655 | 6:34 AM | 🔵 | Existing Gerboni Frontend Design Skill Provides Comprehensive Component Guidelines | ~817 |
 | #12652 | 6:32 AM | ✅ | Frontend Design Skill References Updated with Architecture and Layout Guides | ~387 |

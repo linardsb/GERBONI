@@ -9,8 +9,8 @@ Run from the project root:
 | Command | What it does |
 |---|---|
 | `make test` | Run **all** backend + frontend tests |
-| `make test-backend` | Backend only (pytest, 497 tests) |
-| `make test-frontend` | Frontend only (vitest, 382 tests) |
+| `make test-backend` | Backend only (pytest, 503 tests) |
+| `make test-frontend` | Frontend only (vitest, 406 tests) |
 | `make test-file FILE=backend/tests/test_auth.py` | Single backend test file |
 | `make test-file FILE=frontend/src/__tests__/components/button.test.tsx` | Single frontend test file |
 | `make test-lint` | Frontend ESLint check |
@@ -22,9 +22,9 @@ Run from the project root:
         /\
        /E2E\         6 Playwright specs (cross-browser)
       /------\
-     / Unit  \       16 Vitest specs (components, pages, utilities)
+     / Unit  \       18 Vitest specs (components, pages, utilities)
     /----------\
-   /   API     \     28 pytest modules (endpoints, services, admin)
+   /   API     \     26 pytest modules (endpoints, services, admin)
   /--------------\
 ```
 
@@ -32,9 +32,9 @@ Run from the project root:
 
 | Suite | Framework | Files | Tests | Coverage Threshold | Runtime |
 |-------|-----------|-------|-------|-------------------|---------|
-| Backend API | pytest | 28 modules | 497 tests | ≥60% | ~95s |
-| Frontend Unit | Vitest | 16 files | 382 tests | ≥80% | ~5s |
-| Frontend E2E | Playwright | 6 specs | ~35 scenarios | N/A | ~2m |
+| Backend API | pytest | 26 modules | 503 tests | ≥60% | ~105s |
+| Frontend Unit | Vitest | 18 files | 406 tests | ≥80% | ~5s |
+| Frontend E2E | Playwright | 6 specs | ~40 scenarios | N/A | ~2m |
 
 ## Backend Testing (pytest)
 
@@ -68,7 +68,7 @@ backend/tests/
 ├── test_recommendations.py    # Product recommendations
 ├── test_reviews.py            # Product reviews, helpfulness
 ├── test_websocket_agent.py    # WebSocket chat integration (30 tests)
-└── test_wishlist.py           # Wishlist CRUD, move-to-cart
+└── test_wishlist.py           # Wishlist CRUD, auth enforcement, move-to-cart (29 tests)
 ```
 
 ### Running Backend Tests
@@ -159,6 +159,9 @@ frontend/src/__tests__/
 ├── pages/
 │   ├── faq-page.test.tsx           # FAQ i18n (BUG-001)
 │   └── root-page.test.tsx          # Root redirect (BUG-003)
+├── themes/
+│   ├── theme-provider.test.tsx     # Theme provider + switching
+│   └── theme-utils.test.ts         # Theme utility functions
 ├── utils/
 │   └── design-validation.test.ts   # Design system token validation
 └── middleware.test.ts              # Next.js middleware (BUG-002)

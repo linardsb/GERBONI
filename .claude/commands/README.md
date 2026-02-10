@@ -138,72 +138,116 @@
 
 ## Workflow Chains
 
-Commands are designed to be combined. Here are the standard workflows:
+Commands are designed to be combined into workflows. Each chain follows a deliberate progression — context loading, planning, execution, and verification. You can skip steps when the situation is simple, but the full chain catches issues that shortcuts miss.
 
-### Build a New Feature
+### Chain 1: Build a New Feature
 
-```
-/prime                              → Load session context
-/plan-feature <description>         → Research and design the plan
-/execute tasks/plans/<name>.md      → Implement the plan step-by-step
-/review-code                        → Catch issues before committing
-/validate full                      → Run all quality gates
-```
+**Purpose**: Take a feature from idea to verified implementation without missing architectural patterns, fragile areas, or test coverage.
 
-**When**: Adding new functionality (new page, new API endpoint, new model).
-
-### Fix a Bug from GitHub Issue
+**Scenario**: "Add wishlist sharing via URL", "Add product comparison page", "Add order status email notifications"
 
 ```
-/prime                              → Load session context
-/rca <issue-number>                 → Investigate and document root cause
-/implement-fix <issue-number>       → Write test first, then fix
-/review-code                        → Review the fix
+/prime                              → Load session context (branch, tasks, recent work)
+/plan-feature <description>         → Research codebase, check fragile areas, write step-by-step plan
+/execute tasks/plans/<name>.md      → Implement each step, mark progress, run tests between steps
+/review-code                        → 14-category review catches security, architecture, i18n gaps
+/validate full                      → Full test suites + build + coverage thresholds + i18n parity
+```
+
+**Why this order**: `/plan-feature` researches existing code so you don't duplicate patterns. `/execute` follows the plan systematically so nothing gets skipped. `/review-code` catches what tests can't (architecture violations, missing auth, design system drift). `/validate full` is the final gate before commit.
+
+**Shortcut**: For small features (single file, obvious approach), skip `/plan-feature` and go straight to implementation + `/validate quick`.
+
+---
+
+### Chain 2: Fix a Bug from GitHub Issue
+
+**Purpose**: Fix bugs with full root cause understanding and regression tests, so the same bug never comes back.
+
+**Scenario**: "Users report 500 error on checkout", "Guest users can't see their orders", "Refund button does nothing"
+
+```
+/prime                              → Load context, check if this bug relates to recent changes
+/rca <issue-number>                 → Fetch issue, trace through code layers, find root cause, write RCA doc
+/implement-fix <issue-number>       → Write regression test FIRST (must fail), then fix, then verify test passes
+/review-code                        → Verify fix doesn't introduce new issues
 /validate quick                     → Quick pre-commit check
 ```
 
-**When**: A bug is reported as a GitHub issue.
+**Why this order**: `/rca` prevents fixing symptoms instead of causes — it traces the bug through route → service → model and checks for blast radius. `/implement-fix` enforces test-first: the regression test proves the bug exists before you fix it, and proves it's gone after. The RCA document in `docs/rca/` becomes permanent knowledge.
 
-### Add a New Resource (CRUD Entity)
+**Shortcut**: For obvious bugs (typo, off-by-one, missing import), skip `/rca` and fix directly with a regression test + `/validate quick`.
 
-```
-/prime                              → Load session context
-/scaffold <resource-name>           → Generate all boilerplate files
-/execute                            → Fill in TODO markers (manual or via /execute)
-/validate full                      → Run all quality gates
-```
+---
 
-**When**: Adding a new domain entity like coupon, address, review.
+### Chain 3: Add a New Resource (CRUD Entity)
 
-### Extend AI Agent Capabilities
+**Purpose**: Generate consistent boilerplate for a new domain entity so all files follow GERBONI patterns from the start.
+
+**Scenario**: "Add product reviews", "Add shipping addresses", "Add gift cards"
 
 ```
-/prime backend                      → Load backend context
-/create-tool <tool description>     → Create agent tool with 7-section docstring
-/validate quick                     → Run agent tests
+/prime                              → Load context, check for similar existing resources to reference
+/scaffold <resource-name>           → Generate model, schemas, service, routes, tests, frontend page, i18n
+/execute                            → Fill in the TODO markers with resource-specific fields and logic
+/validate full                      → Run all quality gates on the new resource
 ```
 
-**When**: The support agent needs a new tool (delivery estimates, product recommendations, etc.)
+**Why this order**: `/scaffold` generates 7+ files that all follow GERBONI conventions (three-layer architecture, dual auth, design tokens, i18n). You fill in the resource-specific parts instead of recreating the patterns from memory. The generated tests give you a skeleton to expand.
 
-### Pre-Commit Quality Check
+**When to use this vs `/plan-feature`**: Use `/scaffold` when the resource is standard CRUD (model + API + page). Use `/plan-feature` when the feature has complex business logic, state machines, or cross-cutting concerns.
 
-```
-/review-code                        → Code review (catches architectural issues)
-/audit-i18n                         → Check translation parity (if UI changed)
-/validate full                      → Tests + build + coverage + i18n
-```
+---
 
-**When**: Before committing any changes. Minimum: `/validate quick`.
+### Chain 4: Extend AI Agent Capabilities
 
-### Periodic Health Check
+**Purpose**: Add new tools to the Pydantic AI support agent with proper docstrings that guide tool selection, or create reference docs that eliminate repetitive lookups.
+
+**Scenario**: "Agent should estimate delivery times", "Agent should recommend products based on purchase history", "Create a Zustand patterns reference to stop looking it up"
 
 ```
-/prime                              → See current state
-/audit-i18n                         → Check translation health
-/validate full                      → Full suite verification
+/prime backend                      → Load backend context (agent tools, services, models)
+/create-tool <tool description>     → Auto-detect type, create tool with 7-section docstring or reference doc
+/validate quick                     → Run agent tests (Type 1) or verify reference loads (Type 2)
 ```
 
-**When**: Start of week, before releases, or when something feels off.
+**Why this order**: `/create-tool` reads `reference/adding_tools_guide.md` which contains the 7-section docstring standard, anti-patterns, and GERBONI conventions. For agent tools, it checks existing tools for consolidation opportunities before creating new ones. For reference docs, it follows the established format from other guides.
+
+**Two outcomes**: Type 1 produces a Python function in `support_agent.py` with tests. Type 2 produces a markdown reference in `reference/` that replaces MCP calls.
+
+---
+
+### Chain 5: Pre-Commit Quality Check
+
+**Purpose**: Catch issues before they reach CI — security holes, architecture violations, missing translations, failing tests, coverage drops.
+
+**Scenario**: After any code changes, before running `git commit`.
+
+```
+/review-code                        → 14-category code review (security, auth, architecture, i18n, design system)
+/audit-i18n                         → Check en.json/lv.json parity (only if UI text was changed)
+/validate full                      → Tests + build + coverage + i18n in one pass
+```
+
+**Why all three**: `/review-code` catches things tests don't (using `get_current_user` instead of `require_auth`, missing `data-slot`, hardcoded colors). `/audit-i18n` catches translation drift that only shows up in the other locale. `/validate full` catches runtime failures (build errors, import issues, coverage regression).
+
+**Minimum viable check**: `/validate quick` — runs lint + type check + tests for changed files only (~30 seconds). Use this during iteration. Use the full chain before pushing.
+
+---
+
+### Chain 6: Periodic Health Check
+
+**Purpose**: Verify overall project health — no drift in translations, no broken tests from dependency updates, no stale tasks.
+
+**Scenario**: Start of the week, before a release, after pulling changes from others, or when something feels off.
+
+```
+/prime                              → See branch state, active tasks, open bugs, fragile area alerts
+/audit-i18n                         → Verify 857 en/lv keys still in sync, no empty values, no ICU mismatches
+/validate full                      → Full suite: backend 497 tests, frontend 382 tests, build, coverage
+```
+
+**Why periodically**: Dependencies update silently (pydantic-ai API renames broke 30 tests — BUG-013). Translation files drift when PRs add keys to one language but not the other. Test fixtures can break when models change. Running the full check catches issues before they compound.
 
 ---
 

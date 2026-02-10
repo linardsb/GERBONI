@@ -11,4 +11,10 @@
 | #10713 | " | 🔵 | Async SQLAlchemy Database Layer | ~442 |
 | #10712 | " | 🔵 | Backend Configuration Schema and Security Policies | ~567 |
 | #10711 | " | 🔵 | Production-Grade Backend Security and Middleware Stack | ~612 |
+
+### Feb 10, 2026
+
+| ID | Time | T | Title | Read |
+|----|------|---|-------|------|
+| #12816 | 8:53 AM | 🔵 | GERBONI Domain Exception System for HTTP-Agnostic Business Logic | ~616 |
 </claude-mem-context>

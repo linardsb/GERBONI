@@ -97,114 +97,13 @@ frontend/src/
 
 ## 4. Code Style
 
-### Backend (Python)
-```python
-# snake_case for files, functions, variables
-# PascalCase for classes and enums
-# UPPER_SNAKE_CASE for constants
+> **Full examples**: See `.claude/skills/gerboni-backend/SKILL.md` and `.claude/skills/gerboni-frontend-design/SKILL.md`
 
-class OrderService:
-    """Order business logic. HTTP-agnostic, raises domain exceptions."""
+- **Backend**: snake_case functions/files, PascalCase classes, UPPER_SNAKE_CASE constants. Static service methods, `db: AsyncSession` first param, `Decimal` for money, `| None` unions, `selectinload()` for relationships.
+- **Frontend**: PascalCase components, camelCase hooks/functions. CVA for variants, `data-slot` on every component, `cn()` for className, `useTranslations("namespace")` for text.
+- **Schemas**: `*Create` (input), `*Read` (output), `OrderStatus(str, Enum)` lowercase values, `_id`/`_at`/`_lv` suffixes, `/api/resource/{id}` routes.
 
-    VALID_TRANSITIONS = {
-        OrderStatus.PENDING: {OrderStatus.PAID, OrderStatus.CANCELLED},
-        # ...
-    }
-
-    @staticmethod
-    async def get_order(
-        db: AsyncSession,
-        order_id: int,
-        owner: OrderOwner | None = None,
-    ) -> Order:
-        """Fetch order with ownership verification.
-
-        Args:
-            db: Database session
-            order_id: Order primary key
-            owner: Optional owner filter for authorization
-
-        Raises:
-            EntityNotFoundError: Order not found or not owned by user
-        """
-        stmt = (
-            select(Order)
-            .options(selectinload(Order.items).selectinload(OrderItem.variant))
-            .where(Order.id == order_id)
-        )
-        if owner and owner.user_id:
-            stmt = stmt.where(Order.user_id == owner.user_id)
-
-        result = await db.execute(stmt)
-        order = result.scalar_one_or_none()
-        if not order:
-            raise EntityNotFoundError(f"Order {order_id} not found")
-        return order
-```
-
-**Conventions**: Static methods on service classes. First param `db: AsyncSession`. Dataclasses for value objects (`OrderOwner`, `ShippingInfo`). `Decimal` for money. `| None` union syntax (not `Optional`). Eagerly load relationships via `selectinload()`.
-
-### Frontend (TypeScript/React)
-```tsx
-// PascalCase for components and files
-// camelCase for hooks (useAuthStore), functions, variables
-// UPPER_SNAKE_CASE for constants (API_URL, MAX_RECENTLY_VIEWED)
-
-import { cva, type VariantProps } from "class-variance-authority"
-import { cn } from "@/lib/utils"
-
-const buttonVariants = cva("base-classes", {
-  variants: {
-    variant: { default: "bg-primary", outline: "border" },
-    size: { sm: "h-8", md: "h-9", lg: "h-10" },
-  },
-  defaultVariants: { variant: "default", size: "md" },
-})
-
-function Button({
-  className, variant, size, ...props
-}: React.ComponentProps<"button"> & VariantProps<typeof buttonVariants>) {
-  return (
-    <button
-      data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
-      {...props}
-    />
-  )
-}
-```
-
-**Conventions**: Every component has `data-slot="name"`. All `className` merged via `cn()`. CVA for variants. Radix UI for accessible primitives. `useTranslations("namespace")` for all user-facing text.
-
-### Schema Naming
-| Pattern | Example |
-|---------|---------|
-| Create request | `OrderCreate`, `ShippingInfo` |
-| Read response | `OrderRead`, `ProductListRead` |
-| DB enum | `OrderStatus(str, Enum)` with lowercase values |
-| Column suffix | `_id` for FKs, `_at` for timestamps, `_lv` for Latvian |
-| Route format | `/api/resource/{id}` (REST) |
-
-## 5. Logging
-
-```python
-import logging
-logger = logging.getLogger(__name__)
-
-# Standard usage — context auto-injected via contextvars middleware
-logger.info("Order created", extra={"order_id": order.id, "user_id": user.id})
-logger.warning("Stock low", extra={"variant_id": v.id, "stock": v.stock})
-logger.error("Payment failed", extra={"order_id": order.id}, exc_info=True)
-```
-
-- **Development**: Human-readable format with request context (`StandardFormatter`)
-- **Production**: Structured JSON for log aggregation (`JSONFormatter`)
-- **Request context**: Automatically injected via `contextvars` (request_id, path, method, client_ip)
-- **Noise reduction**: `uvicorn.access` and `sqlalchemy.engine` set to WARNING
-
-Frontend logging uses `console.error` with `[API]` prefix in the API client for failed requests.
-
-## 6. Testing
+## 5. Testing
 
 ### Backend (pytest)
 ```bash
@@ -263,112 +162,14 @@ npm run e2e:headed        # Visual debugging
 
 ## 7. API Contracts
 
-### Backend → Frontend Type Mapping
-```python
-# Backend schema (Pydantic)          # Frontend type (TypeScript)
-class OrderRead(BaseModel):           # interface Order {
-    id: int                           #   id: number
-    status: str                       #   status: string
-    total: Decimal                    #   total: number
-    items: list[OrderItemRead]        #   items: OrderItem[]
-    created_at: datetime              #   created_at: string
-                                      # }
-    class Config:
-        from_attributes = True
-```
+- **Error translation**: `DomainException` → `domain_to_http(e)` at route boundary. `EntityNotFoundError`→404, `InsufficientStockError`→409, others→400.
+- **Frontend errors**: `ApiError` class with `status`, `message`, `requestId` in `lib/api.ts`.
+- **Auth headers**: JWT via `Authorization: Bearer`, guest via `X-Guest-Session`, anonymous = no header. All resolve through `require_auth()` or `get_auth()` → `AuthResult`.
+- **Type mapping**: Pydantic `BaseModel` with `from_attributes=True` → TypeScript interfaces in `lib/api.ts`.
 
-### Error Contract
-```python
-# Backend: domain exceptions → HTTP via domain_to_http()
-except DomainException as e:
-    raise domain_to_http(e)  # EntityNotFoundError→404, InsufficientStockError→409
-```
+> **Full patterns**: See `reference/backend_architecture_guide.md` and `reference/frontend_architecture_guide.md`
 
-```typescript
-// Frontend: ApiError class with status, message, requestId
-try {
-  await createOrder(data)
-} catch (e) {
-  if (e instanceof ApiError && e.status === 409) {
-    toast.error("Item out of stock")
-  }
-}
-```
-
-### Auth Header Contract
-| Auth Type | Header | Backend Dependency |
-|-----------|--------|--------------------|
-| JWT user | `Authorization: Bearer <token>` | `require_auth()` → `AuthResult` |
-| Guest | `X-Guest-Session: <token>` | `require_auth()` → `AuthResult` |
-| Anonymous | (none) | `get_auth()` → `AuthResult` with None fields |
-
-## 8. Common Patterns
-
-### Backend: Service + Route Pattern
-```python
-# Service (HTTP-agnostic, raises domain exceptions)
-class CartService:
-    @staticmethod
-    async def add_item(db: AsyncSession, owner: CartOwner, variant_id: int, qty: int) -> CartItem:
-        variant = await db.get(TShirtVariant, variant_id)
-        if not variant or variant.stock < qty:
-            raise InsufficientStockError("Not enough stock")
-        item = CartItem(user_id=owner.user_id, session_id=owner.session_id,
-                        variant_id=variant_id, quantity=qty)
-        db.add(item)
-        await db.flush()
-        return item
-
-# Route (thin: parse → delegate → respond)
-@router.post("", response_model=CartRead)
-async def add_to_cart(
-    data: CartItemCreate,
-    auth: AuthResult = Depends(require_auth),
-    db: AsyncSession = Depends(get_db),
-):
-    try:
-        item = await CartService.add_item(db, CartOwner(auth.user_id, auth.session_id),
-                                           data.variant_id, data.quantity)
-        await db.commit()
-        return await CartService.get_cart(db, CartOwner(auth.user_id, auth.session_id))
-    except DomainException as e:
-        raise domain_to_http(e)
-```
-
-### Frontend: Zustand Store + API Fetch Pattern
-```tsx
-"use client"
-import { useEffect, useState } from "react"
-import { useAuthStore } from "@/lib/store"
-import { getOrders, type Order } from "@/lib/api"
-import { useTranslations } from "next-intl"
-import { toast } from "sonner"
-
-export function OrderList() {
-  const t = useTranslations("order")
-  const { token, guestSession } = useAuthStore()
-  const [orders, setOrders] = useState<Order[]>([])
-
-  useEffect(() => {
-    getOrders(token, guestSession?.session_token)
-      .then(setOrders)
-      .catch(() => toast.error(t("loadError")))
-  }, [token, guestSession])
-
-  return (
-    <Stack gap="group" data-slot="order-list">
-      {orders.map(order => (
-        <Card key={order.id}>
-          <Text variant="heading-sm">{t("orderNumber", { id: order.id })}</Text>
-          <Text variant="muted">{order.status}</Text>
-        </Card>
-      ))}
-    </Stack>
-  )
-}
-```
-
-## 9. Development Commands
+## 8. Development Commands
 
 ### Docker (Recommended)
 ```bash
@@ -408,7 +209,7 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
 **API docs**: http://localhost:8000/docs | **Backend env**: `backend/.env` | **Frontend env**: `frontend/.env.local`
 
-## 10. AI Coding Assistant Instructions
+## 9. AI Coding Assistant Instructions
 
 1. **Read skill files first**: Before any backend change, read `.claude/skills/gerboni-backend/SKILL.md`. Before any frontend change, read `.claude/skills/gerboni-frontend-design/SKILL.md`. No exceptions.
 2. **Dual auth everywhere**: Every endpoint touching user data must use `require_auth()` or `get_auth()` from `deps.py`. Never use raw `get_current_user` with `User | None` — that's a security bug (BUG-008).

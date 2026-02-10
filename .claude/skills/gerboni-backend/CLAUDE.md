@@ -7,6 +7,8 @@
 
 | ID | Time | T | Title | Read |
 |----|------|---|-------|------|
+| #12804 | 8:48 AM | 🔵 | GERBONI Backend Skill Comprehensive Development Standards | ~854 |
+| #12761 | 8:28 AM | 🔵 | Comprehensive Backend Development Skill for FastAPI/SQLAlchemy | ~821 |
 | #12657 | 6:34 AM | ✅ | Backend Skill Updated with Correct Auth Pattern and Security Warning | ~608 |
 | #12654 | 6:33 AM | ✅ | Backend Skill Version Updated to 2.0.0 | ~228 |
 | #12646 | 6:31 AM | ✅ | Backend Skill Updated with Architecture Guide Reference | ~271 |
