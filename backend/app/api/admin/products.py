@@ -96,6 +96,36 @@ async def list_products(
     }
 
 
+@router.get("/low-stock")
+async def list_low_stock(
+    admin: User = Depends(get_admin_user),
+    db: AsyncSession = Depends(get_db),
+    threshold: int = Query(LOW_STOCK_THRESHOLD, ge=0),
+):
+    """List all variants with low stock."""
+    result = await db.execute(
+        select(TShirtVariant)
+        .options(selectinload(TShirtVariant.product))
+        .where(TShirtVariant.stock < threshold)
+        .order_by(TShirtVariant.stock)
+    )
+    variants = result.scalars().all()
+
+    return [
+        {
+            "id": variant.id,
+            "product_id": variant.product_id,
+            "product_name": variant.product.city_name,
+            "color": variant.color,
+            "size": variant.size,
+            "price": variant.price,
+            "stock": variant.stock,
+            "sku": variant.sku,
+        }
+        for variant in variants
+    ]
+
+
 @router.get("/{product_id}")
 async def get_product(
     product_id: int,
@@ -227,33 +257,3 @@ async def update_variant(
         "stock": variant.stock,
         "sku": variant.sku,
     }
-
-
-@router.get("/low-stock")
-async def list_low_stock(
-    admin: User = Depends(get_admin_user),
-    db: AsyncSession = Depends(get_db),
-    threshold: int = Query(LOW_STOCK_THRESHOLD, ge=0),
-):
-    """List all variants with low stock."""
-    result = await db.execute(
-        select(TShirtVariant)
-        .options(selectinload(TShirtVariant.product))
-        .where(TShirtVariant.stock < threshold)
-        .order_by(TShirtVariant.stock)
-    )
-    variants = result.scalars().all()
-
-    return [
-        {
-            "id": variant.id,
-            "product_id": variant.product_id,
-            "product_name": variant.product.city_name,
-            "color": variant.color,
-            "size": variant.size,
-            "price": variant.price,
-            "stock": variant.stock,
-            "sku": variant.sku,
-        }
-        for variant in variants
-    ]

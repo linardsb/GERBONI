@@ -13,6 +13,7 @@ This directory contains detailed writeups of all bugs discovered and fixed in th
 | [BUG-009](./BUG-009-debug-print-token-leak.md) | Debug print leaking password reset tokens | High | Fixed | 2026-02-08 | Code review |
 | [BUG-010](./BUG-010-silent-exception-swallowing.md) | Silent exception swallowing in error handlers | Medium | Fixed | 2026-02-08 | Code review |
 | [BUG-011](./BUG-011-hardcoded-i18n-default.md) | Hardcoded English default in ProductGrid | Low | Fixed | 2026-02-08 | Code review |
+| [BUG-014](./BUG-014-admin-low-stock-route-shadowed.md) | Admin low-stock route shadowed by `/{product_id}` | Medium | Fixed | 2026-02-10 | `backend/tests/test_admin_products.py` → `TestLowStock` |
 
 ## Bug Categories
 
@@ -27,6 +28,7 @@ This directory contains detailed writeups of all bugs discovered and fixed in th
 
 ### API Issues
 - **BUG-004**: Admin API calling OrderService with incorrect method signatures
+- **BUG-014**: Admin `/low-stock` route shadowed by `/{product_id}` parameter route ordering
 
 ### Security Issues
 - **BUG-009**: Debug `print()` leaking password reset tokens to stdout
@@ -80,7 +82,7 @@ Links to related bugs or fragile areas.
 
 ## Statistics
 
-- **Total Bugs Fixed**: 7
+- **Total Bugs Fixed**: 8
 - **Critical**: 1
 - **High**: 3
 - **Medium**: 2

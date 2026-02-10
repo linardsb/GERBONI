@@ -613,6 +613,37 @@ Pydantic AI is pre-1.0 and its internal API is unstable. The code was written ag
 
 ---
 
+### BUG-014: Admin Low-Stock Route Shadowed by Product ID Parameter
+**Status:** CLOSED
+**Severity:** Medium
+**Reported:** 2026-02-10
+**Fixed:** 2026-02-10
+**Component:** Backend — Admin API
+**GitHub Issue:** https://github.com/linardsb/GERBONI/issues/7
+
+**Description:**
+The admin dashboard's low-stock widget failed with a 422 error. The `/api/admin/products/low-stock` endpoint was unreachable because FastAPI tried to parse `"low-stock"` as an integer path parameter.
+
+**Root Cause:**
+In `backend/app/api/admin/products.py`, the `/low-stock` route was registered at line 232, **after** the `/{product_id}` route at line 99. FastAPI matches routes in registration order, so `/{product_id}` caught the request first and tried to coerce `"low-stock"` into `int`, producing a 422 validation error.
+
+**Fix:**
+Moved the `/low-stock` route definition above `/{product_id}` so it matches first. This is the same pattern already applied to `/export` (line 21).
+
+**Related Files:**
+- `backend/app/api/admin/products.py`
+
+**Regression Test:** `backend/tests/test_admin_products.py` → `TestLowStock::test_bug_014_low_stock_route_not_shadowed`
+
+**Learning Outcomes:**
+- **Fragile Area?** No — already documented in MEMORY.md as "Route ordering: `/export` must register BEFORE `/{id}` to avoid path conflicts"
+- **Pattern?** FastAPI path parameter routes shadow literal sub-paths when registered first. All literal paths must be registered before parameterized paths.
+- **Prevention Strategy:** Code review checklist item: any new `/{param}` route must verify no literal sibling routes exist below it. Consider a linting rule or startup assertion to detect route ordering conflicts.
+
+**Related Bugs:** None (but the pattern was already known from `/export` route ordering)
+
+---
+
 ## Bug Template
 
 ```markdown
@@ -661,7 +692,7 @@ Pydantic AI is pre-1.0 and its internal API is unstable. The code was written ag
 
 | Month | Opened | Closed | Net |
 |-------|--------|--------|-----|
-| Feb 2026 | 13 | 13 | 0 |
+| Feb 2026 | 14 | 14 | 0 |
 
 ---
 
@@ -683,6 +714,7 @@ Tracking coverage improvements to prevent future bugs:
 | 2026-02-09 | BUG-013 pydantic-ai API drift fix | N/A | N/A | 31 agent tests restored |
 | 2026-02-08 | ESLint audit: 9 warnings → 0 | N/A | N/A | 5 useEffect deps + 3 unused vars + 1 img |
 | 2026-02-06 | E2E Tests | 19 failing | 0 failing | Fixed selectors |
+| 2026-02-10 | BUG-014 Admin low-stock route ordering | N/A | N/A | 3 (TestLowStock) |
 | 2026-02-06 | BUG-004 Admin Orders API | N/A | N/A | 10 (TestUpdateOrderStatus) |
 
 **Current Backend Test Count:** 497 tests (28 test files) — all passing

@@ -88,6 +88,47 @@ class TestListVariants:
         assert response.status_code == 404
 
 
+class TestLowStock:
+    """Tests for GET /api/admin/products/low-stock"""
+
+    async def test_bug_014_low_stock_route_not_shadowed(
+        self, admin_client: AsyncClient
+    ):
+        """Regression test for BUG-014: /low-stock must not be caught by /{product_id}.
+
+        Previously, /low-stock was registered after /{product_id}, so FastAPI
+        tried to parse "low-stock" as an integer, returning 422.
+        """
+        response = await admin_client.get("/api/admin/products/low-stock")
+        assert response.status_code == 200
+        assert isinstance(response.json(), list)
+
+    async def test_low_stock_returns_variants_below_threshold(
+        self, admin_client: AsyncClient, test_product, test_variant, db_session: AsyncSession
+    ):
+        """Low stock endpoint returns variants below the threshold."""
+        # Set stock to 0 so it appears in low-stock results
+        test_variant.stock = 0
+        db_session.add(test_variant)
+        await db_session.commit()
+
+        response = await admin_client.get(
+            "/api/admin/products/low-stock", params={"threshold": 10}
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert len(data) >= 1
+        variant = data[0]
+        assert "product_name" in variant
+        assert "stock" in variant
+        assert variant["stock"] < 10
+
+    async def test_low_stock_requires_admin(self, auth_client: AsyncClient):
+        """Regular users cannot access low-stock endpoint."""
+        response = await auth_client.get("/api/admin/products/low-stock")
+        assert response.status_code == 403
+
+
 class TestUpdateVariant:
     """Tests for PUT /api/admin/products/{product_id}/variants/{variant_id}"""
 
