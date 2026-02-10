@@ -1,0 +1,240 @@
+# GERBONI Slash Commands
+
+11 commands organized into 4 workflows. Run any command with `/command-name` in Claude Code.
+
+---
+
+## Command Reference
+
+### `/prime` — Load Session Context
+
+**Solves**: Starting a new session without knowing what's going on — what branch you're on, what tasks are active, what was worked on recently.
+
+**Usage**: `/prime` or `/prime backend` or `/prime frontend`
+
+**What it does**: Reads CLAUDE.md, tasks/todo.md, tasks/bugs.md, runs git status/log, and produces a structured session context summary with branch state, active tasks, open bugs, architecture quick ref, and fragile area alerts.
+
+**When to use**: First command in every session. Sets the stage for everything else.
+
+---
+
+### `/plan-feature` — Design Implementation Plan
+
+**Solves**: Jumping into code without understanding what to build, which files to touch, or what might break.
+
+**Usage**: `/plan-feature add wishlist sharing via URL`
+
+**What it does**: Researches the codebase for related code, checks all 6 fragile areas for overlap, designs backend + frontend + testing steps, and writes a plan to `tasks/plans/<feature-name>.md`.
+
+**When to use**: Before building anything non-trivial. The plan becomes the input for `/execute`.
+
+---
+
+### `/scaffold` — Generate Resource Boilerplate
+
+**Solves**: Writing the same model/schema/service/route/test boilerplate from scratch every time you add a new resource.
+
+**Usage**: `/scaffold coupon` or `/scaffold review backend` or `/scaffold address fullstack`
+
+**What it does**: Generates all files for a new resource following GERBONI patterns — model, schemas (Create/Read/Update), service (static methods, flush), routes (thin handlers, commit), test skeleton, frontend page, API client types, and i18n namespace. Files contain `# TODO` markers for resource-specific logic.
+
+**When to use**: When adding a new domain entity. Gives you the skeleton; you fill in the specifics.
+
+---
+
+### `/execute` — Implement from a Plan
+
+**Solves**: Losing track of what's been done and what's left when implementing a multi-step feature.
+
+**Usage**: `/execute tasks/plans/wishlist-sharing.md`
+
+**What it does**: Reads a plan document, executes each step in order (backend → frontend → tests), marks steps complete as it goes, runs lint/type checks between steps, runs full test suites at the end, and updates the plan status to "Implemented".
+
+**When to use**: After `/plan-feature` produces a plan. This is the execution engine.
+
+---
+
+### `/validate` — Pre-Commit Quality Gates
+
+**Solves**: Pushing code that breaks CI — lint errors, failing tests, coverage drops, i18n drift, build failures.
+
+**Usage**: `/validate` (quick mode) or `/validate full`
+
+**What it does**:
+- **Quick** (~30s): Lint + type check + tests for changed files only
+- **Full** (~3min): All test suites + build + coverage thresholds (backend >=60%, frontend >=80%) + i18n parity check + git status review
+
+**When to use**: Before every commit. Quick mode for iteration, full mode before pushing.
+
+---
+
+### `/review-code` — 14-Category Code Review
+
+**Solves**: Missing security vulnerabilities, architecture violations, design system drift, or test gaps during development.
+
+**Usage**: `/review-code`
+
+**What it does**: Reviews code across 14 categories — security/auth, three-layer architecture, database patterns, type safety, order state machine, i18n, design system, accessibility, frontend patterns, testing, AI agent, API contracts, performance/caching, Docker/production. Produces a prioritized issue list (Critical/High/Medium/Low) with risk assessment.
+
+**When to use**: After implementing changes and before committing. Catches issues that tests alone won't find.
+
+---
+
+### `/rca` — Root Cause Analysis for GitHub Issues
+
+**Solves**: Fixing bugs without understanding why they happened, leading to incomplete fixes and repeat failures.
+
+**Usage**: `/rca 42` (where 42 is the GitHub issue number)
+
+**What it does**: Fetches the GitHub issue, traces the symptom through the three-layer architecture, searches recent commits for introduction point, checks fragile area overlap, searches past bugs for patterns, designs a fix strategy with regression test spec, and writes an RCA document to `docs/rca/issue-42.md`.
+
+**When to use**: When a bug is reported as a GitHub issue. Produces the investigation document that `/implement-fix` consumes.
+
+---
+
+### `/implement-fix` — Test-First Bug Fix from RCA
+
+**Solves**: Fixing bugs without regression tests, or implementing fixes that don't actually address the root cause.
+
+**Usage**: `/implement-fix 42` (where 42 is the GitHub issue number)
+
+**What it does**: Reads the RCA document, writes the regression test FIRST (verifies it fails), implements the fix from the RCA's strategy, verifies the test passes, runs full test suite, updates tasks/bugs.md, and suggests a commit message with `Fixes #42`.
+
+**When to use**: After `/rca` produces an RCA document. Requires the RCA to exist — if missing, it tells you to run `/rca` first.
+
+---
+
+### `/audit-i18n` — Translation Parity Audit
+
+**Solves**: en.json and lv.json drifting out of sync — missing keys, empty values, mismatched ICU variables.
+
+**Usage**: `/audit-i18n`
+
+**What it does**: Runs 5 checks — key parity between en.json/lv.json, namespace usage vs. actual `useTranslations()` calls in code, remaining hardcoded strings, empty/placeholder values, and ICU variable consistency. Reports issues with specific key names.
+
+**When to use**: After adding new UI text, before committing frontend changes, or as a periodic health check.
+
+---
+
+### `/create-tool` — Create Agent Tool or Reference Doc
+
+**Solves**: Extending the AI support agent with new capabilities, or eliminating repetitive MCP/context7 calls by creating local reference docs.
+
+**Usage**: `/create-tool agent tool for delivery time estimates` or `/create-tool Zustand patterns cheat sheet`
+
+**What it does**: Auto-detects the tool type from keywords, then either:
+- **Type 1 (Agent Tool)**: Creates a Pydantic AI tool function in `support_agent.py` with the 7-section docstring standard, auth checks, service delegation, system prompt update, and tests
+- **Type 2 (Reference Doc)**: Creates a reference guide in `reference/` under 200 lines, following the established format with GERBONI-specific examples
+
+**When to use**: When the support agent needs a new capability, or when you're repeatedly looking up the same library/pattern info.
+
+---
+
+### `/scaffold` — Generate Resource Boilerplate
+
+(See above — already documented)
+
+---
+
+## Workflow Chains
+
+Commands are designed to be combined. Here are the standard workflows:
+
+### Build a New Feature
+
+```
+/prime                              → Load session context
+/plan-feature <description>         → Research and design the plan
+/execute tasks/plans/<name>.md      → Implement the plan step-by-step
+/review-code                        → Catch issues before committing
+/validate full                      → Run all quality gates
+```
+
+**When**: Adding new functionality (new page, new API endpoint, new model).
+
+### Fix a Bug from GitHub Issue
+
+```
+/prime                              → Load session context
+/rca <issue-number>                 → Investigate and document root cause
+/implement-fix <issue-number>       → Write test first, then fix
+/review-code                        → Review the fix
+/validate quick                     → Quick pre-commit check
+```
+
+**When**: A bug is reported as a GitHub issue.
+
+### Add a New Resource (CRUD Entity)
+
+```
+/prime                              → Load session context
+/scaffold <resource-name>           → Generate all boilerplate files
+/execute                            → Fill in TODO markers (manual or via /execute)
+/validate full                      → Run all quality gates
+```
+
+**When**: Adding a new domain entity like coupon, address, review.
+
+### Extend AI Agent Capabilities
+
+```
+/prime backend                      → Load backend context
+/create-tool <tool description>     → Create agent tool with 7-section docstring
+/validate quick                     → Run agent tests
+```
+
+**When**: The support agent needs a new tool (delivery estimates, product recommendations, etc.)
+
+### Pre-Commit Quality Check
+
+```
+/review-code                        → Code review (catches architectural issues)
+/audit-i18n                         → Check translation parity (if UI changed)
+/validate full                      → Tests + build + coverage + i18n
+```
+
+**When**: Before committing any changes. Minimum: `/validate quick`.
+
+### Periodic Health Check
+
+```
+/prime                              → See current state
+/audit-i18n                         → Check translation health
+/validate full                      → Full suite verification
+```
+
+**When**: Start of week, before releases, or when something feels off.
+
+---
+
+## Quick Reference
+
+| Command | Input | Produces | Speed |
+|---------|-------|----------|-------|
+| `/prime` | scope (optional) | Session context summary | ~10s |
+| `/plan-feature` | feature description | Plan in `tasks/plans/` | ~2min |
+| `/scaffold` | resource name | Boilerplate files with TODOs | ~1min |
+| `/execute` | path to plan | Implemented code + test results | ~5-15min |
+| `/validate` | `quick` or `full` | Pass/fail report with issues | 30s-3min |
+| `/review-code` | (reads changed files) | Prioritized issue list | ~2min |
+| `/rca` | GitHub issue number | RCA document in `docs/rca/` | ~3min |
+| `/implement-fix` | GitHub issue number | Fix + regression test + updated bugs.md | ~5-10min |
+| `/audit-i18n` | (none) | i18n parity report | ~15s |
+| `/create-tool` | tool description | Agent tool or reference doc | ~5min |
+
+---
+
+## Decision Guide: Which Command Do I Need?
+
+| I want to... | Use |
+|--------------|-----|
+| Start a new coding session | `/prime` |
+| Build a new feature | `/plan-feature` → `/execute` |
+| Add a new database table / API resource | `/scaffold` |
+| Fix a reported bug | `/rca` → `/implement-fix` |
+| Check my code before committing | `/validate quick` |
+| Do a thorough pre-push check | `/review-code` + `/validate full` |
+| Check if translations are complete | `/audit-i18n` |
+| Add a tool to the AI support agent | `/create-tool` |
+| Create a reference doc to avoid repeated lookups | `/create-tool` |
+| Understand what's in the backlog | `/prime` (shows tasks/todo.md) |
