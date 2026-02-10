@@ -9,15 +9,17 @@ from ..schemas.wishlist import (
     WishlistAdd,
     WishlistCheckResponse,
     WishlistMoveToCartRequest,
+    WishlistMoveToCartResponse,
 )
+from ..models import WishlistItem
 from ..services import WishlistService, WishlistOwner, CartService, CartOwner
 from ..exceptions import DomainException, domain_to_http
-from .deps import get_auth, AuthResult
+from .deps import get_auth, require_auth, AuthResult
 
 router = APIRouter()
 
 
-def _format_wishlist_item(item) -> dict:
+def _format_wishlist_item(item: WishlistItem) -> dict:
     """Format wishlist item for API response."""
     product_info = WishlistService.calculate_product_info(item.product)
     return {
@@ -35,7 +37,7 @@ def _format_wishlist_item(item) -> dict:
     }
 
 
-def _format_wishlist(items: list) -> dict:
+def _format_wishlist(items: list[WishlistItem]) -> dict:
     """Format complete wishlist for API response."""
     return {
         "items": [_format_wishlist_item(item) for item in items],
@@ -49,6 +51,9 @@ async def get_wishlist(
     db: AsyncSession = Depends(get_db),
 ):
     """Get user's wishlist."""
+    if not auth.is_authenticated:
+        return {"items": [], "count": 0}
+
     try:
         owner = WishlistOwner(user_id=auth.user_id, session_id=auth.session_id)
         items = await WishlistService.get_wishlist_items(db, owner)
@@ -60,7 +65,7 @@ async def get_wishlist(
 @router.post("", response_model=WishlistRead)
 async def add_to_wishlist(
     data: WishlistAdd,
-    auth: AuthResult = Depends(get_auth),
+    auth: AuthResult = Depends(require_auth),
     db: AsyncSession = Depends(get_db),
 ):
     """Add product to wishlist."""
@@ -76,7 +81,7 @@ async def add_to_wishlist(
 @router.delete("/{product_id}", response_model=WishlistRead)
 async def remove_from_wishlist(
     product_id: int,
-    auth: AuthResult = Depends(get_auth),
+    auth: AuthResult = Depends(require_auth),
     db: AsyncSession = Depends(get_db),
 ):
     """Remove product from wishlist."""
@@ -96,6 +101,9 @@ async def check_wishlist(
     db: AsyncSession = Depends(get_db),
 ):
     """Check if product is in wishlist."""
+    if not auth.is_authenticated:
+        return {"in_wishlist": False, "wishlist_item_id": None}
+
     try:
         owner = WishlistOwner(user_id=auth.user_id, session_id=auth.session_id)
         in_wishlist, item_id = await WishlistService.check_item(db, owner, product_id)
@@ -104,11 +112,11 @@ async def check_wishlist(
         raise domain_to_http(e)
 
 
-@router.post("/move-to-cart/{product_id}")
+@router.post("/move-to-cart/{product_id}", response_model=WishlistMoveToCartResponse)
 async def move_to_cart(
     product_id: int,
     data: WishlistMoveToCartRequest,
-    auth: AuthResult = Depends(get_auth),
+    auth: AuthResult = Depends(require_auth),
     db: AsyncSession = Depends(get_db),
 ):
     """Move wishlist item to cart."""

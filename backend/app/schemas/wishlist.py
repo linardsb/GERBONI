@@ -2,7 +2,9 @@
 
 from datetime import datetime
 from decimal import Decimal
-from pydantic import BaseModel, ConfigDict
+from typing import Literal
+
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class WishlistProductRead(BaseModel):
@@ -53,4 +55,10 @@ class WishlistMoveToCartRequest(BaseModel):
     """Request to move wishlist item to cart."""
 
     variant_id: int
-    quantity: int = 1
+    quantity: int = Field(default=1, ge=1)
+
+
+class WishlistMoveToCartResponse(BaseModel):
+    """Response after moving wishlist item to cart."""
+
+    status: Literal["moved_to_cart"]

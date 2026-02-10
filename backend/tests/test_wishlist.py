@@ -12,10 +12,24 @@ from app.models import WishlistItem, Product
 class TestGetWishlist:
     """Tests for GET /api/wishlist"""
 
-    async def test_get_wishlist_requires_auth_or_session(self, client: AsyncClient):
-        """Test that getting wishlist requires authentication or guest session."""
+    async def test_get_wishlist_anonymous_returns_empty(self, client: AsyncClient):
+        """Test that anonymous user gets empty wishlist."""
         response = await client.get("/api/wishlist")
-        assert response.status_code in (401, 422)
+        assert response.status_code == 200
+        data = response.json()
+        assert data["items"] == []
+        assert data["count"] == 0
+
+    async def test_get_wishlist_invalid_guest_returns_empty(self, client: AsyncClient):
+        """Invalid guest session is treated as anonymous on read endpoints."""
+        response = await client.get(
+            "/api/wishlist",
+            headers={"X-Guest-Session": "invalid-token-abc123"},
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["items"] == []
+        assert data["count"] == 0
 
     async def test_get_wishlist_empty_authenticated(self, auth_client: AsyncClient):
         """Test getting empty wishlist for authenticated user."""
@@ -84,7 +98,17 @@ class TestAddToWishlist:
     async def test_add_to_wishlist_requires_auth_or_session(self, client: AsyncClient):
         """Test that adding to wishlist requires authentication or guest session."""
         response = await client.post("/api/wishlist", json={"product_id": 1})
-        assert response.status_code in (401, 422)
+        assert response.status_code == 401
+
+    async def test_add_to_wishlist_invalid_guest_rejected(self, client: AsyncClient):
+        """Invalid guest session on mutation returns 401 with specific error."""
+        response = await client.post(
+            "/api/wishlist",
+            json={"product_id": 1},
+            headers={"X-Guest-Session": "invalid-token-abc123"},
+        )
+        assert response.status_code == 401
+        assert response.json()["detail"] == "Invalid guest session"
 
     async def test_add_to_wishlist_authenticated(
         self, auth_client: AsyncClient, test_product: Product
@@ -147,7 +171,16 @@ class TestRemoveFromWishlist:
     ):
         """Test that removing from wishlist requires authentication or guest session."""
         response = await client.delete("/api/wishlist/1")
-        assert response.status_code in (401, 422)
+        assert response.status_code == 401
+
+    async def test_remove_from_wishlist_invalid_guest_rejected(self, client: AsyncClient):
+        """Invalid guest session on mutation returns 401 with specific error."""
+        response = await client.delete(
+            "/api/wishlist/1",
+            headers={"X-Guest-Session": "invalid-token-abc123"},
+        )
+        assert response.status_code == 401
+        assert response.json()["detail"] == "Invalid guest session"
 
     async def test_remove_from_wishlist_authenticated(
         self, auth_client: AsyncClient, db_session: AsyncSession, test_user, test_product: Product
@@ -189,10 +222,24 @@ class TestRemoveFromWishlist:
 class TestCheckWishlist:
     """Tests for GET /api/wishlist/check/{product_id}"""
 
-    async def test_check_wishlist_requires_auth_or_session(self, client: AsyncClient):
-        """Test that checking wishlist requires authentication or guest session."""
+    async def test_check_wishlist_anonymous_returns_false(self, client: AsyncClient):
+        """Test that anonymous user gets not-in-wishlist response."""
         response = await client.get("/api/wishlist/check/1")
-        assert response.status_code in (401, 422)
+        assert response.status_code == 200
+        data = response.json()
+        assert data["in_wishlist"] is False
+        assert data["wishlist_item_id"] is None
+
+    async def test_check_wishlist_invalid_guest_returns_false(self, client: AsyncClient):
+        """Invalid guest session is treated as anonymous on check endpoint."""
+        response = await client.get(
+            "/api/wishlist/check/1",
+            headers={"X-Guest-Session": "invalid-token-abc123"},
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["in_wishlist"] is False
+        assert data["wishlist_item_id"] is None
 
     async def test_check_wishlist_item_exists_authenticated(
         self, auth_client: AsyncClient, db_session: AsyncSession, test_user, test_product: Product
@@ -262,7 +309,17 @@ class TestMoveToCart:
             "/api/wishlist/move-to-cart/1",
             json={"variant_id": 1, "quantity": 1},
         )
-        assert response.status_code in (401, 422)
+        assert response.status_code == 401
+
+    async def test_move_to_cart_invalid_guest_rejected(self, client: AsyncClient):
+        """Invalid guest session on mutation returns 401 with specific error."""
+        response = await client.post(
+            "/api/wishlist/move-to-cart/1",
+            json={"variant_id": 1, "quantity": 1},
+            headers={"X-Guest-Session": "invalid-token-abc123"},
+        )
+        assert response.status_code == 401
+        assert response.json()["detail"] == "Invalid guest session"
 
     async def test_move_to_cart_authenticated(
         self,
