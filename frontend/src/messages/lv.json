@@ -41,7 +41,9 @@
     "orders": "Pasūtījumi",
     "wishlist": "Vēlmju saraksts",
     "cart": "Grozs",
-    "menu": "Izvēlne"
+    "menu": "Izvēlne",
+    "darkMode": "Pārslēgt uz tumšo režīmu",
+    "lightMode": "Pārslēgt uz gaišo režīmu"
   },
   "home": {
     "heroTitle": "Velc savu mantojumu",

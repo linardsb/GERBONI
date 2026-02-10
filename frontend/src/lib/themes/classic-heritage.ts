@@ -1,0 +1,128 @@
+/**
+ * Classic Heritage Theme
+ *
+ * Deep forest green primary, serif headings, wider spacing.
+ * Traditional museum-like aesthetic with Latvian heritage feel.
+ */
+
+import type { GerboniTheme } from "./types"
+
+export const classicHeritage: GerboniTheme = {
+  id: "classic-heritage",
+  name: "Classic Heritage",
+  description: "Deep forest green with serif headings and a traditional museum aesthetic.",
+  previewColors: {
+    primary: "oklch(0.42 0.10 160)",
+    background: "oklch(0.98 0.005 80)",
+    foreground: "oklch(0.22 0.02 50)",
+    accent: "oklch(0.94 0.015 80)",
+  },
+
+  colors: {
+    background: "oklch(0.98 0.005 80)",
+    foreground: "oklch(0.22 0.02 50)",
+    card: "oklch(0.99 0.003 80)",
+    cardForeground: "oklch(0.22 0.02 50)",
+    popover: "oklch(0.99 0.003 80)",
+    popoverForeground: "oklch(0.22 0.02 50)",
+    primary: "oklch(0.42 0.10 160)",
+    primaryForeground: "oklch(0.98 0.005 80)",
+    secondary: "oklch(0.95 0.01 80)",
+    secondaryForeground: "oklch(0.28 0.02 50)",
+    muted: "oklch(0.94 0.015 80)",
+    mutedForeground: "oklch(0.48 0.02 50)",
+    accent: "oklch(0.94 0.015 80)",
+    accentForeground: "oklch(0.28 0.02 50)",
+    destructive: "oklch(0.55 0.20 25)",
+    destructiveForeground: "oklch(0.98 0 0)",
+    border: "oklch(0.88 0.015 80)",
+    input: "oklch(0.88 0.015 80)",
+    ring: "oklch(0.42 0.10 160)",
+    surfaceMuted: "oklch(0.96 0.008 80)",
+    surfaceDark: "oklch(0.18 0.02 50)",
+    borderSubtle: "oklch(0.91 0.01 80)",
+    success: "oklch(0.65 0.15 145)",
+    successForeground: "oklch(0.25 0.06 145)",
+    warning: "oklch(0.75 0.15 60)",
+    warningForeground: "oklch(0.35 0.10 60)",
+    overlayForeground: "oklch(1 0 0)",
+    overlayForegroundMuted: "oklch(1 0 0 / 0.7)",
+    overlayForegroundSubtle: "oklch(1 0 0 / 0.5)",
+    redBrand: "oklch(0.42 0.10 160)",
+    redBrandForeground: "oklch(0.98 0.005 80)",
+    ratingFill: "oklch(0.78 0.14 75)",
+    successBg: "oklch(0.94 0.04 145)",
+    tshirtStroke: "oklch(0.88 0.015 80)",
+    chart1: "oklch(0.42 0.10 160)",
+    chart2: "oklch(0.55 0.12 30)",
+    chart3: "oklch(0.68 0.10 260)",
+    chart4: "oklch(0.75 0.14 75)",
+    chart5: "oklch(0.50 0.15 330)",
+    sidebar: "oklch(0.20 0.03 160)",
+    sidebarForeground: "oklch(0.95 0.005 80)",
+    sidebarPrimary: "oklch(0.50 0.09 160)",
+    sidebarPrimaryForeground: "oklch(0.98 0 0)",
+    sidebarAccent: "oklch(0.28 0.04 160)",
+    sidebarAccentForeground: "oklch(0.95 0.005 80)",
+    sidebarBorder: "oklch(0.30 0.03 160)",
+    sidebarRing: "oklch(0.42 0.10 160)",
+  },
+
+  darkColors: {
+    background: "oklch(0.16 0.02 50)",
+    foreground: "oklch(0.94 0.008 80)",
+    card: "oklch(0.19 0.02 50)",
+    cardForeground: "oklch(0.94 0.008 80)",
+    popover: "oklch(0.19 0.02 50)",
+    popoverForeground: "oklch(0.94 0.008 80)",
+    primary: "oklch(0.55 0.09 160)",
+    primaryForeground: "oklch(0.98 0 0)",
+    secondary: "oklch(0.26 0.02 50)",
+    secondaryForeground: "oklch(0.94 0.008 80)",
+    muted: "oklch(0.26 0.02 50)",
+    mutedForeground: "oklch(0.65 0.015 50)",
+    accent: "oklch(0.26 0.02 50)",
+    accentForeground: "oklch(0.94 0.008 80)",
+    destructive: "oklch(0.65 0.18 25)",
+    destructiveForeground: "oklch(0.98 0 0)",
+    border: "oklch(0.30 0.02 50)",
+    input: "oklch(0.30 0.02 50)",
+    ring: "oklch(0.55 0.09 160)",
+    sidebar: "oklch(0.14 0.02 160)",
+    sidebarForeground: "oklch(0.94 0.008 80)",
+    sidebarPrimary: "oklch(0.55 0.09 160)",
+    sidebarPrimaryForeground: "oklch(0.98 0 0)",
+    sidebarAccent: "oklch(0.26 0.03 160)",
+    sidebarAccentForeground: "oklch(0.94 0.008 80)",
+    sidebarBorder: "oklch(0.30 0.02 50)",
+    sidebarRing: "oklch(0.55 0.09 160)",
+  },
+
+  typography: {
+    fontSans: "var(--font-forum), var(--font-figtree)",
+    fontHeading: "var(--font-playfair), Georgia, serif",
+    fontSerif: "var(--font-playfair)",
+    fontMono: "var(--font-geist-mono)",
+    fontLatvian: "var(--font-liva)",
+    trackingHeading: "0.02em",
+    trackingBody: "0.015em",
+  },
+
+  spacing: {
+    page: "3.5rem",
+    section: "2.5rem",
+    group: "1.25rem",
+    element: "0.625rem",
+  },
+
+  radius: {
+    base: "0.25rem",
+    card: "0.5rem",
+  },
+
+  effects: {
+    enable3DButton: false,
+    enableHoverUnderline: true,
+    enableHoverScale: true,
+  },
+}

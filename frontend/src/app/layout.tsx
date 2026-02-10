@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ThemeProvider } from "next-themes";
 import { Figtree, Geist_Mono, Playfair_Display } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
@@ -56,6 +57,23 @@ export const metadata: Metadata = {
     "Premium t-shirts featuring authentic coats of arms from Latvian cities. Wear your heritage with pride.",
 };
 
+/**
+ * Anti-FOUC script — runs synchronously before paint.
+ * Reads the persisted theme ID from localStorage and sets
+ * data-theme on <html> so the ThemeProvider can hydrate
+ * with the correct theme already visible.
+ */
+const antiFoucScript = `
+(function(){
+  try {
+    var t = localStorage.getItem('gerboni-theme');
+    if (t && t !== 'gerboni-default') {
+      document.documentElement.setAttribute('data-theme', t);
+    }
+  } catch(e) {}
+})();
+`;
+
 export default function RootLayout({
   children,
 }: {
@@ -63,11 +81,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: antiFoucScript }} />
+      </head>
       <body
         className={`${capsuula.variable} ${gputeks.variable} ${benne.variable} ${forum.variable} ${figtree.variable} ${geistMono.variable} ${playfairDisplay.variable} ${liva.variable} font-sans antialiased min-h-screen flex flex-col`}
         suppressHydrationWarning
       >
-        {children}
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

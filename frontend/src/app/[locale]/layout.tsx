@@ -9,6 +9,8 @@ import { ChatWidget } from "@/components/components/chat-widget";
 import { NewsletterPopup } from "@/components/compositions/newsletter-popup";
 import { ExitIntentOffer } from "@/components/compositions/exit-intent-offer";
 import { WishlistProvider } from "@/components/providers/wishlist-provider";
+import { GerboniThemeProvider } from "@/components/providers/theme-provider";
+import { ThemeSwitcher } from "@/components/compositions/theme-switcher";
 import { routing } from "@/i18n/routing";
 import { LocaleUpdater } from "@/components/providers/locale-updater";
 import { JsonLd } from "@/components/compositions/json-ld";
@@ -87,15 +89,18 @@ export default async function LocaleLayout({ children, params }: Props) {
     <NextIntlClientProvider messages={messages}>
       <JsonLd data={organizationJsonLd} />
       <LocaleUpdater locale={locale} />
-      <WishlistProvider>
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
-        <ChatWidget />
-        <NewsletterPopup />
-        <ExitIntentOffer />
-        <Toaster />
-      </WishlistProvider>
+      <GerboniThemeProvider>
+        <WishlistProvider>
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
+          <ChatWidget />
+          <NewsletterPopup />
+          <ExitIntentOffer />
+          <ThemeSwitcher />
+          <Toaster />
+        </WishlistProvider>
+      </GerboniThemeProvider>
     </NextIntlClientProvider>
   );
 }

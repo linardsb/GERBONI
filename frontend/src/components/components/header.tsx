@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/routing";
-import { IconShoppingCart, IconUser, IconMenu2, IconChevronDown, IconHeart } from "@/components/icons";
+import { IconShoppingCart, IconUser, IconMenu2, IconChevronDown, IconHeart, IconSun, IconMoon } from "@/components/icons";
 import { Button } from "@/components/elements/button";
 import { Badge } from "@/components/elements/badge";
 import { Text } from "@/components/elements/text";
@@ -25,6 +25,7 @@ import {
 import { useAuthStore, useCartStore, useWishlistStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { LanguageSwitcher } from "@/components/elements/language-switcher";
+import { useTheme } from "next-themes";
 
 export function Header() {
   const t = useTranslations("nav");
@@ -39,6 +40,7 @@ export function Header() {
   const { cart } = useCartStore();
   const { wishlist } = useWishlistStore();
   const pathname = usePathname();
+  const { resolvedTheme, setTheme: setColorMode } = useTheme();
 
   const mainNavItems = [
     { href: "/products" as const, label: t("shop") },
@@ -111,6 +113,22 @@ export function Header() {
         <Row gap="element">
           {/* Language Switcher */}
           <LanguageSwitcher />
+
+          {/* Dark Mode Toggle */}
+          {mounted && (
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label={resolvedTheme === "dark" ? t("lightMode") : t("darkMode")}
+              onClick={() => setColorMode(resolvedTheme === "dark" ? "light" : "dark")}
+            >
+              {resolvedTheme === "dark" ? (
+                <IconSun className="size-5" aria-hidden="true" />
+              ) : (
+                <IconMoon className="size-5" aria-hidden="true" />
+              )}
+            </Button>
+          )}
 
           {/* Wishlist */}
           <Button variant="ghost" size="icon" asChild className="relative" aria-label={t("wishlist")}>

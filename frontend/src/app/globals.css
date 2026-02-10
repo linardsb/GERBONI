@@ -104,6 +104,7 @@
 }
 
 :root {
+  /* Default theme — overridden at runtime by ThemeProvider */
   /* Zinc base + brand red theme + no radius for buttons */
   --radius: 0;
   --background: oklch(1 0 0);
@@ -521,4 +522,27 @@
 .btn-3d-face {
   padding: var(--btn-3d-padding-y) var(--btn-3d-padding-x);
   border-radius: 9999px;
+}
+
+/* ============================================
+   Theme Effect Conditionals
+   ============================================
+   Data attributes set by ThemeProvider to toggle visual effects.
+   When a theme disables an effect, these rules neutralize it.
+   ============================================ */
+[data-effects-3d="false"] .btn-3d-pushback {
+  perspective: none;
+}
+[data-effects-3d="false"] .btn-3d-front {
+  transform: none !important;
+}
+[data-effects-3d="false"] .btn-3d-back {
+  display: none;
+}
+[data-effects-underline="false"] .nav-link::after,
+[data-effects-underline="false"] .footer-link::after {
+  display: none;
+}
+[data-effects-scale="false"] .group:hover .hover-scale {
+  transform: none;
 }

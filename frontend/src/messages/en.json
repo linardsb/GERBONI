@@ -41,7 +41,9 @@
     "orders": "Orders",
     "wishlist": "Wishlist",
     "cart": "Cart",
-    "menu": "Menu"
+    "menu": "Menu",
+    "darkMode": "Switch to dark mode",
+    "lightMode": "Switch to light mode"
   },
   "home": {
     "heroTitle": "Wear Your Heritage",

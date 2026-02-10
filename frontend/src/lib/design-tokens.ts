@@ -5,7 +5,14 @@
  * Use these for validation, testing, and documentation purposes.
  *
  * The actual CSS variables are defined in globals.css.
+ * Runtime theming is handled by the theme system in @/lib/themes/.
  */
+
+// Re-export theme types for convenience
+export type { GerboniTheme, ThemeColors, ThemePreviewColors } from "./themes/types"
+
+/** All registered theme IDs */
+export { themes, DEFAULT_THEME_ID } from "./themes"
 
 /**
  * Semantic spacing tokens for gap, padding, and margin

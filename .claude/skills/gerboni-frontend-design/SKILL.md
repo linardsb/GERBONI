@@ -1109,6 +1109,67 @@ test.describe("Feature Name", () => {
 
 ---
 
+## Theming
+
+The design system supports runtime theme switching. Themes are TS objects that override CSS custom properties — **zero component changes required**.
+
+### How It Works
+
+1. Themes defined in `frontend/src/lib/themes/` as typed TS objects implementing `GerboniTheme`
+2. `ThemeProvider` reads localStorage, calls `applyThemeToDOM()` which sets CSS vars on `<html>`
+3. All components using semantic tokens (`bg-primary`, `gap-section`) update automatically
+4. `globals.css` `:root` values serve as SSR fallback (always the Gerboni default)
+5. `next-themes` handles dark mode via `.dark` class; each theme has its own `darkColors`
+
+### Creating a New Theme
+
+1. Copy `frontend/src/lib/themes/gerboni-default.ts` as template
+2. Replace `id`, `name`, `description`, `previewColors`
+3. Fill in all `colors` (45 tokens) — use OKLch values for consistency
+4. Fill in `darkColors` (partial overrides for dark mode)
+5. Set `typography`, `spacing`, `radius`, `effects`
+6. If custom fonts needed: add `.woff2` to `public/fonts/themes/{id}/` and add `fonts[]` entries
+7. Import in `frontend/src/lib/themes/index.ts` and add to `themes` array
+
+### What Themes Control
+
+- All semantic colors (primary, background, foreground, etc.)
+- Typography (font families, letter-spacing)
+- Spacing scale (page, section, group, element)
+- Border radius (base and card)
+- Animation timing (optional overrides)
+- Visual effects (3D buttons, hover underlines, hover scale)
+
+### What Themes Don't Control
+
+- Component structure, layout, or HTML
+- Container query breakpoints
+- Icon sizes
+- Grid column counts
+- Tailwind utility classes
+- Component variants (CVA definitions)
+
+### Effect Toggles
+
+Themes can disable visual effects via `ThemeEffects`:
+- `enable3DButton: false` — neutralizes 3D pushback button flip
+- `enableHoverUnderline: false` — hides nav/footer link underlines
+- `enableHoverScale: false` — disables product image scale-on-hover
+
+CSS rules in `globals.css` respond to `data-effects-*` attributes on `<html>`.
+
+### Font Loading
+
+- **Default theme fonts** (Figtree, Forum, Capsuula, etc.) loaded statically via `next/font`
+- **Already-loaded fonts** (e.g. Playfair Display) can be used by themes without dynamic loading
+- **New fonts** loaded dynamically via `FontFace` API — add files to `public/fonts/themes/{id}/`
+
+### Theme Switcher
+
+Visible in dev mode or with `?theme-debug=true`. Floating palette button bottom-left.
+
+---
+
 ## References
 
 - [Tailwind CSS Documentation](https://tailwindcss.com/docs)

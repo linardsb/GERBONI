@@ -64,6 +64,9 @@ export { IconTrendingUp } from './IconTrendingUp';
 export { IconSparkles } from './IconSparkles';
 export { IconRobot } from './IconRobot';
 export { IconSelector } from './IconSelector';
+export { IconSun } from './IconSun';
+export { IconMoon } from './IconMoon';
+export { IconPalette } from './IconPalette';
 
 // Type export for icon components
 export type { SVGProps } from 'react';

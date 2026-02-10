@@ -1,0 +1,128 @@
+/**
+ * Modern Minimal Theme
+ *
+ * Slate blue primary, rounded corners, system font stack.
+ * Clean contemporary e-commerce aesthetic.
+ */
+
+import type { GerboniTheme } from "./types"
+
+export const modernMinimal: GerboniTheme = {
+  id: "modern-minimal",
+  name: "Modern Minimal",
+  description: "Clean slate-blue design with rounded corners and system fonts.",
+  previewColors: {
+    primary: "oklch(0.55 0.15 250)",
+    background: "oklch(0.99 0.002 260)",
+    foreground: "oklch(0.20 0.02 260)",
+    accent: "oklch(0.95 0.01 260)",
+  },
+
+  colors: {
+    background: "oklch(0.99 0.002 260)",
+    foreground: "oklch(0.20 0.02 260)",
+    card: "oklch(1 0 0)",
+    cardForeground: "oklch(0.20 0.02 260)",
+    popover: "oklch(1 0 0)",
+    popoverForeground: "oklch(0.20 0.02 260)",
+    primary: "oklch(0.55 0.15 250)",
+    primaryForeground: "oklch(0.98 0 0)",
+    secondary: "oklch(0.96 0.01 260)",
+    secondaryForeground: "oklch(0.25 0.02 260)",
+    muted: "oklch(0.96 0.01 260)",
+    mutedForeground: "oklch(0.50 0.02 260)",
+    accent: "oklch(0.95 0.01 260)",
+    accentForeground: "oklch(0.25 0.02 260)",
+    destructive: "oklch(0.58 0.22 25)",
+    destructiveForeground: "oklch(0.98 0 0)",
+    border: "oklch(0.91 0.01 260)",
+    input: "oklch(0.91 0.01 260)",
+    ring: "oklch(0.55 0.15 250)",
+    surfaceMuted: "oklch(0.97 0.005 260)",
+    surfaceDark: "oklch(0.15 0.02 260)",
+    borderSubtle: "oklch(0.93 0.008 260)",
+    success: "oklch(0.70 0.16 155)",
+    successForeground: "oklch(0.25 0.06 155)",
+    warning: "oklch(0.78 0.14 70)",
+    warningForeground: "oklch(0.35 0.10 70)",
+    overlayForeground: "oklch(1 0 0)",
+    overlayForegroundMuted: "oklch(1 0 0 / 0.7)",
+    overlayForegroundSubtle: "oklch(1 0 0 / 0.5)",
+    redBrand: "oklch(0.55 0.15 250)",
+    redBrandForeground: "oklch(0.98 0 0)",
+    ratingFill: "oklch(0.80 0.15 85)",
+    successBg: "oklch(0.95 0.04 155)",
+    tshirtStroke: "oklch(0.91 0.01 260)",
+    chart1: "oklch(0.55 0.15 250)",
+    chart2: "oklch(0.65 0.14 170)",
+    chart3: "oklch(0.72 0.12 310)",
+    chart4: "oklch(0.78 0.16 85)",
+    chart5: "oklch(0.60 0.18 30)",
+    sidebar: "oklch(0.17 0.02 260)",
+    sidebarForeground: "oklch(0.95 0.005 260)",
+    sidebarPrimary: "oklch(0.60 0.13 250)",
+    sidebarPrimaryForeground: "oklch(0.98 0 0)",
+    sidebarAccent: "oklch(0.25 0.03 260)",
+    sidebarAccentForeground: "oklch(0.95 0.005 260)",
+    sidebarBorder: "oklch(0.30 0.02 260)",
+    sidebarRing: "oklch(0.55 0.15 250)",
+  },
+
+  darkColors: {
+    background: "oklch(0.15 0.02 260)",
+    foreground: "oklch(0.95 0.005 260)",
+    card: "oklch(0.18 0.02 260)",
+    cardForeground: "oklch(0.95 0.005 260)",
+    popover: "oklch(0.18 0.02 260)",
+    popoverForeground: "oklch(0.95 0.005 260)",
+    primary: "oklch(0.65 0.13 250)",
+    primaryForeground: "oklch(0.98 0 0)",
+    secondary: "oklch(0.25 0.02 260)",
+    secondaryForeground: "oklch(0.95 0.005 260)",
+    muted: "oklch(0.25 0.02 260)",
+    mutedForeground: "oklch(0.68 0.015 260)",
+    accent: "oklch(0.25 0.02 260)",
+    accentForeground: "oklch(0.95 0.005 260)",
+    destructive: "oklch(0.68 0.18 25)",
+    destructiveForeground: "oklch(0.98 0 0)",
+    border: "oklch(0.28 0.02 260)",
+    input: "oklch(0.28 0.02 260)",
+    ring: "oklch(0.65 0.13 250)",
+    sidebar: "oklch(0.13 0.02 260)",
+    sidebarForeground: "oklch(0.95 0.005 260)",
+    sidebarPrimary: "oklch(0.65 0.13 250)",
+    sidebarPrimaryForeground: "oklch(0.98 0 0)",
+    sidebarAccent: "oklch(0.25 0.03 260)",
+    sidebarAccentForeground: "oklch(0.95 0.005 260)",
+    sidebarBorder: "oklch(0.28 0.02 260)",
+    sidebarRing: "oklch(0.65 0.13 250)",
+  },
+
+  typography: {
+    fontSans: "system-ui, -apple-system, sans-serif",
+    fontHeading: "system-ui, -apple-system, sans-serif",
+    fontSerif: "Georgia, serif",
+    fontMono: "var(--font-geist-mono)",
+    fontLatvian: "var(--font-liva)",
+    trackingHeading: "0.02em",
+    trackingBody: "0em",
+  },
+
+  spacing: {
+    page: "2.5rem",
+    section: "1.5rem",
+    group: "0.75rem",
+    element: "0.375rem",
+  },
+
+  radius: {
+    base: "0.5rem",
+    card: "0.75rem",
+  },
+
+  effects: {
+    enable3DButton: false,
+    enableHoverUnderline: false,
+    enableHoverScale: true,
+  },
+}
