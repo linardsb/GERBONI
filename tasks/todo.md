@@ -11,6 +11,25 @@ Track current work items and progress. Update status as work progresses.
 
 ## Current Sprint
 
+### Documentation & Developer Experience (2026-02-10)
+- [x] Create Frontend Layout Architecture reference guide (`reference/frontend_layout_guide.md`, 197 lines)
+  - Researched Bootstrap 5 layout concepts (breakpoints, containers, grid, columns, gutters, z-index)
+  - Adapted all patterns to existing Tailwind CSS 4 + CVA design system components
+  - Covers: Section/Container hierarchy, Stack/Row direction, Grid presets, z-index scale, responsive breakpoints, container queries
+- [x] Update backend skill (`gerboni-backend/SKILL.md` v1.0→v2.0)
+  - **Critical fix**: Replaced old `get_current_user` pattern with `require_auth`/`get_auth` (BUG-008 security pattern)
+  - Updated route handler template with `AuthResult` + `ResourceOwner` pattern
+  - Added reference link to `reference/backend_architecture_guide.md`
+- [x] Update frontend skill (`gerboni-frontend-design/SKILL.md` v2.0→v3.0)
+  - Replaced "Inter-Component Composition" with "Layout Architecture" section
+  - Added: Section/Container variant tables, Grid presets, z-index practical scale, responsive breakpoints
+  - Simplified responsive design decision tree
+  - Added reference links to both architecture and layout guides
+- [x] Update theming documentation (`docs/theming.md`)
+  - Added "Layout System" section (component hierarchy, Section/Container/Grid patterns, z-index, responsive)
+  - Added "Changing Layouts at the Component Level" section (10 recipes with code examples + quick reference table)
+- [x] Update all project documentation with latest progress (MEMORY.md, tasks/, docs/)
+
 ### New Features
 - [x] Customer Full Profile (display name, phone, birthday, preferred size/colors/cities)
   - Backend: 6 new User model fields + alembic migration 003

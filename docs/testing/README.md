@@ -9,7 +9,7 @@ Run from the project root:
 | Command | What it does |
 |---|---|
 | `make test` | Run **all** backend + frontend tests |
-| `make test-backend` | Backend only (pytest, 470 tests) |
+| `make test-backend` | Backend only (pytest, 497 tests) |
 | `make test-frontend` | Frontend only (vitest, 382 tests) |
 | `make test-file FILE=backend/tests/test_auth.py` | Single backend test file |
 | `make test-file FILE=frontend/src/__tests__/components/button.test.tsx` | Single frontend test file |
@@ -24,7 +24,7 @@ Run from the project root:
       /------\
      / Unit  \       16 Vitest specs (components, pages, utilities)
     /----------\
-   /   API     \     24 pytest modules (endpoints, services, admin)
+   /   API     \     28 pytest modules (endpoints, services, admin)
   /--------------\
 ```
 
@@ -32,7 +32,7 @@ Run from the project root:
 
 | Suite | Framework | Files | Tests | Coverage Threshold | Runtime |
 |-------|-----------|-------|-------|-------------------|---------|
-| Backend API | pytest | 24 modules | 470 tests | ≥60% | ~95s |
+| Backend API | pytest | 28 modules | 497 tests | ≥60% | ~95s |
 | Frontend Unit | Vitest | 16 files | 382 tests | ≥80% | ~5s |
 | Frontend E2E | Playwright | 6 specs | ~35 scenarios | N/A | ~2m |
 
@@ -53,6 +53,7 @@ backend/tests/
 ├── test_agent.py              # AI agent tools, WebSocket
 ├── test_auth.py               # Registration, login, guest sessions
 ├── test_cache.py              # Redis caching layer
+├── test_campaigns.py          # Newsletter campaigns (admin CRUD, send, state rules)
 ├── test_cart.py               # Cart CRUD, item management
 ├── test_discounts.py          # Discount codes and coupons
 ├── test_email.py              # Email service (Resend)
@@ -63,6 +64,7 @@ backend/tests/
 ├── test_password_reset.py     # Forgot/reset/change password
 ├── test_payments.py           # Stripe checkout, webhooks
 ├── test_products.py           # Product catalog, variants, filtering
+├── test_profile.py            # Customer profile (get/update/validation)
 ├── test_recommendations.py    # Product recommendations
 ├── test_reviews.py            # Product reviews, helpfulness
 ├── test_websocket_agent.py    # WebSocket chat integration (30 tests)

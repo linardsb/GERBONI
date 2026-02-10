@@ -99,3 +99,9 @@ A good runbook:
 - [Bug Fixes Index](../bug-fixes/README.md)
 - [Testing Strategy](../testing/README.md)
 - [Known Fragile Areas](../../CLAUDE.md#known-fragile-areas)
+- [Theming & Layout Guide](../theming.md)
+
+### Reference Guides (on-demand, in `reference/`)
+- `reference/frontend_architecture_guide.md` — 5-step workflow for new frontend features/pages
+- `reference/backend_architecture_guide.md` — 5-step workflow for new backend resources/services
+- `reference/frontend_layout_guide.md` — Layout patterns (Section/Container/Grid, z-index, responsive)

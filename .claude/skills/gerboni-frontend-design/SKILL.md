@@ -11,8 +11,8 @@ description: |
   Prevents: inline styles, arbitrary Tailwind values (gap-[24px]), hardcoded colors,
   missing ARIA attributes, inconsistent icon sizes.
 author: Claude Code
-version: 2.0.0
-date: 2026-02-02
+version: 3.0.0
+date: 2026-02-10
 allowed-tools:
   - Read
   - Write
@@ -40,7 +40,7 @@ You are a frontend design system enforcer for the Gerboni e-commerce project. Yo
 10. [Error & Loading States](#error--loading-states)
 11. [Anti-Pattern Detection](#anti-pattern-detection)
 12. [Migration Checklist](#migration-checklist)
-13. [Inter-Component Composition](#inter-component-composition)
+13. [Layout Architecture](#layout-architecture)
 14. [Automated Validation](#automated-validation)
 
 ---
@@ -543,68 +543,29 @@ import { IconShoppingCart, IconUser, IconMenu2 } from "@tabler/icons-react"
 
 ## Responsive Design Decision Tree
 
-```
-┌─────────────────────────────────────────────────────────┐
-│           Need responsive layout?                        │
-└─────────────────────────────────────────────────────────┘
-                          │
-                          ▼
-         ┌────────────────────────────────┐
-         │  Where is the component used?  │
-         └────────────────────────────────┘
-                          │
-          ┌───────────────┼───────────────┐
-          │               │               │
-          ▼               ▼               ▼
-    ┌──────────┐   ┌──────────┐   ┌──────────────┐
-    │ Sidebar  │   │   Card   │   │  Full-page   │
-    │ Panel    │   │ Content  │   │   Layout     │
-    └──────────┘   └──────────┘   └──────────────┘
-          │               │               │
-          ▼               ▼               ▼
-    ┌──────────┐   ┌──────────┐   ┌──────────────┐
-    │ Container│   │ Container│   │   Viewport   │
-    │ Queries  │   │ Queries  │   │   Queries    │
-    │ (cq-*)   │   │ (cq-*)   │   │ (sm:, md:)   │
-    └──────────┘   └──────────┘   └──────────────┘
-```
-
-### When to Use Viewport Queries (sm:, md:, lg:)
-
-- **Page-level layouts**: Main content areas, navigation
-- **Grid systems**: Product grids that span full width
-- **Typography**: Hero text that needs viewport-relative sizing
-- **Mobile-first designs**: Features that differ phone vs tablet vs desktop
+**Viewport queries** (`sm:`, `md:`, `lg:`, `xl:`) for page-level concerns:
+- Main content areas, navigation, product grids spanning full width
+- Typography that needs viewport-relative sizing
+- Show/hide patterns: `hidden md:flex` / `md:hidden`
 
 ```tsx
-// Viewport-based grid
-<Grid cols={4} gap="group">  {/* Uses md:, lg: breakpoints */}
+<Grid cols={4} gap="group">  {/* Uses sm:, lg: breakpoints */}
+<nav className="hidden md:flex gap-group">  {/* Desktop nav */}
 ```
 
-### When to Use Container Queries (cq-*)
-
-- **Card content**: Layout within a card that may be in different contexts
-- **Sidebar content**: Components that might be in narrow or wide sidebars
-- **Reusable widgets**: Components used in various container sizes
-- **Nested layouts**: When parent size matters more than viewport
+**Container queries** (`cq-*`) for component-level responsiveness:
+- Card content, sidebar widgets, reusable components in various container sizes
+- Anything that doesn't know its viewport context
 
 ```tsx
-// Container-based grid
-<ResponsiveContainer>
+<ResponsiveContainer name="grid">
   <Grid cols={4} gap="group" containerQuery>  {/* Uses cq-* breakpoints */}
 </ResponsiveContainer>
 ```
 
-### Both? Use the `containerQuery` Prop
+**Toggle based on context**: `<Grid cols={4} containerQuery={isInSidebar}>`
 
-```tsx
-// Component that works in both contexts
-<Grid
-  cols={4}
-  gap="group"
-  containerQuery={isInSidebar}  // Toggle based on context
->
-```
+See **Layout Architecture** section above for breakpoint values and Grid column presets.
 
 ---
 
@@ -841,55 +802,102 @@ When refactoring existing code to use the design system:
 
 ---
 
-## Inter-Component Composition
+## Layout Architecture
 
-### Page Structure Hierarchy
+> Full reference: `reference/frontend_layout_guide.md`
+
+### Component Hierarchy
 
 ```
-<main>
-  └── <Section>              (background, vertical padding)
-      └── <Container>        (max-width, horizontal padding)
-          └── <Stack>        (vertical content flow)
-              └── <Grid>     (multi-column layouts)
-                  └── <Card> (content containers)
+Section          ← Full-width band (background + vertical spacing)
+  Container      ← Centered max-width wrapper (horizontal padding)
+    Stack/Row    ← Flex direction (vertical/horizontal)
+      Grid       ← Multi-column responsive grid
+        Card     ← Content container (padding + border)
 ```
+
+All layout uses semantic components — never raw `div` with manual flex/grid classes.
+
+### Section Spacing Variants
+
+| spacing | Value | Use |
+|---------|-------|-----|
+| `none` | py-0 | Flush sections |
+| `compact` | py-8 md:py-12 | Dense content |
+| `default` | py-16 md:py-24 | Standard sections |
+| `large` | py-24 md:py-32 | Hero / CTA |
+
+### Container Size Variants
+
+Sizes: `sm` (2xl) → `md` (4xl) → `lg` (5xl) → `xl` (6xl) → `2xl` (7xl, default) → `3xl` (90rem) → `full` (100%, 1.5% px). Never nest Containers. All add `px-4 sm:px-6 lg:px-8` except `full`.
+
+### Grid Column Presets
+
+| cols | Breakpoints |
+|------|-------------|
+| `1` | Always 1 column |
+| `2` | 1 → md:2 |
+| `3` | 1 → md:2 → lg:3 |
+| `4` | 1 → sm:2 → lg:4 |
+| `"2-3"` | 2 → lg:3 |
+| `"masonry"` | 2 → md:3 → lg:4 |
+
+Use `containerQuery` prop on Grid when inside resizable panels (sidebar, card, modal) — paired with `<ResponsiveContainer>` parent.
+
+### Z-Index Scale (Practical)
+
+| z-value | Use | Example |
+|---------|-----|---------|
+| `z-10` | Dropdown menus | Select popover |
+| `z-20` | Sticky elements | Table header |
+| `z-30` | Fixed elements | FAB button |
+| `z-40` | Modal backdrop | Overlay dim |
+| `z-50` | Modal / header | Dialog, sticky nav |
+| `z-60` | Popover | Context menu |
+| `z-70` | Tooltip | Hover hint |
+| `z-80` | Toast | Notification |
+
+Never use arbitrary z-index (`z-[999]`). If the scale doesn't fit, the stacking context is wrong.
+
+### Responsive Breakpoints
+
+| Breakpoint | Width | Target |
+|------------|-------|--------|
+| (base) | 0+ | Mobile portrait |
+| `sm:` | 640px | Mobile landscape |
+| `md:` | 768px | Tablet |
+| `lg:` | 1024px | Desktop |
+| `xl:` | 1280px | Wide desktop |
+
+**Mobile-first rule**: Base class = mobile. Add `sm:` / `md:` / `lg:` / `xl:` for larger screens.
+**Container queries** (`cq-*`) for component-level responsiveness — use when the component doesn't know its viewport context.
 
 ### Standard Page Layout
 
 ```tsx
-export default function Page() {
-  return (
-    <main>
-      {/* Hero Section */}
-      <Section background="muted" spacing="xl">
-        <Container>
-          <Stack gap="section" align="center">
-            <Text variant="display-lg" as="h1">Title</Text>
-            <Text variant="muted-lg">Subtitle</Text>
-            <Row gap="group">
-              <Button>Primary CTA</Button>
-              <Button variant="outline">Secondary</Button>
-            </Row>
-          </Stack>
-        </Container>
-      </Section>
+<Section spacing="large" background="muted">
+  <Container size="lg">
+    <Stack gap="section" align="center" className="text-center">
+      <Text variant="display-md">{t("hero.title")}</Text>
+      <Text variant="body-lg">{t("hero.subtitle")}</Text>
+      <Row gap="group" justify="center">
+        <Button>{t("hero.cta")}</Button>
+        <Button variant="outline">{t("hero.secondary")}</Button>
+      </Row>
+    </Stack>
+  </Container>
+</Section>
 
-      {/* Content Section */}
-      <Section spacing="lg">
-        <Container>
-          <Stack gap="section">
-            <Text variant="heading-lg" as="h2">Section Title</Text>
-            <Grid cols={4} gap="group">
-              {items.map(item => (
-                <Card key={item.id}>...</Card>
-              ))}
-            </Grid>
-          </Stack>
-        </Container>
-      </Section>
-    </main>
-  )
-}
+<Section spacing="default">
+  <Container size="2xl">
+    <Stack gap="section">
+      <Text variant="heading-lg">{t("products.title")}</Text>
+      <Grid cols={4} gap="default">
+        {products.map(p => <ProductCard key={p.id} product={p} />)}
+      </Grid>
+    </Stack>
+  </Container>
+</Section>
 ```
 
 ### Card Structure
@@ -904,9 +912,7 @@ export default function Page() {
     </CardAction>
   </CardHeader>
   <CardContent padding="md">
-    <Stack gap="element">
-      {/* Main content */}
-    </Stack>
+    <Stack gap="element">{/* Main content */}</Stack>
   </CardContent>
   <CardFooter padding="md">
     <Row justify="end" gap="element">
@@ -922,7 +928,6 @@ export default function Page() {
 ```tsx
 <form onSubmit={handleSubmit}>
   <Stack gap="section">
-    {/* Section 1 */}
     <Stack gap="group">
       <Stack gap="element">
         <Text variant="heading-sm" as="h3">Personal Info</Text>
@@ -934,23 +939,6 @@ export default function Page() {
         <FormField name="email" label="Email" type="email" />
       </Stack>
     </Stack>
-
-    {/* Section 2 */}
-    <Stack gap="group">
-      <Stack gap="element">
-        <Text variant="heading-sm" as="h3">Shipping</Text>
-        <Text variant="muted-sm">Where should we send your order?</Text>
-      </Stack>
-      <Stack gap="group">
-        <FormField name="address" label="Address" />
-        <Row gap="group">
-          <FormField name="city" label="City" />
-          <FormField name="zip" label="ZIP Code" />
-        </Row>
-      </Stack>
-    </Stack>
-
-    {/* Actions */}
     <Row justify="end" gap="element">
       <Button type="button" variant="outline">Cancel</Button>
       <Button type="submit">Submit</Button>
@@ -1172,6 +1160,8 @@ Visible in dev mode or with `?theme-debug=true`. Floating palette button bottom-
 
 ## References
 
+- **Architecture guide**: `reference/frontend_architecture_guide.md` — 5-step workflow for new features/pages
+- **Layout guide**: `reference/frontend_layout_guide.md` — Section/Container/Grid patterns, z-index, responsive
 - [Tailwind CSS Documentation](https://tailwindcss.com/docs)
 - [Class Variance Authority](https://cva.style/docs)
 - [Container Queries MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries)

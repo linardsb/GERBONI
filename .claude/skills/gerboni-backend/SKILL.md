@@ -9,8 +9,8 @@ description: |
   Enforces: Service layer pattern, domain exceptions, async SQLAlchemy,
   type hints, PEP 8, pytest testing, structured logging.
 author: Claude Code
-version: 1.0.0
-date: 2026-02-02
+version: 2.0.0
+date: 2026-02-10
 allowed-tools:
   - Read
   - Write
@@ -372,120 +372,77 @@ def domain_to_http(exc: DomainException) -> HTTPException:
 
 ## API Endpoint Patterns
 
-### Route Handler Template
+### Auth Dependencies (CRITICAL)
 
-Routes should be thin - delegate to services:
+**NEVER use raw `get_current_user` with `User | None`** — passing `owner=None` to services fetches ANY record (BUG-008 security vulnerability).
+
+Always use `require_auth()` or `get_auth()` from `deps.py`:
 
 ```python
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
+from .deps import require_auth, get_auth, AuthResult
 
+# require_auth → strict: returns AuthResult or 401
+# get_auth → permissive: returns AuthResult (allows anonymous, e.g. GET /cart returns empty)
+# AuthResult has: .user_id, .guest_email, .session_id, .is_authenticated
+```
+
+### Route Handler Template
+
+Routes should be thin — parse, delegate, respond:
+
+```python
+from fastapi import APIRouter, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 from ..database import get_db
-from ..models import User
-from ..schemas import OrderCreate, OrderRead
-from ..services import OrderService, OrderOwner, ShippingInfo
+from ..schemas.resource import ResourceCreate, ResourceRead
+from ..services.resource_service import ResourceService, ResourceOwner
 from ..exceptions import DomainException, domain_to_http
-from .deps import get_current_user
+from .deps import require_auth, get_auth, AuthResult
 
 router = APIRouter()
 
+@router.get("", response_model=list[ResourceRead])  # Public — permissive auth
+async def list_resources(skip: int = 0, limit: int = 20, db: AsyncSession = Depends(get_db)):
+    return await ResourceService.list_all(db, skip, limit)
 
-def _format_order(order) -> dict:
-    """Format order for API response."""
-    return {
-        "id": order.id,
-        "status": order.status,
-        "total": order.total,
-        "items": [
-            {
-                "id": item.id,
-                "variant_id": item.variant_id,
-                "quantity": item.quantity,
-                "price": item.price,
-            }
-            for item in order.items
-        ],
-        "created_at": order.created_at,
-    }
-
-
-@router.get("/{order_id}", response_model=OrderRead)
-async def get_order(
-    order_id: int,
-    user: User | None = Depends(get_current_user),
+@router.get("/{resource_id}", response_model=ResourceRead)
+async def get_resource(
+    resource_id: int,
+    auth: AuthResult = Depends(require_auth),  # ← strict auth
     db: AsyncSession = Depends(get_db),
 ):
-    """
-    Get order by ID.
-
-    Authenticated users can only access their own orders.
-    """
-    owner = OrderOwner(
-        user_id=user.id if user else None,
-        guest_email=None,
-    )
-
+    owner = ResourceOwner(user_id=auth.user_id, guest_email=auth.guest_email)
     try:
-        order = await OrderService.get_order(db, order_id, owner if user else None)
-        return _format_order(order)
+        return await ResourceService.get(db, resource_id, owner)
     except DomainException as e:
         raise domain_to_http(e)
 
-
-@router.post("", response_model=OrderRead)
-async def create_order(
-    order_data: OrderCreate,
-    user: User = Depends(get_current_user),
+@router.post("", response_model=ResourceRead, status_code=201)
+async def create_resource(
+    data: ResourceCreate,
+    auth: AuthResult = Depends(require_auth),  # ← strict auth
     db: AsyncSession = Depends(get_db),
 ):
-    """Create order from cart items."""
-    owner = OrderOwner(user_id=user.id, guest_email=None)
-    shipping = ShippingInfo(
-        name=order_data.shipping.name,
-        address=order_data.shipping.address,
-        city=order_data.shipping.city,
-        postal_code=order_data.shipping.postal_code,
-        country=order_data.shipping.country,
-    )
-
+    owner = ResourceOwner(user_id=auth.user_id, guest_email=auth.guest_email)
     try:
-        order = await OrderService.create_from_cart(db, owner, shipping)
-        await db.commit()
-        return _format_order(order)
-    except DomainException as e:
-        raise domain_to_http(e)
-
-
-@router.delete("/{order_id}")
-async def cancel_order(
-    order_id: int,
-    user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
-):
-    """
-    Cancel a pending order.
-
-    Only orders in PENDING status can be cancelled.
-    """
-    owner = OrderOwner(user_id=user.id, guest_email=None)
-
-    try:
-        await OrderService.cancel(db, order_id, owner)
-        await db.commit()
-        return {"status": "cancelled"}
+        resource = await ResourceService.create(db, owner, data.name, data.name_lv, data.price)
+        await db.commit()  # ← route commits after service succeeds
+        return resource
     except DomainException as e:
         raise domain_to_http(e)
 ```
+
+Register: `api_router.include_router(resources_router, prefix="/resources", tags=["resources"])` in `api/__init__.py`
 
 ### Endpoint Conventions
 
 | Convention | Example |
 |------------|---------|
-| Use response_model | `response_model=OrderRead` |
-| Inject dependencies | `db: AsyncSession = Depends(get_db)` |
-| Wrap service calls in try/except | `except DomainException as e:` |
-| Commit after successful operations | `await db.commit()` |
-| Keep formatting in route module | `_format_order()` helper |
+| Auth via `require_auth` or `get_auth` | `auth: AuthResult = Depends(require_auth)` |
+| Build Owner from AuthResult | `ResourceOwner(user_id=auth.user_id, guest_email=auth.guest_email)` |
+| Wrap service calls in try/except | `except DomainException as e: raise domain_to_http(e)` |
+| Commit after successful mutations | `await db.commit()` |
+| Use response_model | `response_model=ResourceRead` |
 
 ---
 
@@ -1253,6 +1210,7 @@ def calculate_totals(items: list[CartItem]) -> CartSummary:
 
 ## References
 
+- **Architecture guide**: `reference/backend_architecture_guide.md` — concise 5-step workflow for adding new resources
 - FastAPI Documentation: https://fastapi.tiangolo.com/
 - SQLAlchemy 2.0 Async: https://docs.sqlalchemy.org/en/20/orm/extensions/asyncio.html
 - Pydantic V2: https://docs.pydantic.dev/latest/

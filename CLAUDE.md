@@ -440,6 +440,9 @@ Areas that have broken before. Pay extra attention when modifying:
 |---------|------|
 | Backend skill | `.claude/skills/gerboni-backend/SKILL.md` |
 | Frontend skill | `.claude/skills/gerboni-frontend-design/SKILL.md` |
+| Backend architecture guide | `reference/backend_architecture_guide.md` |
+| Frontend architecture guide | `reference/frontend_architecture_guide.md` |
+| Frontend layout guide | `reference/frontend_layout_guide.md` |
 | AI agent + tools | `backend/app/agent/support_agent.py` |
 | Shared auth deps | `backend/app/api/deps.py` |
 | Domain exceptions | `backend/app/exceptions.py` |
@@ -447,4 +450,5 @@ Areas that have broken before. Pay extra attention when modifying:
 | Zustand stores | `frontend/src/lib/store.ts` |
 | Design tokens (CSS) | `frontend/src/app/globals.css` |
 | Design tokens (TS) | `frontend/src/lib/design-tokens.ts` |
+| Theming & layout docs | `docs/theming.md` |
 | Task tracking | `tasks/CLAUDE.md`, `tasks/todo.md`, `tasks/bugs.md` |
