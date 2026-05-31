@@ -2,12 +2,15 @@
 Tests for password reset endpoints.
 """
 
+import logging
+
 import pytest
 from datetime import datetime, timedelta
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import PasswordResetToken
+from app.services import EmailService
 
 
 class TestForgotPassword:
@@ -52,6 +55,47 @@ class TestForgotPassword:
         # Both should succeed with same message structure
         assert resp_existing.status_code == resp_nonexistent.status_code == 200
         assert resp_existing.json()["message"] == resp_nonexistent.json()["message"]
+
+    async def test_forgot_password_never_exposes_token_value(
+        self, client: AsyncClient, test_user, caplog, capsys, monkeypatch
+    ):
+        """Regression for BUG-009: the reset token value must never be logged/printed.
+
+        The endpoint previously did ``print(f"...: {reset_token.token}")``, leaking
+        the secret token to stdout. We force ``debug`` mode so the logging branch
+        runs, capture the actual token via the email-send call, then assert that the
+        token string appears in neither the logs nor stdout/stderr.
+        """
+        captured: dict[str, str] = {}
+
+        async def fake_send(email, token):
+            captured["token"] = token
+
+        # Spy on the email send to capture the exact token the endpoint generated.
+        monkeypatch.setattr(EmailService, "send_password_reset", fake_send)
+        # Force the debug-only logging branch to execute so the test is meaningful.
+        monkeypatch.setattr("app.api.auth.settings.debug", True)
+
+        with caplog.at_level(logging.DEBUG, logger="app.api.auth"):
+            response = await client.post(
+                "/api/auth/forgot-password",
+                json={"email": "test@example.com"},
+            )
+
+        assert response.status_code == 200
+        assert "token" in captured, "endpoint should create a reset token for an existing user"
+
+        token_value = captured["token"]
+        stdout, stderr = capsys.readouterr()
+        haystack = caplog.text + stdout + stderr
+        assert token_value not in haystack, (
+            "reset token value must never be printed or logged (BUG-009)"
+        )
+        # Prove the debug logging branch actually ran (otherwise the check is vacuous).
+        assert any(
+            "Password reset token created" in record.getMessage()
+            for record in caplog.records
+        )
 
 
 class TestVerifyResetToken:

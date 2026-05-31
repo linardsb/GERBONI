@@ -707,9 +707,9 @@ Tracking coverage improvements to prevent future bugs:
 | 2026-02-07 | BUG-005 Agent refund bypass | N/A | N/A | 4 (refund via OrderService) |
 | 2026-02-07 | BUG-006 Payments guest checkout | N/A | N/A | 4 (guest checkout security) |
 | 2026-02-07 | `app/api/agent.py` (WebSocket) | 0% | 91% | 30 |
-| 2026-02-08 | BUG-009 Debug print info disclosure | N/A | N/A | Code review (logging fix) |
-| 2026-02-08 | BUG-010 Silent exception swallowing | N/A | N/A | Code review (logging fix) |
-| 2026-02-08 | BUG-011 Hardcoded i18n default | N/A | N/A | Code review (removed default) |
+| 2026-02-08 | BUG-009 Debug print info disclosure | N/A | N/A | 1 (test_password_reset.py::test_forgot_password_never_exposes_token_value) |
+| 2026-02-08 | BUG-010 Silent exception swallowing | N/A | N/A | 2 (test_no_silent_exceptions.py AST audit) |
+| 2026-02-08 | BUG-011 Hardcoded i18n default | N/A | N/A | 2 (product-grid.test.tsx empty-state) |
 | 2026-02-09 | BUG-012 conftest model import fix | N/A | N/A | All 497 tests now pass in isolation |
 | 2026-02-09 | BUG-013 pydantic-ai API drift fix | N/A | N/A | 31 agent tests restored |
 | 2026-02-08 | ESLint audit: 9 warnings → 0 | N/A | N/A | 5 useEffect deps + 3 unused vars + 1 img |
