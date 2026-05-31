@@ -41,7 +41,10 @@ export default function AdminDashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!token) return;
+    if (!token) {
+      setLoading(false);
+      return;
+    }
 
     const fetchData = async () => {
       try {
@@ -100,7 +103,7 @@ export default function AdminDashboardPage() {
           />
           <StatCard
             title="Total Revenue"
-            value={`€${(stats?.total_revenue ?? 0).toFixed(2)}`}
+            value={`€${Number(stats?.total_revenue ?? 0).toFixed(2)}`}
             icon={IconCurrencyEuro}
           />
           <StatCard
@@ -125,7 +128,7 @@ export default function AdminDashboardPage() {
           />
           <StatCard
             title="Revenue Today"
-            value={`€${(stats?.revenue_today ?? 0).toFixed(2)}`}
+            value={`€${Number(stats?.revenue_today ?? 0).toFixed(2)}`}
             subtitle="From paid orders"
             icon={IconCurrencyEuro}
           />

@@ -51,7 +51,10 @@ export default function AdminProductsPage() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (!token) return;
+    if (!token) {
+      setLoading(false);
+      return;
+    }
 
     const fetchProducts = async () => {
       setLoading(true);

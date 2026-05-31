@@ -83,7 +83,7 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # 1. Trusted Host Middleware - Prevent host header injection attacks
 #    Validates the Host header against allowed hosts
-allowed_hosts = ["localhost", "127.0.0.1"]
+allowed_hosts = ["localhost", "127.0.0.1", "backend"]
 if not settings.debug:
     # Add production domains
     allowed_hosts.extend(["gerboni.lv", "*.gerboni.lv", "api.gerboni.lv"])

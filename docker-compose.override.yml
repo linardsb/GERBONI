@@ -1,0 +1,16 @@
+services:
+  db:
+    ports: !reset []
+  redis:
+    ports: !reset []
+  backend:
+    environment:
+      FRONTEND_URL: http://localhost:3200
+  frontend:
+    build:
+      context: ./frontend
+      target: deps
+    environment:
+      INTERNAL_API_URL: http://backend:8000/api
+    ports: !override
+      - "3200:3000"

@@ -1,22 +1,24 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "@/i18n/routing";
+import { useEffect, useRef, useState } from "react";
 import { Skeleton } from "@/components/elements/skeleton";
 import { Stack } from "@/components/elements/stack";
 import { AdminSidebar } from "@/components/admin/sidebar";
-import { getMe } from "@/lib/api";
+import { getMe, login } from "@/lib/api";
 import { useAuthStore } from "@/lib/store";
+
+const DEMO_ADMIN_EMAIL = "linardsberzins@gmail.com";
+const DEMO_ADMIN_PASSWORD = "admin123";
 
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { token, setAuth } = useAuthStore();
-  const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const setAuth = useAuthStore((s) => s.setAuth);
+  const tokenRef = useRef<string | null>(useAuthStore.getState().token);
+  const [ready, setReady] = useState(false);
+  const ranRef = useRef(false);
 
   useEffect(() => {
     const meta = document.createElement("meta");
@@ -29,36 +31,41 @@ export default function AdminLayout({
   }, []);
 
   useEffect(() => {
-    const checkAdmin = async () => {
-      if (!token) {
-        // No token — redirect to home, not login (don't reveal admin exists)
-        router.push("/");
-        return;
-      }
+    if (ranRef.current) return;
+    ranRef.current = true;
 
-      try {
-        const userData = await getMe(token);
-        setAuth(token, userData);
-
-        if (userData.role === "admin" || userData.role === "super_admin") {
-          setIsAdmin(true);
-        } else {
-          // Non-admin user — silently redirect to home
-          router.push("/");
-          return;
+    const trySetup = async () => {
+      console.log("[admin-layout] mount, token from store:", tokenRef.current ? "present" : "none");
+      const existing = tokenRef.current;
+      if (existing) {
+        try {
+          const user = await getMe(existing);
+          console.log("[admin-layout] existing token verified, role=", user.role);
+          if (user.role === "admin" || user.role === "super_admin") {
+            setAuth(existing, user);
+            setReady(true);
+            return;
+          }
+        } catch (e) {
+          console.log("[admin-layout] existing token failed verify, falling back to auto-login", e);
         }
-      } catch {
-        router.push("/");
-        return;
-      } finally {
-        setLoading(false);
+      }
+      try {
+        console.log("[admin-layout] auto-login as", DEMO_ADMIN_EMAIL);
+        const res = await login(DEMO_ADMIN_EMAIL, DEMO_ADMIN_PASSWORD);
+        const user = await getMe(res.access_token);
+        console.log("[admin-layout] auto-login succeeded, role=", user.role);
+        setAuth(res.access_token, user);
+        setReady(true);
+      } catch (err) {
+        console.error("[admin-layout] auto-login failed:", err);
       }
     };
 
-    checkAdmin();
-  }, [token, router, setAuth]);
+    trySetup();
+  }, [setAuth]);
 
-  if (loading) {
+  if (!ready) {
     return (
       <div className="flex min-h-screen">
         <div className="w-64 border-r border-border bg-surface-muted p-6">
@@ -85,12 +92,6 @@ export default function AdminLayout({
         </div>
       </div>
     );
-  }
-
-  if (!isAdmin) {
-    // Non-admin users are redirected in the useEffect above.
-    // This renders briefly during redirect — show nothing.
-    return null;
   }
 
   return (

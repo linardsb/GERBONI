@@ -7,7 +7,7 @@ import { JsonLd } from "@/components/compositions/json-ld";
 import { ProductClient } from "./product-client";
 import type { ProductDetail } from "@/lib/api";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+const API_URL = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://gerboni.lv";
 
 type Props = {

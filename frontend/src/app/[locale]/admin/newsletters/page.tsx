@@ -15,6 +15,7 @@ import { Input } from "@/components/elements/input";
 import { Label } from "@/components/elements/label";
 import { Badge } from "@/components/elements/badge";
 import { Skeleton } from "@/components/elements/skeleton";
+import { Container } from "@/components/elements/container";
 import { Row } from "@/components/elements/row";
 import { Stack } from "@/components/elements/stack";
 import { Text } from "@/components/elements/text";
@@ -179,14 +180,17 @@ export default function AdminNewslettersPage() {
 
   if (loading) {
     return (
-      <Stack gap="group">
-        <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-64 w-full" />
-      </Stack>
+      <Container padding="md" className="px-8">
+        <Stack gap="group">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-64 w-full" />
+        </Stack>
+      </Container>
     );
   }
 
   return (
+    <Container padding="md" className="px-8">
     <Stack gap="section" data-slot="admin-newsletters">
       <Row justify="between" className="items-center">
         <div>
@@ -367,5 +371,6 @@ export default function AdminNewslettersPage() {
         </Stack>
       )}
     </Stack>
+    </Container>
   );
 }
